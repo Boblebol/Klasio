@@ -307,6 +307,23 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 .btn-ok:hover{background:#4338ca}
 .btn-cancel{flex:1;background:none;border:1.5px solid var(--border);border-radius:var(--rs);padding:12px;font-size:14px;cursor:pointer;color:var(--t2)}
 .btn-cancel:hover{background:var(--bg)}
+.btn-ok:disabled{background:var(--border2);cursor:not-allowed}
+.btn-ok:disabled:hover{background:var(--border2)}
+/* Modal CSV — plus large + textarea */
+.csv-modal{max-width:640px}
+.csv-modal textarea{width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:11px 13px;font-size:13px;color:var(--text);background:var(--bg);font-family:ui-monospace,'SF Mono',Menlo,monospace;line-height:1.55;resize:vertical;min-height:140px}
+.csv-modal textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+.csv-modal code{background:var(--bg);padding:1px 6px;border-radius:4px;font-size:12px;border:1px solid var(--border)}
+.csv-actions{display:flex;gap:8px;flex-wrap:wrap;margin:-4px 0 12px}
+.btn-ghost-sm{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;transition:all .12s}
+.btn-ghost-sm:hover{background:var(--surface);border-color:var(--border2);color:var(--text)}
+.csv-preview{min-height:20px;margin-bottom:14px;font-size:13px;line-height:1.55;padding:10px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--border);color:var(--t2);max-height:220px;overflow:auto}
+.csv-preview:empty{display:none}
+.csv-preview .csv-row{display:flex;justify-content:space-between;gap:12px;padding:3px 0;border-bottom:1px dashed var(--border)}
+.csv-preview .csv-row:last-child{border-bottom:none}
+.csv-preview .csv-row.new{color:var(--brand);font-weight:500}
+.csv-preview .csv-row.err{color:var(--red)}
+.csv-preview .csv-summary{font-weight:600;color:var(--text);margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
 
 /* ── Toast ── */
 .toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-8px);background:#1e1e1c;color:#e8e7e0;font-size:13px;font-weight:500;padding:10px 18px;border-radius:99px;z-index:700;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
@@ -460,6 +477,10 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
       <button class="btn-add" onclick="openAddNiveau()">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Ajouter un niveau (GS, MS, 6e…)
+      </button>
+      <button class="btn-add" onclick="openCsvImport()" title="Coller ou importer une liste « Niveau, Effectif »">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Importer CSV
       </button>
     </div>
   </div>
@@ -687,6 +708,33 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
   </div>
 </div>
 
+<!-- ══ MODAL import CSV ══ -->
+<div class="modal-bg" id="csv-modal-bg" style="display:none" onclick="if(event.target===this)closeCsvImport()">
+  <div class="modal csv-modal" role="dialog" aria-modal="true" aria-labelledby="csv-modal-title">
+    <div class="modal-handle"></div>
+    <h3 id="csv-modal-title">Importer une liste de niveaux</h3>
+    <p>Collez une liste au format <code>Niveau, Effectif</code> — une ligne par niveau. Les niveaux déjà présents seront mis à jour, les nouveaux créés.</p>
+    <div class="modal-field">
+      <label for="csv-input">Liste CSV (séparateurs acceptés : virgule, point-virgule, tabulation, pipe)</label>
+      <textarea id="csv-input" rows="7" spellcheck="false"
+        placeholder="CP,24&#10;CE1,22&#10;CE2,18&#10;CM1,25&#10;CM2,26"
+        oninput="updateCsvPreview()"></textarea>
+    </div>
+    <div class="csv-actions">
+      <button type="button" class="btn-ghost-sm" onclick="fillCsvExample()">Insérer un exemple</button>
+      <label class="btn-ghost-sm" style="cursor:pointer">
+        Charger un fichier .csv
+        <input type="file" id="csv-file-input" accept=".csv,text/csv,text/plain" style="display:none" onchange="loadCsvFile(event)">
+      </label>
+    </div>
+    <div class="csv-preview" id="csv-preview" aria-live="polite"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeCsvImport()">Annuler</button>
+      <button class="btn-ok" id="csv-confirm-btn" onclick="confirmCsvImport()" disabled>Importer</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ MODAL ajout niveau ══ -->
 <div class="modal-bg" id="modal-bg" style="display:none" onclick="if(event.target===this)closeModal()">
   <div class="modal">
@@ -709,71 +757,29 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
   </div>
 </div>
 
-<script>
-const COLORS=['#4f46e5','#7c3aed','#0891b2','#158a52','#d97706','#c0282a','#9333ea','#059669','#db2777','#ea580c'];
+<script type="module">
+// ── Imports du noyau pur ──
+// Les fonctions sans dépendance DOM/état vivent dans src/core.mjs et sont
+// couvertes par Vitest (voir tests/core.test.mjs).
+import {
+  COLORS, STRATS, STRATS_IDS, DEFAULT_STATE,
+  esc, isValidNiveau, isValidClasse, validateState,
+  classTotal, classPlafond as _classPlafondPure,
+  consecOk as _consecOkPure,
+  computeDistrib as _computeDistribPure,
+  encodeState as _encodeStatePure,
+  decodeState as _decodeStatePure,
+  parseCsvEffectifs, applyCsvItems,
+} from './src/core.mjs';
 
-const DEFAULT_STATE={
-  niveaux:[
-    {id:'CP', label:'CP', total:0,plafond:24,color:COLORS[0]},
-    {id:'CE1',label:'CE1',total:0,plafond:24,color:COLORS[1]},
-    {id:'CE2',label:'CE2',total:0,plafond:25,color:COLORS[2]},
-    {id:'CM1',label:'CM1',total:0,plafond:25,color:COLORS[3]},
-    {id:'CM2',label:'CM2',total:0,plafond:25,color:COLORS[4]},
-  ],
-  classes:[],maxClasses:8,counter:6,
-  distribMode:'balanced',showPreview:false,
-  currentStep:1,
-  schoolName:'',
-  schoolYear:'2025-2026',
-};
-let state=JSON.parse(JSON.stringify(DEFAULT_STATE));
+// ── Adapters locaux (fournissent niveaux/maxClasses depuis l'état global) ──
+const classPlafond = cl => _classPlafondPure(cl, state.niveaux);
+const consecOk = nids => _consecOkPure(nids, state.niveaux);
+const computeDistrib = mode => _computeDistribPure(state.niveaux, state.maxClasses, mode);
+const encodeState = () => _encodeStatePure(state);
 
-// ── Helper : échappement HTML sûr ──
-// À utiliser pour toute donnée saisie par l'utilisateur injectée dans un template.
-function esc(s){
-  if(s==null)return '';
-  return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-// ── Validation de schéma ──
-// Garde-fou pour résister aux données corrompues (localStorage ancien, URL manipulée).
-const STRATS_IDS=['balanced','double','single','small-first'];
-function isValidNiveau(n){
-  return n&&typeof n==='object'
-    &&typeof n.id==='string'&&/^[A-Za-z0-9_-]{1,20}$/.test(n.id)
-    &&typeof n.label==='string'&&n.label.length<=20
-    &&Number.isFinite(n.total)&&n.total>=0&&n.total<10000
-    &&Number.isFinite(n.plafond)&&n.plafond>=1&&n.plafond<200
-    &&(typeof n.color==='string'?/^#[0-9a-f]{3,8}$/i.test(n.color):true);
-}
-function isValidClasse(cl,validIds){
-  if(!cl||!Array.isArray(cl.rows)||cl.rows.length>5)return false;
-  return cl.rows.every(r=>r&&typeof r.nid==='string'&&validIds.has(r.nid)&&Number.isFinite(parseInt(r.val)));
-}
-function validateState(s){
-  if(!s||typeof s!=='object')return null;
-  if(!Array.isArray(s.niveaux)||s.niveaux.length===0||s.niveaux.length>30)return null;
-  if(!s.niveaux.every(isValidNiveau))return null;
-  const ids=new Set(s.niveaux.map(n=>n.id));
-  if(ids.size!==s.niveaux.length)return null;
-  const classes=Array.isArray(s.classes)?s.classes:[];
-  if(classes.length>50||!classes.every(cl=>isValidClasse(cl,ids)))return null;
-  return {
-    niveaux:s.niveaux.map(n=>({id:n.id,label:n.label,total:n.total,plafond:n.plafond,color:n.color})),
-    classes:classes.map(cl=>({
-      rows:cl.rows.map(r=>({nid:r.nid,val:Math.max(0,parseInt(r.val)||0)})),
-      teacher:typeof cl.teacher==='string'?cl.teacher.slice(0,80):'',
-      name:typeof cl.name==='string'?cl.name.slice(0,60):''
-    })),
-    maxClasses:Number.isFinite(s.maxClasses)&&s.maxClasses>=1&&s.maxClasses<=50?s.maxClasses:8,
-    counter:Number.isFinite(s.counter)?s.counter:6,
-    distribMode:STRATS_IDS.includes(s.distribMode)?s.distribMode:'balanced',
-    showPreview:!!s.showPreview,
-    currentStep:[1,2,3,4].includes(s.currentStep)?s.currentStep:1,
-    schoolName:typeof s.schoolName==='string'?s.schoolName.slice(0,120):'',
-    schoolYear:typeof s.schoolYear==='string'?s.schoolYear.slice(0,20):'2025-2026',
-  };
-}
+let state = DEFAULT_STATE();
+window.state = state;
 
 // ── Persist ──
 // Tous les `save()` sont appelés APRÈS une mutation. On snapshot la version
@@ -809,7 +815,7 @@ function load(){
     if(!d)return;
     const parsed=JSON.parse(d);
     const valid=validateState(parsed);
-    if(valid)state=valid;
+    if(valid){state=valid;window.state=state;}
     else console.warn('[Klasio] données locales invalides, réinitialisation');
   }catch(e){console.warn('[Klasio] load():',e);}
 }
@@ -824,7 +830,7 @@ function historyUndo(){
   const cur=JSON.stringify(state);
   history.future.push(cur);
   const prev=history.past.pop();
-  try{state=JSON.parse(prev);}catch(e){return;}
+  try{state=JSON.parse(prev);window.state=state;}catch(e){return;}
   _historySuppress=true;
   _lastSnapshot=prev;
   try{localStorage.setItem('klasio2',prev);}catch(e){}
@@ -839,7 +845,7 @@ function historyRedo(){
   const cur=JSON.stringify(state);
   history.past.push(cur);
   const next=history.future.pop();
-  try{state=JSON.parse(next);}catch(e){return;}
+  try{state=JSON.parse(next);window.state=state;}catch(e){return;}
   _historySuppress=true;
   _lastSnapshot=next;
   try{localStorage.setItem('klasio2',next);}catch(e){}
@@ -908,26 +914,12 @@ function toggleTheme(){
 }
 
 // ── URL share ──
-function encodeState(){
-  const mini={n:state.niveaux.map(n=>({i:n.id,l:n.label,t:n.total,p:n.plafond,c:n.color})),cl:state.classes.map(cl=>({r:cl.rows.map(r=>({n:r.nid,v:r.val}))})),m:state.maxClasses};
-  return btoa(encodeURIComponent(JSON.stringify(mini))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-}
-function decodeState(str){
-  try{
-    const json=decodeURIComponent(atob(str.replace(/-/g,'+').replace(/_/g,'/')));
-    const mini=JSON.parse(json);
-    if(!mini||!Array.isArray(mini.n)||!Array.isArray(mini.cl))return false;
-    const candidate={
-      ...DEFAULT_STATE,
-      niveaux:mini.n.map(n=>({id:String(n.i||''),label:String(n.l||''),total:parseInt(n.t)||0,plafond:parseInt(n.p)||25,color:String(n.c||'#4f46e5')})),
-      classes:mini.cl.map(cl=>({rows:(cl.r||[]).map(r=>({nid:String(r.n||''),val:parseInt(r.v)||0})),teacher:''})),
-      maxClasses:parseInt(mini.m)||8,
-    };
-    const valid=validateState(candidate);
-    if(!valid)return false;
-    state=valid;
-    return true;
-  }catch(e){return false;}
+// Les versions pures sont dans core.mjs ; on y ajoute ici le branchement à `state`.
+function importFromEncoded(str){
+  const valid=_decodeStatePure(str);
+  if(!valid)return false;
+  state=valid;window.state=state;
+  return true;
 }
 function shareUrl(){
   const enc=encodeState();
@@ -940,7 +932,7 @@ function loadFromUrl(){
   const p=new URLSearchParams(location.search);
   const s=p.get('s');
   if(s){
-    if(decodeState(s)){
+    if(importFromEncoded(s)){
       history.replaceState(null,'',location.pathname);
       showDialog({icon:'ok',title:'Répartition importée',msg:'La répartition partagée a bien été chargée. Vous pouvez la consulter et la modifier.',buttons:[{label:'Voir mes classes',style:'ok green',value:true,cb:()=>goStep(4)}]});
       return true;
@@ -977,6 +969,7 @@ function _dialogBtn(i){
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     if(document.getElementById('dialog-bg').style.display!=='none')_dialogBtn(0);
+    else if(document.getElementById('csv-modal-bg').style.display!=='none')closeCsvImport();
     else if(document.getElementById('modal-bg').style.display!=='none')closeModal();
   }
   if(e.key==='Enter'&&document.getElementById('modal-bg').style.display!=='none')confirmAddNiveau();
@@ -1020,22 +1013,10 @@ function goStep(n){
 
 // ── Helpers ──
 function getNiveau(id){return state.niveaux.find(n=>n.id===id);}
-function classTotal(cl){return cl.rows.reduce((s,r)=>s+(parseInt(r.val)||0),0);}
-function classPlafond(cl){
-  if(!cl.rows.length)return Infinity;
-  return Math.min(...cl.rows.map(r=>{const n=getNiveau(r.nid);return n?n.plafond:24;}));
-}
 function computeUsed(){
   const u={};state.niveaux.forEach(n=>u[n.id]=0);
   state.classes.forEach(cl=>cl.rows.forEach(r=>{if(u[r.nid]!==undefined)u[r.nid]+=(parseInt(r.val)||0);}));
   return u;
-}
-function consecOk(nids){
-  if(nids.length<=1)return true;
-  const order=state.niveaux.map(n=>n.id);
-  const idx=nids.map(id=>order.indexOf(id)).filter(i=>i>=0).sort((a,b)=>a-b);
-  for(let i=1;i<idx.length;i++)if(idx[i]-idx[i-1]!==1)return false;
-  return true;
 }
 function availNiveaux(cl){
   const pres=cl.rows.map(r=>r.nid),all=state.niveaux.map(n=>n.id);
@@ -1078,54 +1059,7 @@ function toggleHelp(id){
   const v=b.classList.toggle('on');btn.classList.toggle('on',v);
 }
 
-// ── Stratégies ──
-const STRATS=[
-  {id:'balanced',  emoji:'⚖️',name:'Classes équilibrées',tag:'Recommandé',
-   desc:'Chaque niveau est réparti en classes de même taille. Idéal dans la plupart des cas.'},
-  {id:'double',    emoji:'🔀',name:'Le moins de classes possible',tag:'Compact',
-   desc:'Regroupe deux niveaux par classe pour réduire le nombre total de classes.'},
-  {id:'single',    emoji:'📋',name:'Un seul niveau par classe',tag:'Simple',
-   desc:'Chaque classe a un seul niveau. Aucun double-niveau.'},
-  {id:'small-first',emoji:'🌱',name:'Classes les plus légères',tag:'Doux',
-   desc:'Répartit pour que les classes soient le moins chargées possible.'},
-];
-function computeDistrib(mode){
-  const niveaux=[...state.niveaux],result=[];
-  if(mode==='single'){
-    niveaux.forEach(n=>{if(!n.total)return;let r=n.total;while(r>0){const t=Math.min(r,n.plafond);result.push({rows:[{nid:n.id,val:t}]});r-=t;}});
-  } else if(mode==='balanced'){
-    niveaux.forEach(n=>{
-      if(!n.total)return;
-      const nc=Math.ceil(n.total/n.plafond),base=Math.floor(n.total/nc),extra=n.total%nc;
-      for(let i=0;i<nc;i++)result.push({rows:[{nid:n.id,val:base+(i<extra?1:0)}]});
-    });
-  } else if(mode==='double'){
-    let i=0;
-    while(i<niveaux.length){
-      const n1=niveaux[i],n2=niveaux[i+1];
-      if(n2&&n1.total&&n2.total){
-        const plaf=Math.min(n1.plafond,n2.plafond);
-        let r1=n1.total,r2=n2.total;
-        while(r1>0||r2>0){
-          const h=Math.floor(plaf/2),t1=Math.min(r1,h),t2=Math.min(r2,plaf-t1);
-          const rows=[];if(t1>0)rows.push({nid:n1.id,val:t1});if(t2>0)rows.push({nid:n2.id,val:t2});
-          if(!rows.length)break;result.push({rows});r1-=t1;r2-=t2;
-        }
-        i+=2;
-      } else {
-        if(n1.total){let r=n1.total;while(r>0){const t=Math.min(r,n1.plafond);result.push({rows:[{nid:n1.id,val:t}]});r-=t;}}
-        i++;
-      }
-    }
-  } else if(mode==='small-first'){
-    niveaux.forEach(n=>{
-      if(!n.total)return;
-      const nc=Math.ceil(n.total/n.plafond),min=Math.floor(n.total/nc),extra=n.total-(min*nc);
-      for(let i=0;i<nc;i++)result.push({rows:[{nid:n.id,val:i<(nc-extra)?min:min+1}]});
-    });
-  }
-  return result.slice(0,state.maxClasses);
-}
+// ── Stratégies (STRATS + computeDistrib importés depuis core.mjs) ──
 function selectStrat(id){state.distribMode=id;state.showPreview=false;render();save();}
 async function applyDistribAndNext(){
   const cls=computeDistrib(state.distribMode);
@@ -1243,6 +1177,95 @@ async function confirmAddNiveau(){
   state.niveaux.push({id:'N'+state.counter++,label:lbl,total:tot,plafond:25,color:COLORS[state.niveaux.length%COLORS.length]});
   closeModal();render();save();
   showToast(`✓ Niveau ${lbl} ajouté`);
+}
+
+// ── Import CSV ──
+// Le parsing est dans core.mjs (parseCsvEffectifs). Ici : UI, aperçu, confirmation.
+function openCsvImport(){
+  const ta=document.getElementById('csv-input');
+  ta.value='';
+  document.getElementById('csv-preview').innerHTML='';
+  document.getElementById('csv-confirm-btn').disabled=true;
+  document.getElementById('csv-modal-bg').style.display='flex';
+  setTimeout(()=>ta.focus(),60);
+}
+function closeCsvImport(){
+  document.getElementById('csv-modal-bg').style.display='none';
+}
+function fillCsvExample(){
+  const ex='CP,24\nCE1,22\nCE2,18\nCM1,25\nCM2,26';
+  document.getElementById('csv-input').value=ex;
+  updateCsvPreview();
+}
+function loadCsvFile(ev){
+  const file=ev.target.files?.[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    document.getElementById('csv-input').value=String(reader.result||'');
+    updateCsvPreview();
+  };
+  reader.readAsText(file);
+}
+function updateCsvPreview(){
+  const txt=document.getElementById('csv-input').value;
+  const preview=document.getElementById('csv-preview');
+  const btn=document.getElementById('csv-confirm-btn');
+  if(!txt.trim()){preview.innerHTML='';btn.disabled=true;return;}
+
+  const {items,errors}=parseCsvEffectifs(txt);
+  const {updated,newLevels}=applyCsvItems(state.niveaux,items);
+  const updates=items.filter(it=>!newLevels.find(n=>n.label===it.label));
+
+  const rows=[];
+  if(updates.length){
+    rows.push(`<div class="csv-summary">${updates.length} niveau(x) mis à jour</div>`);
+    updates.forEach(it=>{
+      const before=state.niveaux.find(n=>n.label.toUpperCase()===it.label)?.total||0;
+      rows.push(`<div class="csv-row"><span>${esc(it.label)}</span><span>${before} → <strong>${it.total}</strong></span></div>`);
+    });
+  }
+  if(newLevels.length){
+    rows.push(`<div class="csv-summary" style="margin-top:8px">${newLevels.length} nouveau(x) niveau(x)</div>`);
+    newLevels.forEach(it=>{
+      rows.push(`<div class="csv-row new"><span>+ ${esc(it.label)}</span><span><strong>${it.total}</strong> élèves</span></div>`);
+    });
+  }
+  if(errors.length){
+    rows.push(`<div class="csv-summary" style="margin-top:8px;color:var(--red)">${errors.length} ligne(s) ignorée(s)</div>`);
+    errors.forEach(e=>{
+      rows.push(`<div class="csv-row err"><span>Ligne ${e.line}</span><span>${esc(e.raw||'').slice(0,40)}</span></div>`);
+    });
+  }
+  preview.innerHTML=rows.join('');
+  btn.disabled=items.length===0;
+}
+async function confirmCsvImport(){
+  const txt=document.getElementById('csv-input').value;
+  const {items}=parseCsvEffectifs(txt);
+  if(!items.length)return;
+
+  const {newLevels}=applyCsvItems(state.niveaux,items);
+  const byLabel=new Map(state.niveaux.map(n=>[n.label.toUpperCase(),n]));
+  items.forEach(it=>{
+    const existing=byLabel.get(it.label);
+    if(existing)existing.total=it.total;
+  });
+  newLevels.forEach(it=>{
+    state.niveaux.push({
+      id:'N'+state.counter++,
+      label:it.label,
+      total:it.total,
+      plafond:25,
+      color:COLORS[state.niveaux.length%COLORS.length],
+    });
+  });
+
+  closeCsvImport();render();save();
+  const msg=[];
+  if(items.length-newLevels.length>0)msg.push(`${items.length-newLevels.length} mis à jour`);
+  if(newLevels.length)msg.push(`${newLevels.length} créé(s)`);
+  showToast(`✓ ${msg.join(' · ')}`);
 }
 async function removeNiveau(id){
   const n=getNiveau(id);
@@ -1585,7 +1608,7 @@ async function importKlasio(ev){
       const ok=await confirmDialog('Remplacer la répartition actuelle ?','Le contenu actuel sera écrasé par celui du fichier. Pensez à sauvegarder avant si besoin.','warn');
       if(!ok)return;
     }
-    state=valid;
+    state=valid;window.state=state;
     _lastSnapshot=JSON.stringify(state);
     history.past.length=0;history.future.length=0;updateHistoryButtons();
     save();syncStepInputs();render();goStep(4);
@@ -1697,6 +1720,24 @@ updateHistoryButtons();
 if(!fromUrl&&!localStorage.getItem('klasio-onb-seen')){
   setTimeout(openOnboarding,400);
 }
+
+// ── Exposition des handlers pour les attributs inline (onclick/oninput) ──
+// Le script tourne en `type="module"` : ses déclarations sont scopées, pas
+// globales. On expose explicitement uniquement ce qui est référencé dans le HTML.
+Object.assign(window, {
+  save, render,
+  historyUndo, historyRedo, toggleTheme, shareUrl,
+  goStep, toggleHelp, openAddNiveau, closeModal, confirmAddNiveau,
+  stepInput, stepInline, applyDistribAndNext, togglePreview,
+  selectStrat, setSort, addClasse, addRow, removeRow, removeClasse,
+  removeNiveau, getNiveau, updateTotal, updatePlafond, updateVal,
+  updateTeacher, updateClassName, applyQA, _dialogBtn,
+  scrollToFirstClassWith,
+  exportPdf, exportTxt, exportMural, exportKlasio, importKlasio,
+  openCsvImport, closeCsvImport, fillCsvExample, loadCsvFile,
+  updateCsvPreview, confirmCsvImport,
+  openOnboarding, closeOnboarding, onbNext, onbPrev,
+});
 </script>
 </body>
 </html>

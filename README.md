@@ -5,6 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Status](https://img.shields.io/badge/status-alpha-orange.svg)]()
 [![No dependencies](https://img.shields.io/badge/build-static%20HTML-informational)]()
+[![CI](https://github.com/Boblebol/Klasio/actions/workflows/check.yml/badge.svg)](https://github.com/Boblebol/Klasio/actions/workflows/check.yml)
+[![Tests](https://img.shields.io/badge/tests-42%20passing-success)]()
 
 Klasio est une application **100 % côté client** (un seul fichier `index.html`). Aucune donnée ne quitte le navigateur : tout est stocké localement (`localStorage`). Aucun compte, aucun backend, aucun tracker.
 
@@ -24,9 +26,10 @@ Klasio est une application **100 % côté client** (un seul fichier `index.html`
 - **Tri des classes** (ordre de création / par niveau).
 - **Nom d'enseignant·e** par classe.
 - **Partage par lien URL** (l'état est encodé dans l'URL).
-- **Exports** : PDF, TXT, affichage mural imprimable.
+- **Exports / imports** : PDF, TXT, affichage mural imprimable, **fichier `.klasio`** (JSON) réimportable, **import CSV** des effectifs à l'étape 1.
 - **Plafonds personnalisables** (24 pour CP/CE1 par défaut, conformément à la réglementation française 2024).
 - **Ajout de niveaux libres** (maternelle GS/MS/PS, collège 6e…).
+- **Mode sombre** + **Annuler/Rétablir** (`Ctrl+Z` / `Ctrl+Y`).
 
 ## 🚀 Démarrage rapide
 
@@ -82,17 +85,34 @@ Les en-têtes de sécurité (CSP, X-Frame-Options, Referrer-Policy…) sont déj
 
 ## 🛠️ Stack technique
 
-- HTML / CSS / JavaScript vanilla — **aucune dépendance de build**.
+- HTML / CSS / JavaScript vanilla — **aucune dépendance runtime**, aucun bundler nécessaire pour servir l'app.
+- `<script type="module">` avec imports ES6 vers `src/core.mjs` (fonctions pures testables).
 - [jsPDF](https://github.com/parallax/jsPDF) (chargé via CDN) pour l'export PDF.
 - Police [Inter](https://rsms.me/inter/) via Google Fonts.
-- Persistance locale via `localStorage`.
-- Partage via encodage Base64URL dans l'URL (`?s=...`).
+- Persistance locale via `localStorage`, partage via encodage Base64URL dans l'URL.
+- [Vitest](https://vitest.dev) en dépendance **dev uniquement** pour la suite de tests.
+
+## 🧪 Tests
+
+Le noyau de logique (validation, répartition, parsing CSV, échappement HTML, encode/decode URL) vit dans `src/core.mjs` et est couvert par une suite de tests Vitest.
+
+```bash
+npm install      # installe vitest en dev
+npm test         # exécution unique (CI)
+npm run test:watch
+```
 
 ## 📁 Structure du projet
 
 ```
 klasio/
-├── index.html              # L'application complète (HTML + CSS + JS)
+├── index.html              # UI complète (HTML + CSS + JS inline)
+├── src/
+│   └── core.mjs            # Noyau pur (validation, répartition, parsing CSV…)
+├── tests/
+│   └── core.test.mjs       # 42 tests Vitest
+├── package.json            # scripts + devDependencies (vitest)
+├── vitest.config.mjs
 ├── README.md               # Ce fichier
 ├── ROADMAP.md              # Feuille de route produit
 ├── CHANGELOG.md            # Historique des versions
@@ -105,7 +125,7 @@ klasio/
     ├── ISSUE_TEMPLATE/
     ├── PULL_REQUEST_TEMPLATE.md
     └── workflows/
-        └── check.yml        # Lint HTML en CI
+        └── check.yml        # Tests + lint HTML en CI
 ```
 
 ## 🤝 Contribuer

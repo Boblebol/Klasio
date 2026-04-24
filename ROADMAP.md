@@ -13,8 +13,10 @@
 *Objectif : rendre la v0.1 fiable, testable et agréable au quotidien. 1–3 semaines.*
 
 ### Produit
-- 🎯 **Annuler / refaire** (Ctrl+Z / Ctrl+Y) sur toutes les actions destructrices (suppression de classe, vider, appliquer une stratégie). Historique des 20 derniers états.
-- 🎯 **Nom personnalisé par classe** (en plus du nom auto « CP + CE1 ») — ex. « Classe de la baleine », « Salle 12 ».
+- ✅ **Annuler / refaire** (Ctrl+Z / Ctrl+Y) avec coalescence des modifications rapprochées.
+- ✅ **Nom personnalisé par classe** (en plus du nom auto « CP + CE1 »).
+- ✅ **Import CSV des effectifs** — coller `CP,24 / CE1,22 / …` à l'étape 1 pour pré-remplir.
+- ✅ **Sauvegarde/ouverture de fichiers `.klasio`** (JSON) à l'étape 4.
 - 🎯 **Déplacer des élèves entre classes** (bouton ± dans une classe qui transfère vers la classe ayant encore de la place, ou drag-and-drop).
 - 🎯 **Multi-profils** — garder plusieurs répartitions (ex. scénarios A / B / C) côte à côte, switch rapide.
 - **Dupliquer une répartition** (pour tester une variante).
@@ -23,32 +25,32 @@
 - **Indicateur de charge** par enseignant·e (utile si une maîtresse a 2 demi-classes à cheval).
 
 ### UX / UI
-- 🎯 **Mode sombre** (la charte CSS est déjà variabilisée — c'est quelques heures).
+- ✅ **Mode sombre** (clair / sombre / auto, persisté).
+- ✅ **Onboarding première visite** (3 écrans).
+- ✅ **Mobile** : sticky bar revue pour les écrans étroits.
 - 🎯 **Capture d'écran / bandeau d'illustration** dans le README (actuellement placeholder).
-- 🎯 **Onboarding première visite** : petit tutoriel overlay 3 écrans.
 - 🎯 **Accessibilité** : audit complet (focus visibles, ARIA labels, navigation clavier de A à Z, contrastes AA).
-- 🎯 **Mobile** : la sticky bar du bas empile mal sur très petit écran — repasser dessus.
 - **Animations plus douces** lors du changement d'étape.
 - **Localisation des messages d'erreur** (messages plus pédagogiques pour les non-tech).
 
 ### Technique
-- 🧱 **Split du monolithe `index.html`** en fichiers séparés :
+- ✅ **Tests Vitest** sur `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `encodeState/decodeState`, `parseCsvEffectifs` (42 tests).
+- ✅ **Validation stricte des états importés** (localStorage + URL + fichier `.klasio`).
+- ✅ **Échappement HTML centralisé** via `esc()` sur toutes les données utilisateur.
+- ✅ **Début de split du monolithe** : les fonctions pures sont dans `src/core.mjs`, `index.html` est un `<script type="module">` qui les importe.
+- 🧱 **Terminer le split du monolithe** en fichiers séparés :
   ```
   src/
     index.html
     styles/main.css
     js/state.js      # état + persistance
-    js/strategies.js # algos de répartition
     js/render.js     # rendu DOM
     js/exports.js    # PDF, TXT, mural
     js/share.js      # encodage URL
   ```
   Build minimal : concaténation avec [esbuild](https://esbuild.github.io/) ou [Vite](https://vitejs.dev/), mais **garder la possibilité** de servir le fichier unique en prod (one-file-build).
-- 🧱 **Tests** : ajouter [Vitest](https://vitest.dev/) + quelques tests unitaires sur `computeDistrib`, `consecOk`, `classPlafond`, `encodeState/decodeState`.
 - 🧱 **Tests end-to-end** avec [Playwright](https://playwright.dev/) — scénarios nominaux (4 étapes, partage, exports).
 - 🧱 **Linting** : [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/).
-- 🧱 **Helper d'échappement HTML centralisé** — remplacer les concaténations de templates par un helper `html\`...\`` type [tagged template](https://github.com/AntonioVdlC/html-template-tag) ou migrer vers [lit-html](https://lit.dev/docs/libraries/standalone-templates/).
-- 🧱 **Validation des états importés par URL** : actuellement un `JSON.parse` permissif — ajouter un schéma (Zod ou validation manuelle).
 - 🧱 **Héberger jsPDF localement** plutôt que CDN (résilience offline, vie privée).
 
 ---

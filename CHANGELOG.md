@@ -13,6 +13,8 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 - **Nom personnalisé par classe** (ex. « Classe de la baleine », « Salle 12 »). Le nom auto « CP + CE1 » reste en placeholder et en sous-titre de la carte.
 - **Sauvegarde / ouverture de fichier `.klasio`** (JSON) : boutons *Sauver* et *Ouvrir* dans la barre du bas de l'étape 4. Le fichier est validé par le schéma avant import.
 - **Onboarding de première visite** : 3 écrans présentant l'outil, le wizard et les raccourcis (vu une seule fois, bouton *Passer* toujours disponible).
+- **Import CSV des effectifs** à l'étape 1 : coller une liste `CP,24 / CE1,22 / …` (séparateurs virgule, point-virgule, tabulation ou pipe) ou charger un fichier `.csv`. Aperçu en temps réel des niveaux mis à jour / créés, avec remontée des lignes invalides.
+- **Suite de tests unitaires** (Vitest) sur le noyau pur (`src/core.mjs`) : 42 tests couvrant `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `encodeState/decodeState`, `parseCsvEffectifs`, `applyCsvItems`, `esc`. Exécutés en CI sur chaque push.
 - **Configuration Netlify** (`netlify.toml`) pour déploiement zéro-config avec en-têtes de sécurité (CSP, X-Frame-Options, Referrer-Policy, Permissions-Policy).
 
 ### Corrigé
@@ -21,6 +23,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### Changé
 - Bascule de la configuration de déploiement de GitHub Pages vers Netlify.
+- **Début de décomposition du monolithe** : le code JavaScript devient un module ES (`<script type="module">`) qui importe ses fonctions pures depuis `src/core.mjs`. Les handlers inline restants sont exposés explicitement via `window.*`. Ouvre la voie au build Vite prévu en Phase 2.
 
 ### Sécurité
 - **Échappement HTML systématique** de toutes les données saisies par l'utilisateur injectées dans les templates de rendu (labels de niveaux, nom de classe, libellés de boutons, attributs `title`, actions rapides). Un helper `esc()` centralisé remplace les concaténations directes.
