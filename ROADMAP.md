@@ -3,6 +3,7 @@
 > Feuille de route produit pour faire grandir Klasio d'un outil personnel v0.1 vers une vraie solution utilisable par les écoles françaises (et au-delà).
 
 **Légende**
+
 - 🎯 = priorité forte (impact utilisateur élevé, effort raisonnable)
 - 🧱 = dette technique / fondations
 - 🌟 = nice-to-have / long terme
@@ -10,9 +11,11 @@
 ---
 
 ## Phase 1 — Consolidation (v0.2)
-*Objectif : rendre la v0.1 fiable, testable et agréable au quotidien. 1–3 semaines.*
+
+_Objectif : rendre la v0.1 fiable, testable et agréable au quotidien. 1–3 semaines._
 
 ### Produit
+
 - ✅ **Annuler / refaire** (Ctrl+Z / Ctrl+Y) avec coalescence des modifications rapprochées.
 - ✅ **Nom personnalisé par classe** (en plus du nom auto « CP + CE1 »).
 - ✅ **Import CSV des effectifs** — coller `CP,24 / CE1,22 / …` à l'étape 1 pour pré-remplir.
@@ -25,6 +28,7 @@
 - **Indicateur de charge** par enseignant·e (utile si une maîtresse a 2 demi-classes à cheval).
 
 ### UX / UI
+
 - ✅ **Mode sombre** (clair / sombre / auto, persisté).
 - ✅ **Onboarding première visite** (3 écrans).
 - ✅ **Mobile** : sticky bar revue pour les écrans étroits.
@@ -34,6 +38,7 @@
 - **Localisation des messages d'erreur** (messages plus pédagogiques pour les non-tech).
 
 ### Technique
+
 - ✅ **Tests Vitest** sur `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `encodeState/decodeState`, `parseCsvEffectifs` (42 tests).
 - ✅ **Validation stricte des états importés** (localStorage + URL + fichier `.klasio`).
 - ✅ **Échappement HTML centralisé** via `esc()` sur toutes les données utilisateur.
@@ -50,15 +55,17 @@
   ```
   Build minimal : concaténation avec [esbuild](https://esbuild.github.io/) ou [Vite](https://vitejs.dev/), mais **garder la possibilité** de servir le fichier unique en prod (one-file-build).
 - 🧱 **Tests end-to-end** avec [Playwright](https://playwright.dev/) — scénarios nominaux (4 étapes, partage, exports).
-- 🧱 **Linting** : [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/).
+- ✅ **Linting** : ESLint 9 (flat config) + Prettier, intégrés au CI.
 - ✅ **jsPDF hébergé localement** (`vendor/jspdf/`) — plus de CDN runtime, CSP durcie, offline complet.
 
 ---
 
 ## Phase 2 — Étendre la cible (v0.3–0.4)
-*Objectif : passer d'un outil pour directeur d'école primaire à une solution plus large. 1–2 mois.*
+
+_Objectif : passer d'un outil pour directeur d'école primaire à une solution plus large. 1–2 mois._
 
 ### Produit
+
 - 🎯 **Import CSV** — coller/uploader une liste d'élèves (prénom, nom, niveau) et Klasio remplit les champs automatiquement. Bonus : chaque élève devient nommable et déplaçable individuellement.
 - 🎯 **Gestion nominative des élèves** (mode avancé) — au lieu de « 12 CP », liste de 12 prénoms. Permet :
   - règles « X et Y dans la même classe » / « A et B à séparer »
@@ -74,28 +81,33 @@
 - **Export vers ONDE / Pronote** (étude de faisabilité — probablement par CSV compatible).
 
 ### Comms / site
+
 - 🎯 **Landing page** simple (fr) avec démo live, captures, témoignages.
 - 🎯 **Domaine dédié** (ex. `klasio.fr` ou `klasio.app`).
 - 🎯 **Page « Vie privée »** détaillée (RGPD).
 - **Article de blog** : « Pourquoi Klasio (et pas un tableur) ».
 
 ### i18n
+
 - 🌟 Architecture i18n (fichiers JSON par langue, sélecteur dans le header).
 - 🌟 Traductions EN, ES pour commencer.
 
 ---
 
 ## Phase 3 — Collaboration (v0.5–0.6)
-*Objectif : plusieurs personnes peuvent travailler sur la même répartition. 2–3 mois.*
+
+_Objectif : plusieurs personnes peuvent travailler sur la même répartition. 2–3 mois._
 
 > ⚠️ **Décision produit importante** à prendre : on garde du 100 % local + lien partagé (simple, privé, gratuit à héberger), OU on ajoute un backend (plus puissant mais implique RGPD pro, hébergement, coûts) ?
 
 ### Piste A — Sans serveur (recommandée au début)
+
 - 🎯 **Partage collaboratif via CRDT** ([Yjs](https://yjs.dev/) + [y-webrtc](https://github.com/yjs/y-webrtc)) : plusieurs navigateurs sur la même URL, édition simultanée, aucun serveur.
 - **Export/import fichier `.klasio`** (JSON signé) pour envoyer par email.
 - **Historique des versions** (snapshots localStorage + export).
 
 ### Piste B — Avec backend (si la traction l'exige)
+
 - Backend Node/Fastify + PostgreSQL, ou Supabase.
 - Auth magic link (pas de mot de passe à créer).
 - Espace **équipe pédagogique** : invitations, rôles (admin / lecture).
@@ -103,6 +115,7 @@
 - **Historique des versions** serveur avec restauration.
 
 ### Auth (si piste B)
+
 - Magic link email (SMTP).
 - OAuth Google / Microsoft (familier du secteur éducation).
 - 2FA optionnelle.
@@ -110,7 +123,8 @@
 ---
 
 ## Phase 4 — Outils métier avancés (v1.0)
-*Objectif : devenir LA référence française pour la composition des classes. 3–6 mois.*
+
+_Objectif : devenir LA référence française pour la composition des classes. 3–6 mois._
 
 - **Simulateur multi-année** : projeter 3 ans d'effectifs (montée de niveau).
 - **Suggestions IA** (optionnelles, en local avec un petit modèle ou via API) : propose des regroupements en fonction de données historiques anonymes.
@@ -136,16 +150,16 @@ Quelle que soit la piste, **le fichier `index.html` standalone doit rester gratu
 
 ## Dette technique identifiée (à traiter en continu)
 
-| Item | Où | Sévérité |
-|---|---|---|
-| Échappement HTML systématique des labels saisis par l'utilisateur dans les templates | `render()` | 🔴 Haute |
-| Pas de validation du JSON importé par URL | `decodeState()` | 🟠 Moyenne |
-| `renderExcept` ne restaure pas le focus (code mort, commentaire reconnaît le problème) | `render()` | 🟡 Basse |
-| ~~Dépendance CDN jsPDF (pas d'offline)~~ — vendorisé dans `vendor/jspdf/` | `<head>` | ✅ Réglé |
-| Aucun test automatisé | — | 🟠 Moyenne |
-| 1229 lignes dans un seul fichier | `index.html` | 🟠 Moyenne |
-| Pas de CSP header | `<head>` (meta) | 🟡 Basse |
-| `load()` fait un `state=p` sans merger — plante si le schéma évolue | `load()` | 🟠 Moyenne |
+| Item                                                                                   | Où              | Sévérité   |
+| -------------------------------------------------------------------------------------- | --------------- | ---------- |
+| Échappement HTML systématique des labels saisis par l'utilisateur dans les templates   | `render()`      | 🔴 Haute   |
+| Pas de validation du JSON importé par URL                                              | `decodeState()` | 🟠 Moyenne |
+| `renderExcept` ne restaure pas le focus (code mort, commentaire reconnaît le problème) | `render()`      | 🟡 Basse   |
+| ~~Dépendance CDN jsPDF (pas d'offline)~~ — vendorisé dans `vendor/jspdf/`              | `<head>`        | ✅ Réglé   |
+| Aucun test automatisé                                                                  | —               | 🟠 Moyenne |
+| 1229 lignes dans un seul fichier                                                       | `index.html`    | 🟠 Moyenne |
+| Pas de CSP header                                                                      | `<head>` (meta) | 🟡 Basse   |
+| `load()` fait un `state=p` sans merger — plante si le schéma évolue                    | `load()`        | 🟠 Moyenne |
 
 ---
 

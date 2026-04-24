@@ -4,8 +4,8 @@
 
 Seule la dernière version publiée est supportée.
 
-| Version | Supportée        |
-| ------- | ---------------- |
+| Version | Supportée          |
+| ------- | ------------------ |
 | 0.1.x   | :white_check_mark: |
 
 ## Signaler une vulnérabilité
@@ -24,6 +24,7 @@ Merci de **ne pas ouvrir d'issue publique** pour une vulnérabilité.
 2. Envoyez un email au mainteneur (adresse dans le profil GitHub).
 
 Nous nous engageons à :
+
 - accuser réception sous **72 heures** ;
 - publier un correctif dans les **14 jours** pour les failles critiques ;
 - créditer le rapporteur dans le CHANGELOG (sauf demande contraire).

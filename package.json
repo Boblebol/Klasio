@@ -13,10 +13,18 @@
     "dev": "python3 -m http.server 8080 --bind 127.0.0.1",
     "test": "vitest run",
     "test:watch": "vitest",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "vendor:jspdf": "cp node_modules/jspdf/dist/jspdf.umd.min.js vendor/jspdf/jspdf.umd.min.js && cp node_modules/jspdf/LICENSE vendor/jspdf/LICENSE"
   },
   "devDependencies": {
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^9.1.2",
+    "globals": "^15.15.0",
     "jspdf": "^2.5.2",
+    "prettier": "^3.8.3",
     "vitest": "^2.1.8"
   }
 }

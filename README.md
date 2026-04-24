@@ -58,6 +58,7 @@ Puis rendez-vous sur <http://localhost:8080>.
 Le projet est configuré pour un déploiement **Netlify zéro-config** (`netlify.toml` à la racine). Deux options :
 
 **Option A — via l'interface Netlify** (la plus simple) :
+
 1. Se connecter sur [app.netlify.com](https://app.netlify.com/).
 2. **Add new site → Import an existing project → GitHub**.
 3. Sélectionner le dépôt `Boblebol/Klasio` (Netlify a besoin d'un accès aux repos privés, à autoriser dans les paramètres GitHub).
@@ -65,6 +66,7 @@ Le projet est configuré pour un déploiement **Netlify zéro-config** (`netlify
 5. Le site est en ligne sur une URL `*.netlify.app`, déployé automatiquement à chaque push sur `main`.
 
 **Option B — via la CLI Netlify** :
+
 ```bash
 npm install -g netlify-cli
 netlify login
@@ -101,6 +103,19 @@ npm install      # installe vitest en dev
 npm test         # exécution unique (CI)
 npm run test:watch
 ```
+
+## 🧹 Lint & format
+
+ESLint (flat config) et Prettier sont configurés sur le noyau JS (`src/`, `tests/`, configs). `index.html` est volontairement exclu — il sera splitté dans une itération future avec Vite.
+
+```bash
+npm run lint           # ESLint (0 warning attendu)
+npm run lint:fix       # autofix
+npm run format         # reformatte avec Prettier
+npm run format:check   # vérifie sans écrire (CI)
+```
+
+Les deux tournent aussi dans le CI GitHub Actions (job `lint`).
 
 ## 📁 Structure du projet
 

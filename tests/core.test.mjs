@@ -20,7 +20,7 @@ import {
 
 // Niveaux factices réutilisés dans plusieurs tests
 const NIV = [
-  { id: 'CP',  label: 'CP',  total: 24, plafond: 24, color: '#4f46e5' },
+  { id: 'CP', label: 'CP', total: 24, plafond: 24, color: '#4f46e5' },
   { id: 'CE1', label: 'CE1', total: 22, plafond: 24, color: '#7c3aed' },
   { id: 'CE2', label: 'CE2', total: 18, plafond: 25, color: '#0891b2' },
   { id: 'CM1', label: 'CM1', total: 25, plafond: 25, color: '#158a52' },
@@ -34,9 +34,7 @@ describe('esc()', () => {
   });
 
   it('échappe les caractères dangereux', () => {
-    expect(esc('<script>alert(1)</script>')).toBe(
-      '&lt;script&gt;alert(1)&lt;/script&gt;'
-    );
+    expect(esc('<script>alert(1)</script>')).toBe('&lt;script&gt;alert(1)&lt;/script&gt;');
     expect(esc('a & b')).toBe('a &amp; b');
     expect(esc('"quoted"')).toBe('&quot;quoted&quot;');
     expect(esc("l'école")).toBe('l&#39;école');
@@ -88,18 +86,22 @@ describe('validateState()', () => {
   });
 
   it('rejette les ids de niveaux dupliqués', () => {
-    expect(validateState({
-      ...DEFAULT_STATE(),
-      niveaux: [NIV[0], { ...NIV[1], id: 'CP' }],
-    })).toBeNull();
+    expect(
+      validateState({
+        ...DEFAULT_STATE(),
+        niveaux: [NIV[0], { ...NIV[1], id: 'CP' }],
+      }),
+    ).toBeNull();
   });
 
   it('rejette une classe référençant un niveau inexistant', () => {
-    expect(validateState({
-      ...DEFAULT_STATE(),
-      niveaux: NIV,
-      classes: [{ rows: [{ nid: 'INCONNU', val: 5 }] }],
-    })).toBeNull();
+    expect(
+      validateState({
+        ...DEFAULT_STATE(),
+        niveaux: NIV,
+        classes: [{ rows: [{ nid: 'INCONNU', val: 5 }] }],
+      }),
+    ).toBeNull();
   });
 
   it('coupe les champs texte trop longs', () => {
@@ -128,7 +130,10 @@ describe('validateState()', () => {
     const v = validateState({
       ...DEFAULT_STATE(),
       classes: [
-        { rows: [{ nid: 'CP', val: 20 }], comment: 'Privilégier élèves calmes · séparer les jumeaux Dupont' },
+        {
+          rows: [{ nid: 'CP', val: 20 }],
+          comment: 'Privilégier élèves calmes · séparer les jumeaux Dupont',
+        },
         { rows: [{ nid: 'CE1', val: 20 }], comment: 'x'.repeat(500) },
       ],
     });
@@ -171,7 +176,14 @@ describe('consecOk()', () => {
 
 describe('classTotal() et classPlafond()', () => {
   it('classTotal somme les val', () => {
-    expect(classTotal({ rows: [{ nid: 'CP', val: 12 }, { nid: 'CE1', val: 10 }] })).toBe(22);
+    expect(
+      classTotal({
+        rows: [
+          { nid: 'CP', val: 12 },
+          { nid: 'CE1', val: 10 },
+        ],
+      }),
+    ).toBe(22);
   });
 
   it('classTotal gère val manquante ou non numérique', () => {
@@ -179,14 +191,28 @@ describe('classTotal() et classPlafond()', () => {
   });
 
   it('classPlafond prend le min des plafonds des niveaux présents', () => {
-    expect(classPlafond(
-      { rows: [{ nid: 'CP', val: 10 }, { nid: 'CE1', val: 10 }] },
-      NIV
-    )).toBe(24);
-    expect(classPlafond(
-      { rows: [{ nid: 'CE2', val: 10 }, { nid: 'CM1', val: 10 }] },
-      NIV
-    )).toBe(25);
+    expect(
+      classPlafond(
+        {
+          rows: [
+            { nid: 'CP', val: 10 },
+            { nid: 'CE1', val: 10 },
+          ],
+        },
+        NIV,
+      ),
+    ).toBe(24);
+    expect(
+      classPlafond(
+        {
+          rows: [
+            { nid: 'CE2', val: 10 },
+            { nid: 'CM1', val: 10 },
+          ],
+        },
+        NIV,
+      ),
+    ).toBe(25);
   });
 
   it('classPlafond renvoie Infinity pour une classe vide', () => {
@@ -204,7 +230,7 @@ describe('computeDistrib()', () => {
 
   it('mode "single" ne mélange pas les niveaux', () => {
     const out = computeDistrib(NIV, 20, 'single');
-    out.forEach(cl => expect(cl.rows).toHaveLength(1));
+    out.forEach((cl) => expect(cl.rows).toHaveLength(1));
   });
 
   it('mode "balanced" place tous les élèves sans dépasser le plafond', () => {
@@ -212,7 +238,7 @@ describe('computeDistrib()', () => {
     const out = computeDistrib(niv, 10, 'balanced');
     const placed = out.reduce((s, cl) => s + classTotal(cl), 0);
     expect(placed).toBe(52);
-    out.forEach(cl => {
+    out.forEach((cl) => {
       expect(classTotal(cl)).toBeLessThanOrEqual(24);
     });
   });
@@ -220,7 +246,7 @@ describe('computeDistrib()', () => {
   it('mode "double" regroupe les niveaux deux à deux', () => {
     const out = computeDistrib(NIV, 20, 'double');
     // Au moins une classe a deux niveaux
-    const mixed = out.find(cl => cl.rows.length === 2);
+    const mixed = out.find((cl) => cl.rows.length === 2);
     expect(mixed).toBeTruthy();
   });
 
@@ -234,8 +260,8 @@ describe('computeDistrib()', () => {
       { id: 'CE1', label: 'CE1', total: 22, plafond: 24, color: '#111' },
     ];
     const out = computeDistrib(niv, 10, 'balanced');
-    out.forEach(cl => {
-      cl.rows.forEach(r => expect(r.nid).not.toBe('CP'));
+    out.forEach((cl) => {
+      cl.rows.forEach((r) => expect(r.nid).not.toBe('CP'));
     });
   });
 });
@@ -246,7 +272,14 @@ describe('encodeState() / decodeState()', () => {
       ...DEFAULT_STATE(),
       niveaux: NIV,
       classes: [
-        { rows: [{ nid: 'CP', val: 12 }, { nid: 'CE1', val: 10 }], teacher: '', name: '' },
+        {
+          rows: [
+            { nid: 'CP', val: 12 },
+            { nid: 'CE1', val: 10 },
+          ],
+          teacher: '',
+          name: '',
+        },
         { rows: [{ nid: 'CE2', val: 18 }], teacher: '', name: '' },
       ],
       maxClasses: 6,
@@ -259,7 +292,7 @@ describe('encodeState() / decodeState()', () => {
 
     const decoded = decodeState(str);
     expect(decoded).not.toBeNull();
-    expect(decoded.niveaux.map(n => n.id)).toEqual(NIV.map(n => n.id));
+    expect(decoded.niveaux.map((n) => n.id)).toEqual(NIV.map((n) => n.id));
     expect(decoded.classes).toHaveLength(2);
     expect(decoded.classes[0].rows[0].val).toBe(12);
     expect(decoded.maxClasses).toBe(6);
@@ -273,7 +306,9 @@ describe('encodeState() / decodeState()', () => {
 
   it('decodeState() rejette un state malformé', () => {
     const bad = btoa(encodeURIComponent(JSON.stringify({ n: 'pas un tableau', cl: [] })))
-      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
     expect(decodeState(bad)).toBeNull();
   });
 });
@@ -291,8 +326,8 @@ describe('parseCsvEffectifs()', () => {
 
   it('accepte plusieurs séparateurs', () => {
     const { items } = parseCsvEffectifs('CP;24\nCE1\t22\nCE2 | 18');
-    expect(items.map(i => i.label)).toEqual(['CP', 'CE1', 'CE2']);
-    expect(items.map(i => i.total)).toEqual([24, 22, 18]);
+    expect(items.map((i) => i.label)).toEqual(['CP', 'CE1', 'CE2']);
+    expect(items.map((i) => i.total)).toEqual([24, 22, 18]);
   });
 
   it('ignore les lignes vides et les commentaires', () => {
@@ -315,23 +350,29 @@ describe('parseCsvEffectifs()', () => {
     const { items, errors } = parseCsvEffectifs(csv);
     expect(items).toHaveLength(1);
     expect(errors).toHaveLength(2);
-    expect(errors.map(e => e.reason).sort()).toEqual(['label_invalide', 'total_invalide']);
+    expect(errors.map((e) => e.reason).sort()).toEqual(['label_invalide', 'total_invalide']);
   });
 });
 
 describe('applyCsvItems()', () => {
   it('met à jour les niveaux existants', () => {
-    const items = [{ label: 'CP', total: 30 }, { label: 'CE1', total: 28 }];
+    const items = [
+      { label: 'CP', total: 30 },
+      { label: 'CE1', total: 28 },
+    ];
     const { updated, newLevels } = applyCsvItems(NIV, items);
     expect(newLevels).toEqual([]);
-    expect(updated.find(n => n.id === 'CP').total).toBe(30);
-    expect(updated.find(n => n.id === 'CE1').total).toBe(28);
+    expect(updated.find((n) => n.id === 'CP').total).toBe(30);
+    expect(updated.find((n) => n.id === 'CE1').total).toBe(28);
     // Les autres ne sont pas touchés
-    expect(updated.find(n => n.id === 'CM2').total).toBe(26);
+    expect(updated.find((n) => n.id === 'CM2').total).toBe(26);
   });
 
   it('remonte les niveaux inconnus comme newLevels', () => {
-    const items = [{ label: 'CP', total: 30 }, { label: 'GS', total: 25 }];
+    const items = [
+      { label: 'CP', total: 30 },
+      { label: 'GS', total: 25 },
+    ];
     const { newLevels } = applyCsvItems(NIV, items);
     expect(newLevels).toEqual([{ label: 'GS', total: 25 }]);
   });
@@ -341,18 +382,23 @@ describe('computeMoveTargets()', () => {
   const baseState = {
     niveaux: NIV,
     classes: [
-      { rows: [{ nid: 'CP', val: 12 }] },                              // 0: CP 12
-      { rows: [{ nid: 'CP', val: 10 }] },                              // 1: CP 10
-      { rows: [{ nid: 'CE1', val: 20 }] },                             // 2: CE1 20 (plaf 24)
-      { rows: [{ nid: 'CE2', val: 20 }] },                             // 3: CE2 20 (non consec CP)
-      { rows: [] },                                                    // 4: vide
-      { rows: [{ nid: 'CE1', val: 12 }, { nid: 'CE2', val: 12 }] },    // 5: double plein
+      { rows: [{ nid: 'CP', val: 12 }] }, // 0: CP 12
+      { rows: [{ nid: 'CP', val: 10 }] }, // 1: CP 10
+      { rows: [{ nid: 'CE1', val: 20 }] }, // 2: CE1 20 (plaf 24)
+      { rows: [{ nid: 'CE2', val: 20 }] }, // 3: CE2 20 (non consec CP)
+      { rows: [] }, // 4: vide
+      {
+        rows: [
+          { nid: 'CE1', val: 12 },
+          { nid: 'CE2', val: 12 },
+        ],
+      }, // 5: double plein
     ],
   };
 
   it('fusionne avec les classes qui ont déjà le même niveau (kind=merge)', () => {
     const targets = computeMoveTargets(baseState, 0, 0);
-    const merge = targets.find(t => t.ti === 1);
+    const merge = targets.find((t) => t.ti === 1);
     expect(merge).toBeDefined();
     expect(merge.kind).toBe('merge');
     // classe 1 : CP plafond 24, total 10 → space 14, max=min(14, 12)=12
@@ -362,7 +408,7 @@ describe('computeMoveTargets()', () => {
 
   it('ajoute un nouveau niveau si consécutif (kind=new)', () => {
     const targets = computeMoveTargets(baseState, 0, 0);
-    const newInCE1 = targets.find(t => t.ti === 2);
+    const newInCE1 = targets.find((t) => t.ti === 2);
     expect(newInCE1).toBeDefined();
     expect(newInCE1.kind).toBe('new');
     // CE1 plafond 24, CP plafond 24 → newPlaf = 24, total 20, space = 4
@@ -372,12 +418,12 @@ describe('computeMoveTargets()', () => {
 
   it('exclut les classes où le niveau serait non consécutif', () => {
     const targets = computeMoveTargets(baseState, 0, 0);
-    expect(targets.find(t => t.ti === 3)).toBeUndefined();
+    expect(targets.find((t) => t.ti === 3)).toBeUndefined();
   });
 
   it('accepte une classe vide comme nouvelle cible', () => {
     const targets = computeMoveTargets(baseState, 0, 0);
-    const empty = targets.find(t => t.ti === 4);
+    const empty = targets.find((t) => t.ti === 4);
     expect(empty).toBeDefined();
     expect(empty.kind).toBe('new');
     expect(empty.space).toBe(24);
@@ -385,21 +431,18 @@ describe('computeMoveTargets()', () => {
 
   it('exclut la classe source elle-même', () => {
     const targets = computeMoveTargets(baseState, 0, 0);
-    expect(targets.find(t => t.ti === 0)).toBeUndefined();
+    expect(targets.find((t) => t.ti === 0)).toBeUndefined();
   });
 
   it('exclut les classes pleines', () => {
     const targets = computeMoveTargets(baseState, 0, 0);
-    expect(targets.find(t => t.ti === 5)).toBeUndefined();
+    expect(targets.find((t) => t.ti === 5)).toBeUndefined();
   });
 
   it('renvoie [] si la ligne source est à 0', () => {
     const s = {
       niveaux: NIV,
-      classes: [
-        { rows: [{ nid: 'CP', val: 0 }] },
-        { rows: [] },
-      ],
+      classes: [{ rows: [{ nid: 'CP', val: 0 }] }, { rows: [] }],
     };
     expect(computeMoveTargets(s, 0, 0)).toEqual([]);
   });
@@ -419,13 +462,10 @@ describe('computeMoveTargets()', () => {
     ];
     const s = {
       niveaux: niv,
-      classes: [
-        { rows: [{ nid: 'CE1', val: 10 }] },
-        { rows: [{ nid: 'CE2', val: 22 }] },
-      ],
+      classes: [{ rows: [{ nid: 'CE1', val: 10 }] }, { rows: [{ nid: 'CE2', val: 22 }] }],
     };
     const targets = computeMoveTargets(s, 0, 0);
-    const t = targets.find(x => x.ti === 1);
+    const t = targets.find((x) => x.ti === 1);
     expect(t).toBeDefined();
     expect(t.space).toBe(2);
   });
@@ -446,8 +486,18 @@ describe('summariseState()', () => {
         { id: 'CE1', label: 'CE1', total: 22, plafond: 24, color: '#111' },
       ],
       classes: [
-        { rows: [{ nid: 'CP', val: 12 }, { nid: 'CE1', val: 10 }] },
-        { rows: [{ nid: 'CP', val: 12 }, { nid: 'CE1', val: 12 }] },
+        {
+          rows: [
+            { nid: 'CP', val: 12 },
+            { nid: 'CE1', val: 10 },
+          ],
+        },
+        {
+          rows: [
+            { nid: 'CP', val: 12 },
+            { nid: 'CE1', val: 12 },
+          ],
+        },
       ],
       maxClasses: 8,
     });
@@ -471,7 +521,14 @@ describe('summariseState()', () => {
   it('compte les erreurs : niveaux non consécutifs', () => {
     const s = summariseState({
       niveaux: NIV,
-      classes: [{ rows: [{ nid: 'CP', val: 12 }, { nid: 'CE2', val: 10 }] }],
+      classes: [
+        {
+          rows: [
+            { nid: 'CP', val: 12 },
+            { nid: 'CE2', val: 10 },
+          ],
+        },
+      ],
     });
     expect(s.nbErrors).toBeGreaterThan(0);
   });
@@ -485,7 +542,7 @@ describe('summariseState()', () => {
 describe('STRATS', () => {
   it('expose 4 stratégies avec les champs attendus', () => {
     expect(STRATS).toHaveLength(4);
-    STRATS.forEach(s => {
+    STRATS.forEach((s) => {
       expect(s).toHaveProperty('id');
       expect(s).toHaveProperty('name');
       expect(s).toHaveProperty('desc');
@@ -493,6 +550,6 @@ describe('STRATS', () => {
   });
 
   it('STRATS_IDS contient tous les ids', () => {
-    expect(STRATS_IDS).toEqual(STRATS.map(s => s.id));
+    expect(STRATS_IDS).toEqual(STRATS.map((s) => s.id));
   });
 });
