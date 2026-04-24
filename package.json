@@ -12,9 +12,11 @@
   "scripts": {
     "dev": "python3 -m http.server 8080 --bind 127.0.0.1",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "vendor:jspdf": "cp node_modules/jspdf/dist/jspdf.umd.min.js vendor/jspdf/jspdf.umd.min.js && cp node_modules/jspdf/LICENSE vendor/jspdf/LICENSE"
   },
   "devDependencies": {
+    "jspdf": "^2.5.2",
     "vitest": "^2.1.8"
   }
 }

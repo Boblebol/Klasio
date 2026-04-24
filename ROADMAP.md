@@ -51,7 +51,7 @@
   Build minimal : concaténation avec [esbuild](https://esbuild.github.io/) ou [Vite](https://vitejs.dev/), mais **garder la possibilité** de servir le fichier unique en prod (one-file-build).
 - 🧱 **Tests end-to-end** avec [Playwright](https://playwright.dev/) — scénarios nominaux (4 étapes, partage, exports).
 - 🧱 **Linting** : [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/).
-- 🧱 **Héberger jsPDF localement** plutôt que CDN (résilience offline, vie privée).
+- ✅ **jsPDF hébergé localement** (`vendor/jspdf/`) — plus de CDN runtime, CSP durcie, offline complet.
 
 ---
 
@@ -141,7 +141,7 @@ Quelle que soit la piste, **le fichier `index.html` standalone doit rester gratu
 | Échappement HTML systématique des labels saisis par l'utilisateur dans les templates | `render()` | 🔴 Haute |
 | Pas de validation du JSON importé par URL | `decodeState()` | 🟠 Moyenne |
 | `renderExcept` ne restaure pas le focus (code mort, commentaire reconnaît le problème) | `render()` | 🟡 Basse |
-| Dépendance CDN jsPDF (pas d'offline) | `<head>` | 🟡 Basse |
+| ~~Dépendance CDN jsPDF (pas d'offline)~~ — vendorisé dans `vendor/jspdf/` | `<head>` | ✅ Réglé |
 | Aucun test automatisé | — | 🟠 Moyenne |
 | 1229 lignes dans un seul fichier | `index.html` | 🟠 Moyenne |
 | Pas de CSP header | `<head>` (meta) | 🟡 Basse |

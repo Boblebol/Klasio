@@ -17,9 +17,11 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-    # CSP permissive pour supporter jsPDF CDN + Google Fonts.
-    # À durcir en phase 2 quand on hébergera les assets localement.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'"
+    # CSP : jsPDF est vendorisé (voir vendor/jspdf/), seule Google Fonts
+    # reste externe (à vendoriser dans une itération future pour offline
+    # total). `'unsafe-inline'` reste nécessaire pour le <style> et le
+    # <script type="module"> inline ; sera supprimé avec le split Vite.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 
 # Cache long sur les ressources immuables (aucune pour l'instant — à venir)
 [[headers]]

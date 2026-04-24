@@ -85,10 +85,10 @@ Les en-têtes de sécurité (CSP, X-Frame-Options, Referrer-Policy…) sont déj
 
 ## 🛠️ Stack technique
 
-- HTML / CSS / JavaScript vanilla — **aucune dépendance runtime**, aucun bundler nécessaire pour servir l'app.
+- HTML / CSS / JavaScript vanilla — **aucune dépendance runtime externe**, aucun bundler nécessaire pour servir l'app.
 - `<script type="module">` avec imports ES6 vers `src/core.mjs` (fonctions pures testables).
-- [jsPDF](https://github.com/parallax/jsPDF) (chargé via CDN) pour l'export PDF.
-- Police [Inter](https://rsms.me/inter/) via Google Fonts.
+- [jsPDF](https://github.com/parallax/jsPDF) 2.5.2 **hébergé localement** dans `vendor/jspdf/` pour l'export PDF (offline, vie privée, CSP stricte).
+- Police [Inter](https://rsms.me/inter/) via Google Fonts (seule ressource externe restante).
 - Persistance locale via `localStorage`, partage via encodage Base64URL dans l'URL.
 - [Vitest](https://vitest.dev) en dépendance **dev uniquement** pour la suite de tests.
 
@@ -109,6 +109,8 @@ klasio/
 ├── index.html              # UI complète (HTML + CSS + JS inline)
 ├── src/
 │   └── core.mjs            # Noyau pur (validation, répartition, parsing CSV…)
+├── vendor/
+│   └── jspdf/              # jsPDF 2.5.2 vendorisé (UMD + LICENSE)
 ├── tests/
 │   └── core.test.mjs       # 58 tests Vitest
 ├── package.json            # scripts + devDependencies (vitest)
