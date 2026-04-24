@@ -8,6 +8,45 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ══ Accessibilité ══ */
+/* Skip link : invisible, apparaît au focus clavier */
+.skip-link{
+  position:fixed;top:8px;left:8px;
+  background:#1e1e1c;color:#fff;
+  padding:10px 16px;border-radius:8px;
+  font-size:14px;font-weight:600;text-decoration:none;
+  z-index:2000;
+  transform:translateY(-120%);
+  transition:transform .2s ease-out;
+}
+.skip-link:focus{transform:translateY(0);outline:3px solid #fbbf24;outline-offset:2px}
+/* Focus ring cohérent (uniquement au clavier grâce à :focus-visible) */
+:focus{outline:none}
+:focus-visible{
+  outline:3px solid var(--brand);
+  outline-offset:2px;
+  border-radius:6px;
+}
+/* Les éléments contenant déjà leur propre halo peuvent adoucir l'outline */
+.btn-ok:focus-visible,.btn-cancel:focus-visible,.s-btn:focus-visible,
+.hdr-btn:focus-visible,.sc-btn:focus-visible,.move-target-btn:focus-visible,
+.wstep:focus-visible,.strat-card:focus-visible{
+  outline-offset:3px;
+}
+/* sr-only classique */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* Respect des préférences utilisateur : animations coupées */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+
 :root{
   --bg:#f4f3f0;--surface:#fff;--surface2:#fafaf8;
   --border:#e8e6de;--border2:#d0cec4;
@@ -445,6 +484,8 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 </head>
 <body>
 
+<a class="skip-link" href="#main">Aller au contenu principal</a>
+
 <!-- ══ HEADER ══ -->
 <header class="site-header">
   <div class="header-inner">
@@ -482,24 +523,24 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 </header>
 
 <!-- ══ WIZARD NAV ══ -->
-<nav class="wizard">
+<nav class="wizard" aria-label="Étapes de l'assistant de répartition">
   <div class="wizard-inner">
-    <div class="wstep active" id="wstep-1" onclick="goStep(1)">
-      <span class="wstep-num" id="wnum-1">1</span> Mes effectifs
+    <div class="wstep active" id="wstep-1" role="button" tabindex="0" aria-current="step" onclick="goStep(1)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(1);}">
+      <span class="wstep-num" id="wnum-1" aria-hidden="true">1</span> Mes effectifs
     </div>
-    <div class="wstep" id="wstep-2" onclick="goStep(2)">
-      <span class="wstep-num" id="wnum-2">2</span> Taille des classes
+    <div class="wstep" id="wstep-2" role="button" tabindex="0" onclick="goStep(2)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(2);}">
+      <span class="wstep-num" id="wnum-2" aria-hidden="true">2</span> Taille des classes
     </div>
-    <div class="wstep" id="wstep-3" onclick="goStep(3)">
-      <span class="wstep-num" id="wnum-3">3</span> Répartition
+    <div class="wstep" id="wstep-3" role="button" tabindex="0" onclick="goStep(3)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(3);}">
+      <span class="wstep-num" id="wnum-3" aria-hidden="true">3</span> Répartition
     </div>
-    <div class="wstep" id="wstep-4" onclick="goStep(4)">
-      <span class="wstep-num" id="wnum-4">4</span> Mes classes
+    <div class="wstep" id="wstep-4" role="button" tabindex="0" onclick="goStep(4)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(4);}">
+      <span class="wstep-num" id="wnum-4" aria-hidden="true">4</span> Mes classes
     </div>
   </div>
 </nav>
 
-<div class="page">
+<main class="page" id="main" tabindex="-1">
 
 <!-- ══ ÉTAPE 1 — EFFECTIFS ══ -->
 <div class="step-panel active" id="panel-1">
@@ -595,7 +636,7 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
       Vous pourrez ensuite les modifier une par une à l'étape suivante.
     </div>
     <p class="section-desc">Choisissez une option — Klasio crée toutes vos classes automatiquement. Vous ajusterez ensuite.</p>
-    <div class="strat-grid" id="strat-grid"></div>
+    <div class="strat-grid" id="strat-grid" role="radiogroup" aria-label="Stratégie de répartition"></div>
     <div id="distrib-preview"></div>
     <div class="auto-btns">
       <button class="btn-main" onclick="applyDistribAndNext()">
@@ -659,7 +700,7 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
   </div>
 </div>
 
-</div><!-- /page -->
+</main><!-- /page -->
 
 <!-- ══ STICKY (visible step 4 seulement) ── -->
 <div class="sticky" id="sticky-bar" style="display:none">
@@ -751,7 +792,7 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 </div>
 
 <!-- ══ TOAST ══ -->
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <!-- ══ DIALOG ══ -->
 <div class="dialog-bg" id="dialog-bg" style="display:none">
@@ -1134,9 +1175,8 @@ function goStep(n){
     const ws=document.getElementById('wstep-'+i);
     const wn=document.getElementById('wnum-'+i);
     ws.classList.remove('active','done');
-    if(i===n)ws.classList.add('active');
-    else if(i<n){ws.classList.add('done');wn.textContent='✓';}
-    else wn.textContent=i;
+    if(i===n){ws.classList.add('active');ws.setAttribute('aria-current','step');}
+    else {ws.removeAttribute('aria-current');if(i<n){ws.classList.add('done');wn.textContent='✓';}else{wn.textContent=i;}}
   }
   document.getElementById('sticky-bar').style.display=n===4?'flex':'none';
   window.scrollTo({top:0,behavior:'smooth'});
@@ -1410,7 +1450,7 @@ function openMoveDialog(ci,ri){
   const val=parseInt(row.val)||0;
   if(val<=0){showToast('Cette ligne n\'a pas d\'élève à déplacer.');return;}
 
-  _moveCtx={ci,ri};
+  _moveCtx={ci,ri,opener:document.activeElement};
   const n=getNiveau(row.nid);
   document.getElementById('move-modal-title').textContent=
     `Déplacer des élèves ${n?.label||row.nid}`;
@@ -1418,11 +1458,18 @@ function openMoveDialog(ci,ri){
     `Depuis <strong>${esc(className(source))}</strong> — ${val} élève(s) disponible(s).`;
 
   renderMoveTargets();
-  document.getElementById('move-modal-bg').style.display='flex';
+  const bg=document.getElementById('move-modal-bg');
+  bg.style.display='flex';
+  setTimeout(()=>{
+    const f=bg.querySelector('.move-target-btn, input, button');
+    if(f)f.focus();
+  },60);
 }
 function closeMoveDialog(){
+  const opener=_moveCtx?.opener;
   _moveCtx=null;
   document.getElementById('move-modal-bg').style.display='none';
+  if(opener&&typeof opener.focus==='function')opener.focus();
 }
 function renderMoveTargets(){
   if(!_moveCtx)return;
@@ -1496,12 +1543,23 @@ function updateScenarioBadge(){
   const btn=document.getElementById('btn-scenarios');
   if(btn)btn.title=`Scénario actif : ${scenarioNames[activeScenario]} (clic pour gérer)`;
 }
+let _scenarioOpener=null;
 function openScenarios(){
+  _scenarioOpener=document.activeElement;
   renderScenariosModal();
-  document.getElementById('sc-modal-bg').style.display='flex';
+  const bg=document.getElementById('sc-modal-bg');
+  bg.style.display='flex';
+  setTimeout(()=>{
+    const active=bg.querySelector('.sc-card.active button:not(:disabled), .sc-card.active input');
+    if(active)active.focus();
+  },60);
 }
 function closeScenarios(){
   document.getElementById('sc-modal-bg').style.display='none';
+  if(_scenarioOpener&&typeof _scenarioOpener.focus==='function'){
+    _scenarioOpener.focus();
+  }
+  _scenarioOpener=null;
 }
 function renderScenariosModal(){
   const grid=document.getElementById('sc-grid');
@@ -1705,13 +1763,21 @@ function render(){
     </div>`).join('');
 
   // Strats
-  document.getElementById('strat-grid').innerHTML=STRATS.map(s=>`
-    <div class="strat-card${state.distribMode===s.id?' sel':''}" onclick="selectStrat('${s.id}')">
+  document.getElementById('strat-grid').innerHTML=STRATS.map(s=>{
+    const sel=state.distribMode===s.id;
+    return `
+    <div class="strat-card${sel?' sel':''}"
+         role="radio" tabindex="0"
+         aria-checked="${sel?'true':'false'}"
+         aria-label="${esc(s.name)} — ${esc(s.desc)}"
+         onclick="selectStrat('${s.id}')"
+         onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();selectStrat('${s.id}');}">
       ${s.tag?`<div class="strat-tag">${s.tag}</div>`:''}
-      <div class="strat-emoji">${s.emoji}</div>
+      <div class="strat-emoji" aria-hidden="true">${s.emoji}</div>
       <div class="strat-name">${s.name}</div>
       <div class="strat-desc">${s.desc}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   renderPreview();
 
   // Pools (step 4)

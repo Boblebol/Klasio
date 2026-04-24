@@ -29,7 +29,7 @@
 - ✅ **Onboarding première visite** (3 écrans).
 - ✅ **Mobile** : sticky bar revue pour les écrans étroits.
 - 🎯 **Capture d'écran / bandeau d'illustration** dans le README (actuellement placeholder).
-- 🎯 **Accessibilité** : audit complet (focus visibles, ARIA labels, navigation clavier de A à Z, contrastes AA).
+- ✅ **Accessibilité** : skip link, landmarks, navigation clavier sur les étapes et les cartes stratégie (role=radio), toast `aria-live`, focus restoration sur les modals, `prefers-reduced-motion`.
 - **Animations plus douces** lors du changement d'étape.
 - **Localisation des messages d'erreur** (messages plus pédagogiques pour les non-tech).
 
