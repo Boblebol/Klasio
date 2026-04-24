@@ -41,5 +41,5 @@ Voir [ROADMAP.md](./ROADMAP.md) pour les prochaines fonctionnalités planifiées
 - Les valeurs du champ « enseignant·e » sont maintenant peuplées via le DOM plutôt qu'injectées en HTML pour éviter tout risque XSS.
 - L'export mural utilise un `Blob` + `URL.createObjectURL` au lieu d'APIs d'écriture directes dans le document.
 
-[Unreleased]: https://github.com/OWNER/klasio/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/OWNER/klasio/releases/tag/v0.1.0
+[Unreleased]: https://github.com/Boblebol/Klasio/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Boblebol/Klasio/releases/tag/v0.1.0

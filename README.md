@@ -35,30 +35,41 @@ Klasio est un fichier HTML statique. Il suffit de l'ouvrir dans un navigateur mo
 ### En local
 
 ```bash
-git clone https://github.com/<votre-compte>/klasio.git
-cd klasio
-# Ouvrir directement le fichier
+git clone https://github.com/Boblebol/Klasio.git
+cd Klasio
 open index.html        # macOS
-# ou
-xdg-open index.html    # Linux
-# ou
-start index.html       # Windows
 ```
 
 ### Via un petit serveur local (recommandé)
 
 ```bash
-# Python 3
 python3 -m http.server 8080
-# Node
+# ou
 npx serve .
 ```
 
 Puis rendez-vous sur <http://localhost:8080>.
 
-### En ligne (GitHub Pages)
+### En ligne (Netlify)
 
-Le workflow `.github/workflows/deploy.yml` déploie automatiquement le contenu sur GitHub Pages à chaque push sur `main`. Une fois activé dans **Settings → Pages → Source: GitHub Actions**, l'app sera disponible sur `https://<votre-compte>.github.io/klasio/`.
+Le projet est configuré pour un déploiement **Netlify zéro-config** (`netlify.toml` à la racine). Deux options :
+
+**Option A — via l'interface Netlify** (la plus simple) :
+1. Se connecter sur [app.netlify.com](https://app.netlify.com/).
+2. **Add new site → Import an existing project → GitHub**.
+3. Sélectionner le dépôt `Boblebol/Klasio` (Netlify a besoin d'un accès aux repos privés, à autoriser dans les paramètres GitHub).
+4. Laisser les réglages par défaut (le `netlify.toml` s'en charge). Cliquer **Deploy**.
+5. Le site est en ligne sur une URL `*.netlify.app`, déployé automatiquement à chaque push sur `main`.
+
+**Option B — via la CLI Netlify** :
+```bash
+npm install -g netlify-cli
+netlify login
+netlify init           # relie le repo au site Netlify
+netlify deploy --prod  # déploie
+```
+
+Les en-têtes de sécurité (CSP, X-Frame-Options, Referrer-Policy…) sont déjà configurés dans `netlify.toml`.
 
 ## 🧭 Utilisation
 
@@ -87,13 +98,14 @@ klasio/
 ├── CHANGELOG.md            # Historique des versions
 ├── CONTRIBUTING.md         # Guide de contribution
 ├── LICENSE                 # MIT
+├── netlify.toml            # Config Netlify (headers, redirects)
 ├── .editorconfig
 ├── .gitignore
 └── .github/
     ├── ISSUE_TEMPLATE/
     ├── PULL_REQUEST_TEMPLATE.md
     └── workflows/
-        └── deploy.yml       # Déploiement GitHub Pages
+        └── check.yml        # Lint HTML en CI
 ```
 
 ## 🤝 Contribuer

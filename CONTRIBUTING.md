@@ -13,8 +13,8 @@ Merci de votre intérêt pour Klasio ! Ce guide couvre les conventions du projet
 Klasio est un projet **sans build**. Tout se passe dans `index.html`.
 
 ```bash
-git clone https://github.com/OWNER/klasio.git
-cd klasio
+git clone https://github.com/Boblebol/Klasio.git
+cd Klasio
 python3 -m http.server 8080   # ou `npx serve .`
 ```
 
