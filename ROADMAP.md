@@ -17,7 +17,7 @@
 - ✅ **Nom personnalisé par classe** (en plus du nom auto « CP + CE1 »).
 - ✅ **Import CSV des effectifs** — coller `CP,24 / CE1,22 / …` à l'étape 1 pour pré-remplir.
 - ✅ **Sauvegarde/ouverture de fichiers `.klasio`** (JSON) à l'étape 4.
-- 🎯 **Déplacer des élèves entre classes** (bouton ± dans une classe qui transfère vers la classe ayant encore de la place, ou drag-and-drop).
+- ✅ **Déplacer des élèves entre classes** — bouton → sur chaque ligne, modal avec classes cibles compatibles et quantité paramétrable.
 - 🎯 **Multi-profils** — garder plusieurs répartitions (ex. scénarios A / B / C) côte à côte, switch rapide.
 - **Dupliquer une répartition** (pour tester une variante).
 - **Commentaire par classe** (notes libres : « privilégier élèves calmes », « jumeaux à séparer »…).

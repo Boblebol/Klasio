@@ -236,6 +236,68 @@ export function decodeState(str) {
   }
 }
 
+// ── Déplacement d'élèves entre classes ──
+/**
+ * Calcule les destinations possibles pour déplacer des élèves d'une ligne donnée.
+ *
+ * @param {object} state  - { niveaux, classes }
+ * @param {number} ci     - index de la classe source
+ * @param {number} ri     - index de la ligne (niveau) source dans cette classe
+ * @returns {Array<{ ti, space, kind: 'merge'|'new', max }>}
+ *   - `ti`   : index de la classe cible
+ *   - `space`: nb de places disponibles compte tenu des plafonds
+ *   - `kind` : `merge` si le niveau existe déjà dans la cible, `new` sinon
+ *   - `max`  : nb max d'élèves déplaçables (= min(space, val source))
+ *
+ * Une destination n'est retournée que si elle respecte toutes les contraintes :
+ *   - classe différente de la source
+ *   - au plus 5 niveaux par classe (consistant avec validateState)
+ *   - si nouveau niveau : l'ajout maintient la consécutivité des niveaux
+ *   - il reste au moins 1 place (`space > 0`)
+ */
+export function computeMoveTargets(state, ci, ri) {
+  const source = state?.classes?.[ci];
+  if (!source) return [];
+  const sourceRow = source.rows?.[ri];
+  if (!sourceRow) return [];
+  const sourceVal = parseInt(sourceRow.val) || 0;
+  if (sourceVal <= 0) return [];
+
+  const sourceNiveau = state.niveaux.find(n => n.id === sourceRow.nid);
+  if (!sourceNiveau) return [];
+
+  const results = [];
+  state.classes.forEach((target, ti) => {
+    if (ti === ci) return;
+    const existing = target.rows.find(r => r.nid === sourceRow.nid);
+    const currentTotal = classTotal(target);
+
+    if (existing) {
+      const targetPlaf = classPlafond(target, state.niveaux);
+      const space = Math.max(0, targetPlaf - currentTotal);
+      if (space > 0) {
+        results.push({ ti, space, kind: 'merge', max: Math.min(space, sourceVal) });
+      }
+      return;
+    }
+
+    // Nouveau niveau dans la cible : vérifier contraintes
+    if (target.rows.length >= 5) return;
+    const newNids = [...target.rows.map(r => r.nid), sourceRow.nid];
+    if (!consecOk(newNids, state.niveaux)) return;
+
+    const newPlaf = target.rows.length > 0
+      ? Math.min(classPlafond(target, state.niveaux), sourceNiveau.plafond)
+      : sourceNiveau.plafond;
+    const space = Math.max(0, newPlaf - currentTotal);
+    if (space > 0) {
+      results.push({ ti, space, kind: 'new', max: Math.min(space, sourceVal) });
+    }
+  });
+
+  return results;
+}
+
 // ── Import CSV des effectifs ──
 /**
  * Parse un texte CSV simple (une ligne par niveau) et renvoie un tableau

@@ -114,8 +114,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .niveau-card-head{display:flex;align-items:center;gap:7px}
 .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .niv-lbl{font-size:14px;font-weight:700;flex:1}
-.btn-icon{background:none;border:none;color:var(--t3);font-size:13px;cursor:pointer;padding:0 2px;transition:color .1s}
+.btn-icon{background:none;border:none;color:var(--t3);font-size:13px;cursor:pointer;padding:0 2px;transition:color .1s;display:inline-flex;align-items:center;justify-content:center}
 .btn-icon:hover{color:var(--red)}
+.btn-icon:disabled{opacity:.35;cursor:not-allowed}
+.btn-icon:disabled:hover{color:var(--t3)}
+.btn-icon.btn-move:hover{color:var(--brand)}
+.nrow-actions{display:flex;align-items:center;gap:6px}
 .field-hint{font-size:11px;color:var(--t3);text-align:center}
 
 /* ── Plafonds ── */
@@ -324,6 +328,23 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 .csv-preview .csv-row.new{color:var(--brand);font-weight:500}
 .csv-preview .csv-row.err{color:var(--red)}
 .csv-preview .csv-summary{font-weight:600;color:var(--text);margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+
+/* Modal déplacement */
+.move-modal{max-width:560px}
+.move-targets{display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto;margin-bottom:14px}
+.move-target{display:flex;align-items:center;gap:12px;padding:12px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);transition:border-color .12s,background .12s}
+.move-target:hover{border-color:var(--brand);background:var(--surface)}
+.move-target-info{flex:1;min-width:0}
+.move-target-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.move-target-meta{font-size:12px;color:var(--t2)}
+.move-target-meta .badge-new{display:inline-block;background:var(--brand);color:#fff;border-radius:99px;font-size:10px;font-weight:700;padding:1px 7px;margin-left:4px;letter-spacing:.3px;text-transform:uppercase}
+.move-target-controls{display:flex;align-items:center;gap:6px}
+.move-target-controls .inline-core{width:50px}
+.move-target-btn{background:var(--brand);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .12s}
+.move-target-btn:hover{background:#4338ca}
+.move-target-btn:disabled{background:var(--border2);cursor:not-allowed}
+.move-empty{font-size:13px;color:var(--t2);text-align:center;padding:20px 8px;line-height:1.55}
+.move-empty small{display:block;margin-top:6px;color:var(--t3);font-size:12px}
 
 /* ── Toast ── */
 .toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-8px);background:#1e1e1c;color:#e8e7e0;font-size:13px;font-weight:500;padding:10px 18px;border-radius:99px;z-index:700;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
@@ -735,6 +756,23 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
   </div>
 </div>
 
+<!-- ══ MODAL déplacement d'élèves ══ -->
+<div class="modal-bg" id="move-modal-bg" style="display:none" onclick="if(event.target===this)closeMoveDialog()">
+  <div class="modal move-modal" role="dialog" aria-modal="true" aria-labelledby="move-modal-title">
+    <div class="modal-handle"></div>
+    <h3 id="move-modal-title">Déplacer des élèves</h3>
+    <p id="move-modal-desc">Sélectionnez la classe de destination.</p>
+    <div class="move-targets" id="move-targets" aria-live="polite"></div>
+    <p class="move-empty" id="move-empty" style="display:none">
+      Aucune classe compatible n'a de place disponible.
+      <small>Une classe doit avoir le même niveau OU un niveau consécutif, et ne pas être pleine.</small>
+    </p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeMoveDialog()">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ MODAL ajout niveau ══ -->
 <div class="modal-bg" id="modal-bg" style="display:none" onclick="if(event.target===this)closeModal()">
   <div class="modal">
@@ -767,6 +805,7 @@ import {
   classTotal, classPlafond as _classPlafondPure,
   consecOk as _consecOkPure,
   computeDistrib as _computeDistribPure,
+  computeMoveTargets as _computeMoveTargetsPure,
   encodeState as _encodeStatePure,
   decodeState as _decodeStatePure,
   parseCsvEffectifs, applyCsvItems,
@@ -776,6 +815,7 @@ import {
 const classPlafond = cl => _classPlafondPure(cl, state.niveaux);
 const consecOk = nids => _consecOkPure(nids, state.niveaux);
 const computeDistrib = mode => _computeDistribPure(state.niveaux, state.maxClasses, mode);
+const computeMoveTargets = (ci, ri) => _computeMoveTargetsPure(state, ci, ri);
 const encodeState = () => _encodeStatePure(state);
 
 let state = DEFAULT_STATE();
@@ -969,6 +1009,7 @@ function _dialogBtn(i){
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     if(document.getElementById('dialog-bg').style.display!=='none')_dialogBtn(0);
+    else if(document.getElementById('move-modal-bg').style.display!=='none')closeMoveDialog();
     else if(document.getElementById('csv-modal-bg').style.display!=='none')closeCsvImport();
     else if(document.getElementById('modal-bg').style.display!=='none')closeModal();
   }
@@ -1267,6 +1308,96 @@ async function confirmCsvImport(){
   if(newLevels.length)msg.push(`${newLevels.length} créé(s)`);
   showToast(`✓ ${msg.join(' · ')}`);
 }
+
+// ── Déplacer des élèves entre classes ──
+// Le calcul des cibles compatibles est dans core.mjs (computeMoveTargets).
+// Ici : UI + mutation d'état.
+let _moveCtx=null; // { ci, ri }
+function openMoveDialog(ci,ri){
+  const source=state.classes[ci];if(!source)return;
+  const row=source.rows[ri];if(!row)return;
+  const val=parseInt(row.val)||0;
+  if(val<=0){showToast('Cette ligne n\'a pas d\'élève à déplacer.');return;}
+
+  _moveCtx={ci,ri};
+  const n=getNiveau(row.nid);
+  document.getElementById('move-modal-title').textContent=
+    `Déplacer des élèves ${n?.label||row.nid}`;
+  document.getElementById('move-modal-desc').innerHTML=
+    `Depuis <strong>${esc(className(source))}</strong> — ${val} élève(s) disponible(s).`;
+
+  renderMoveTargets();
+  document.getElementById('move-modal-bg').style.display='flex';
+}
+function closeMoveDialog(){
+  _moveCtx=null;
+  document.getElementById('move-modal-bg').style.display='none';
+}
+function renderMoveTargets(){
+  if(!_moveCtx)return;
+  const {ci,ri}=_moveCtx;
+  const targets=computeMoveTargets(ci,ri);
+  const list=document.getElementById('move-targets');
+  const empty=document.getElementById('move-empty');
+  if(!targets.length){
+    list.innerHTML='';empty.style.display='block';return;
+  }
+  empty.style.display='none';
+  list.innerHTML=targets.map(t=>{
+    const target=state.classes[t.ti];
+    const label=className(target);
+    const badge=t.kind==='new'?' <span class="badge-new">nouveau</span>':'';
+    const descr=t.kind==='merge'
+      ?`Fusion avec le niveau existant · <strong>${t.space}</strong> place(s) libre(s)`
+      :`Ajoute le niveau dans la classe${badge} · <strong>${t.space}</strong> place(s) libre(s)`;
+    return `<div class="move-target">
+      <div class="move-target-info">
+        <div class="move-target-name">Classe ${t.ti+1} — ${esc(label)}</div>
+        <div class="move-target-meta">${descr}</div>
+      </div>
+      <div class="move-target-controls">
+        <div class="inline-wrap">
+          <button type="button" class="inline-spin" onclick="moveInputStep(${t.ti},-1)">−</button>
+          <input type="number" class="inline-core" id="move-qty-${t.ti}" min="1" max="${t.max}" value="${t.max}" onfocus="this.select()">
+          <button type="button" class="inline-spin" onclick="moveInputStep(${t.ti},1)">+</button>
+        </div>
+        <button type="button" class="move-target-btn" onclick="confirmMove(${t.ti})">
+          Déplacer
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function moveInputStep(ti,d){
+  const el=document.getElementById(`move-qty-${ti}`);if(!el)return;
+  const max=parseInt(el.max)||1;
+  const v=(parseInt(el.value)||1)+d;
+  el.value=Math.max(1,Math.min(max,v));
+}
+function confirmMove(ti){
+  if(!_moveCtx)return;
+  const {ci,ri}=_moveCtx;
+  const input=document.getElementById(`move-qty-${ti}`);
+  const qty=Math.max(1,parseInt(input?.value)||0);
+  const source=state.classes[ci],target=state.classes[ti];
+  const row=source?.rows?.[ri];
+  if(!source||!target||!row)return;
+
+  const actual=Math.min(qty,parseInt(row.val)||0);
+  if(actual<=0){showToast('Rien à déplacer.');return;}
+
+  row.val-=actual;
+  const existing=target.rows.find(r=>r.nid===row.nid);
+  if(existing)existing.val=(parseInt(existing.val)||0)+actual;
+  else target.rows.push({nid:row.nid,val:actual});
+
+  if(row.val<=0)source.rows.splice(ri,1);
+
+  closeMoveDialog();render();save();
+  const nLabel=getNiveau(row.nid)?.label||row.nid;
+  showToast(`✓ ${actual} ${nLabel} déplacé(s) vers Classe ${ti+1}`);
+}
+
 async function removeNiveau(id){
   const n=getNiveau(id);
   const ok=await confirmDialog(`Supprimer le niveau ${esc(n?.label||id)} ?`,'Les entrées de ce niveau dans les classes seront aussi supprimées.','del');
@@ -1480,7 +1611,12 @@ function render(){
             </div>
             <span class="nrow-hint ${hintCls}">${hintTxt}</span>
           </div>
-          <button class="btn-icon" onclick="removeRow(${ci},${ri})" title="Retirer ${esc(n.label)}" aria-label="Retirer ${esc(n.label)}">✕</button>
+          <div class="nrow-actions">
+            <button class="btn-icon btn-move" onclick="openMoveDialog(${ci},${ri})" title="Déplacer des élèves ${esc(n.label)} vers une autre classe" aria-label="Déplacer des élèves ${esc(n.label)}"${val===0?' disabled':''}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+            <button class="btn-icon" onclick="removeRow(${ci},${ri})" title="Retirer ${esc(n.label)}" aria-label="Retirer ${esc(n.label)}">✕</button>
+          </div>
         </div>`;
       }).join('');
 
@@ -1736,6 +1872,7 @@ Object.assign(window, {
   exportPdf, exportTxt, exportMural, exportKlasio, importKlasio,
   openCsvImport, closeCsvImport, fillCsvExample, loadCsvFile,
   updateCsvPreview, confirmCsvImport,
+  openMoveDialog, closeMoveDialog, moveInputStep, confirmMove,
   openOnboarding, closeOnboarding, onbNext, onbPrev,
 });
 </script>

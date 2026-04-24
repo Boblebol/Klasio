@@ -14,7 +14,8 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 - **Sauvegarde / ouverture de fichier `.klasio`** (JSON) : boutons *Sauver* et *Ouvrir* dans la barre du bas de l'étape 4. Le fichier est validé par le schéma avant import.
 - **Onboarding de première visite** : 3 écrans présentant l'outil, le wizard et les raccourcis (vu une seule fois, bouton *Passer* toujours disponible).
 - **Import CSV des effectifs** à l'étape 1 : coller une liste `CP,24 / CE1,22 / …` (séparateurs virgule, point-virgule, tabulation ou pipe) ou charger un fichier `.csv`. Aperçu en temps réel des niveaux mis à jour / créés, avec remontée des lignes invalides.
-- **Suite de tests unitaires** (Vitest) sur le noyau pur (`src/core.mjs`) : 42 tests couvrant `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `encodeState/decodeState`, `parseCsvEffectifs`, `applyCsvItems`, `esc`. Exécutés en CI sur chaque push.
+- **Déplacer des élèves entre classes** : bouton → sur chaque ligne de niveau, modal listant les classes compatibles (même niveau ou niveau consécutif, places disponibles), avec sélecteur de quantité. Supprime automatiquement la ligne source si elle tombe à zéro, ou fusionne avec une ligne existante côté cible.
+- **Suite de tests unitaires** (Vitest) sur le noyau pur (`src/core.mjs`) : 51 tests couvrant `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `computeMoveTargets`, `encodeState/decodeState`, `parseCsvEffectifs`, `applyCsvItems`, `esc`. Exécutés en CI sur chaque push.
 - **Configuration Netlify** (`netlify.toml`) pour déploiement zéro-config avec en-têtes de sécurité (CSP, X-Frame-Options, Referrer-Policy, Permissions-Policy).
 
 ### Corrigé

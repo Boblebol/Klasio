@@ -7,6 +7,7 @@ import {
   classTotal,
   classPlafond,
   computeDistrib,
+  computeMoveTargets,
   encodeState,
   decodeState,
   parseCsvEffectifs,
@@ -308,6 +309,100 @@ describe('applyCsvItems()', () => {
     const items = [{ label: 'CP', total: 30 }, { label: 'GS', total: 25 }];
     const { newLevels } = applyCsvItems(NIV, items);
     expect(newLevels).toEqual([{ label: 'GS', total: 25 }]);
+  });
+});
+
+describe('computeMoveTargets()', () => {
+  const baseState = {
+    niveaux: NIV,
+    classes: [
+      { rows: [{ nid: 'CP', val: 12 }] },                              // 0: CP 12
+      { rows: [{ nid: 'CP', val: 10 }] },                              // 1: CP 10
+      { rows: [{ nid: 'CE1', val: 20 }] },                             // 2: CE1 20 (plaf 24)
+      { rows: [{ nid: 'CE2', val: 20 }] },                             // 3: CE2 20 (non consec CP)
+      { rows: [] },                                                    // 4: vide
+      { rows: [{ nid: 'CE1', val: 12 }, { nid: 'CE2', val: 12 }] },    // 5: double plein
+    ],
+  };
+
+  it('fusionne avec les classes qui ont déjà le même niveau (kind=merge)', () => {
+    const targets = computeMoveTargets(baseState, 0, 0);
+    const merge = targets.find(t => t.ti === 1);
+    expect(merge).toBeDefined();
+    expect(merge.kind).toBe('merge');
+    // classe 1 : CP plafond 24, total 10 → space 14, max=min(14, 12)=12
+    expect(merge.space).toBe(14);
+    expect(merge.max).toBe(12);
+  });
+
+  it('ajoute un nouveau niveau si consécutif (kind=new)', () => {
+    const targets = computeMoveTargets(baseState, 0, 0);
+    const newInCE1 = targets.find(t => t.ti === 2);
+    expect(newInCE1).toBeDefined();
+    expect(newInCE1.kind).toBe('new');
+    // CE1 plafond 24, CP plafond 24 → newPlaf = 24, total 20, space = 4
+    expect(newInCE1.space).toBe(4);
+    expect(newInCE1.max).toBe(4);
+  });
+
+  it('exclut les classes où le niveau serait non consécutif', () => {
+    const targets = computeMoveTargets(baseState, 0, 0);
+    expect(targets.find(t => t.ti === 3)).toBeUndefined();
+  });
+
+  it('accepte une classe vide comme nouvelle cible', () => {
+    const targets = computeMoveTargets(baseState, 0, 0);
+    const empty = targets.find(t => t.ti === 4);
+    expect(empty).toBeDefined();
+    expect(empty.kind).toBe('new');
+    expect(empty.space).toBe(24);
+  });
+
+  it('exclut la classe source elle-même', () => {
+    const targets = computeMoveTargets(baseState, 0, 0);
+    expect(targets.find(t => t.ti === 0)).toBeUndefined();
+  });
+
+  it('exclut les classes pleines', () => {
+    const targets = computeMoveTargets(baseState, 0, 0);
+    expect(targets.find(t => t.ti === 5)).toBeUndefined();
+  });
+
+  it('renvoie [] si la ligne source est à 0', () => {
+    const s = {
+      niveaux: NIV,
+      classes: [
+        { rows: [{ nid: 'CP', val: 0 }] },
+        { rows: [] },
+      ],
+    };
+    expect(computeMoveTargets(s, 0, 0)).toEqual([]);
+  });
+
+  it('renvoie [] sur index invalide', () => {
+    expect(computeMoveTargets(baseState, 99, 0)).toEqual([]);
+    expect(computeMoveTargets(baseState, 0, 99)).toEqual([]);
+  });
+
+  it('respecte le plafond plus strict du niveau ajouté', () => {
+    // CP plaf 24, cible classe avec CE2 (plaf 25) à 22 élèves
+    // → newPlaf = min(25, 24) = 24, currentTotal = 22 → space = 2
+    const niv = [
+      { id: 'CP', label: 'CP', total: 0, plafond: 24, color: '#000' },
+      { id: 'CE1', label: 'CE1', total: 0, plafond: 24, color: '#111' },
+      { id: 'CE2', label: 'CE2', total: 0, plafond: 25, color: '#222' },
+    ];
+    const s = {
+      niveaux: niv,
+      classes: [
+        { rows: [{ nid: 'CE1', val: 10 }] },
+        { rows: [{ nid: 'CE2', val: 22 }] },
+      ],
+    };
+    const targets = computeMoveTargets(s, 0, 0);
+    const t = targets.find(x => x.ti === 1);
+    expect(t).toBeDefined();
+    expect(t.space).toBe(2);
   });
 });
 
