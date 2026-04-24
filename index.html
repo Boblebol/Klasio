@@ -324,6 +324,7 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 .dialog-icon.info{background:var(--bbg)}.dialog-icon.warn{background:var(--abg)}.dialog-icon.err{background:var(--rbg)}.dialog-icon.ok{background:var(--gbg)}
 .dialog h3{font-size:16px;font-weight:700;margin-bottom:6px;letter-spacing:-.2px}
 .dialog p{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:18px}
+#dialog-msg kbd{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
 .dialog-btns{display:flex;gap:8px;justify-content:flex-end}
 .d-btn{border-radius:var(--rs);padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .15s}
 .d-btn.ok{background:var(--brand);color:#fff;border-color:var(--brand)}
@@ -370,24 +371,39 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 .csv-preview .csv-summary{font-weight:600;color:var(--text);margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
 
 /* Modal scénarios */
-.sc-modal{max-width:720px}
-.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
-@media(max-width:640px){.sc-grid{grid-template-columns:1fr}}
-.sc-card{position:relative;border:1.5px solid var(--border);border-radius:var(--rs);padding:14px;background:var(--bg);display:flex;flex-direction:column;gap:8px;transition:border-color .12s,background .12s}
+.sc-modal{max-width:860px;padding-top:12px}
+.sc-intro{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin:10px 0 14px;font-size:13px;color:var(--t2);line-height:1.55}
+.sc-intro-title{font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.45px;margin-bottom:8px}
+.sc-intro ul{margin:0;padding-left:1.15rem}
+.sc-intro li{margin:5px 0}
+.sc-intro kbd{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+.sc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:2px;align-items:stretch}
+@media(max-width:900px){.sc-grid{grid-template-columns:1fr;max-width:420px;margin-left:auto;margin-right:auto}}
+.sc-card{position:relative;border:1.5px solid var(--border);border-radius:14px;padding:14px 14px 12px;background:var(--bg);display:flex;flex-direction:column;gap:10px;transition:border-color .12s,background .12s;min-height:280px}
 .sc-card.active{border-color:var(--brand);background:var(--surface);box-shadow:0 0 0 3px rgba(79,70,229,.08)}
-.sc-card .sc-slot{position:absolute;top:10px;right:12px;font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.6px;text-transform:uppercase}
+.sc-card .sc-slot{position:absolute;top:10px;right:12px;font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;max-width:42%;text-align:right;line-height:1.25}
 .sc-card.active .sc-slot{color:var(--brand)}
-.sc-card-name{font-size:14px;font-weight:700;color:var(--text);margin-top:4px;padding-right:32px;line-height:1.2}
-.sc-card-name input{background:transparent;border:1px dashed transparent;border-radius:6px;padding:3px 6px;font:inherit;color:inherit;width:100%;transition:border-color .12s}
-.sc-card-name input:hover{border-color:var(--border)}
+.sc-card-name{font-size:14px;font-weight:700;color:var(--text);margin-top:2px;padding-right:38px;line-height:1.2}
+.sc-card-name label{display:block;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.35px;margin-bottom:4px}
+.sc-card-name input{background:transparent;border:1.5px dashed var(--border);border-radius:8px;padding:6px 8px;font:inherit;color:inherit;width:100%;transition:border-color .12s,background .12s}
+.sc-card-name input:hover{border-color:var(--border2);background:var(--surface)}
 .sc-card-name input:focus{outline:none;border-color:var(--brand);background:var(--bg)}
-.sc-card-summary{font-size:12px;color:var(--t2);line-height:1.55;min-height:56px}
-.sc-card-summary .sc-metric{display:flex;justify-content:space-between;gap:8px;padding:2px 0}
-.sc-card-summary .sc-metric-label{color:var(--t3)}
-.sc-card-summary .sc-metric-value{font-weight:600;color:var(--text)}
+.sc-card-summary{font-size:12px;color:var(--t2);line-height:1.5;flex:1;display:flex;flex-direction:column;gap:2px}
+.sc-card-summary .sc-metric{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:4px 0;border-bottom:1px dashed var(--border)}
+.sc-card-summary .sc-metric:last-of-type{border-bottom:none}
+.sc-card-summary .sc-metric-label{color:var(--t3);flex-shrink:0}
+.sc-card-summary .sc-metric-value{font-weight:600;color:var(--text);text-align:right}
+.sc-card-summary .sc-metric-sub{display:block;font-size:11px;font-weight:500;color:var(--t3);margin-top:2px}
 .sc-card-summary .sc-warn{color:var(--red);font-weight:600}
-.sc-card-summary .sc-empty{font-style:italic;color:var(--t3)}
-.sc-card-actions{display:flex;gap:6px;flex-wrap:wrap}
+.sc-card-summary .sc-empty{font-style:normal;color:var(--t3);line-height:1.6;padding:4px 0}
+.sc-card-summary .sc-empty strong{color:var(--t2);font-weight:600}
+.sc-actions-col{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-top:4px;border-top:1px solid var(--border)}
+.sc-row-primary{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sc-row-primary .sc-btn{flex:1;min-width:120px}
+.sc-copy-block{display:flex;flex-direction:column;gap:6px}
+.sc-copy-hint{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.35px}
+.sc-copy-btns{display:flex;flex-wrap:wrap;gap:6px}
+.sc-btn.sc-btn-dup{flex:0 1 auto;min-width:72px;padding:6px 10px;font-size:12px;font-weight:600}
 .sc-btn{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;transition:all .12s;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
 .sc-btn:hover{background:var(--surface);border-color:var(--border2);color:var(--text)}
 .sc-btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
@@ -397,7 +413,11 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 .sc-card.active .sc-btn.primary:hover{background:#117043;border-color:#117043}
 
 /* Bouton scénario dans le header */
-.hdr-btn.scenario-btn strong{font-weight:700;color:var(--brand);margin-left:2px}
+.hdr-btn.scenario-btn{flex-direction:column;align-items:flex-start;gap:0;padding:6px 12px 7px;line-height:1.15;min-width:0;max-width:200px}
+.hdr-btn.scenario-btn .scenario-btn-line1{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--t2)}
+.hdr-btn.scenario-btn .scenario-letter{font-size:13px;font-weight:800;color:var(--brand);background:var(--brand-bg);border-radius:6px;padding:1px 7px;line-height:1.2}
+.hdr-btn.scenario-btn .scenario-sub{font-size:11px;font-weight:500;color:var(--t3);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:2px;margin-top:1px}
+@media(max-width:520px){.hdr-btn.scenario-btn .scenario-sub{display:none}}
 
 /* Modal déplacement */
 .move-modal{max-width:560px}
@@ -531,9 +551,13 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
       <button class="hdr-btn icon-only" id="btn-redo" onclick="historyRedo()" title="Rétablir (Ctrl+Y)" aria-label="Rétablir" disabled>
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 15-6.7L21 13"/></svg>
       </button>
-      <button class="hdr-btn scenario-btn" id="btn-scenarios" onclick="openScenarios()" title="Gérer les scénarios (A / B / C)" aria-label="Gérer les scénarios">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-        <span>Scénario <strong id="scenario-current-label">A</strong></span>
+      <button class="hdr-btn scenario-btn" id="btn-scenarios" type="button" onclick="openScenarios()" title="Ouvrir la gestion des brouillons A, B et C" aria-label="Gérer les brouillons A, B et C" aria-haspopup="dialog" aria-expanded="false" aria-controls="sc-modal-dialog">
+        <span class="scenario-btn-line1" aria-hidden="true">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span>Brouillon</span>
+          <span class="scenario-letter" id="scenario-current-label">A</span>
+        </span>
+        <span class="scenario-sub" id="scenario-name-preview" title=""></span>
       </button>
       <button class="hdr-btn icon-only" id="btn-theme" onclick="toggleTheme()" title="Basculer le thème" aria-label="Basculer le thème clair/sombre">
         <svg id="icon-sun" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
@@ -862,11 +886,19 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 
 <!-- ══ MODAL scénarios A/B/C ══ -->
 <div class="modal-bg" id="sc-modal-bg" style="display:none" onclick="if(event.target===this)closeScenarios()">
-  <div class="modal sc-modal" role="dialog" aria-modal="true" aria-labelledby="sc-modal-title">
+  <div class="modal sc-modal" id="sc-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="sc-modal-title" aria-describedby="sc-modal-desc">
     <div class="modal-handle"></div>
-    <h3 id="sc-modal-title">Scénarios de répartition</h3>
-    <p>Comparez jusqu'à trois répartitions en parallèle (ex : effectifs haut/bas, avec ou sans une nouvelle classe). Le scénario <strong>actif</strong> est celui que vous éditez.</p>
-    <div class="sc-grid" id="sc-grid"></div>
+    <h3 id="sc-modal-title">Brouillons A, B et C</h3>
+    <div class="sc-intro" id="sc-modal-desc">
+      <div class="sc-intro-title">Comment ça marche ?</div>
+      <ul>
+        <li><strong>Trois emplacements indépendants</strong> (A, B, C) : chacun garde ses propres effectifs, classes, notes et historique <kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd>. Tout est enregistré dans ce navigateur.</li>
+        <li><strong>Actif</strong> : c’est le brouillon affiché dans l’assistant. Les autres restent en mémoire sans changer tant que vous ne les activez pas.</li>
+        <li><strong>Copier vers…</strong> : duplique tout le contenu d’un slot vers un autre (utile pour partir d’une variante sans toucher à l’original).</li>
+        <li><strong>Vider</strong> : remet un slot à zéro (effectifs à 0, plus aucune classe).</li>
+      </ul>
+    </div>
+    <div class="sc-grid" id="sc-grid" role="list" aria-label="Les trois emplacements de brouillon"></div>
     <div class="modal-btns" style="margin-top:14px">
       <button class="btn-cancel" onclick="closeScenarios()">Fermer</button>
     </div>
@@ -1586,11 +1618,29 @@ function confirmMove(ti){
 }
 
 // ── Gestion des scénarios ──
+function _scenarioDefaultName(id){return`Scénario ${id}`;}
+function _scenarioHeaderSubtitle(id){
+  const n=String(scenarioNames[id]||'').trim();
+  const def=_scenarioDefaultName(id);
+  if(!n||n===def)return'';
+  return n.length>28?`${n.slice(0,26)}…`:n;
+}
 function updateScenarioBadge(){
-  const el=document.getElementById('scenario-current-label');
-  if(el)el.textContent=activeScenario;
+  const letter=document.getElementById('scenario-current-label');
+  if(letter)letter.textContent=activeScenario;
+  const sub=document.getElementById('scenario-name-preview');
   const btn=document.getElementById('btn-scenarios');
-  if(btn)btn.title=`Scénario actif : ${scenarioNames[activeScenario]} (clic pour gérer)`;
+  const full=String(scenarioNames[activeScenario]||_scenarioDefaultName(activeScenario)).trim()||_scenarioDefaultName(activeScenario);
+  if(sub){
+    const t=_scenarioHeaderSubtitle(activeScenario);
+    sub.textContent=t;
+    sub.title=full;
+    sub.hidden=!t;
+  }
+  if(btn){
+    btn.title=`Brouillon actif : ${full} — ouvrir pour activer, renommer ou copier vers un autre emplacement`;
+    btn.setAttribute('aria-label',`Gérer les brouillons. Actuellement : ${full}`);
+  }
 }
 let _scenarioOpener=null;
 function openScenarios(){
@@ -1598,13 +1648,17 @@ function openScenarios(){
   renderScenariosModal();
   const bg=document.getElementById('sc-modal-bg');
   bg.style.display='flex';
+  const btn=document.getElementById('btn-scenarios');
+  if(btn)btn.setAttribute('aria-expanded','true');
   setTimeout(()=>{
-    const active=bg.querySelector('.sc-card.active button:not(:disabled), .sc-card.active input');
+    const active=bg.querySelector('.sc-card.active .sc-card-name input, .sc-card.active button:not(:disabled)');
     if(active)active.focus();
   },60);
 }
 function closeScenarios(){
   document.getElementById('sc-modal-bg').style.display='none';
+  const btn=document.getElementById('btn-scenarios');
+  if(btn)btn.setAttribute('aria-expanded','false');
   if(_scenarioOpener&&typeof _scenarioOpener.focus==='function'){
     _scenarioOpener.focus();
   }
@@ -1619,30 +1673,34 @@ function renderScenariosModal(){
     const isActive=id===activeScenario;
 
     const summary=empty
-      ? `<span class="sc-empty">Aucune donnée. Activez ce slot pour commencer une nouvelle répartition.</span>`
+      ? `<span class="sc-empty"><strong>Slot vide.</strong> Activez-le puis saisissez vos effectifs à l’étape 1, ou copiez un autre slot avec « Copier vers… ».</span>`
       : `
-        <div class="sc-metric"><span class="sc-metric-label">Élèves placés</span><span class="sc-metric-value">${s.placedEleves} / ${s.totalEleves}</span></div>
-        <div class="sc-metric"><span class="sc-metric-label">Classes</span><span class="sc-metric-value">${s.nbClasses} / ${s.maxClasses}</span></div>
-        <div class="sc-metric"><span class="sc-metric-label">Niveaux</span><span class="sc-metric-value">${s.nbNiveaux}</span></div>
-        ${s.nbErrors>0?`<div class="sc-metric"><span class="sc-metric-label">Erreurs</span><span class="sc-metric-value sc-warn">⚠ ${s.nbErrors}</span></div>`:''}
-        ${s.remainingEleves>0?`<div class="sc-metric"><span class="sc-metric-label">Non placés</span><span class="sc-metric-value sc-warn">${s.remainingEleves}</span></div>`:''}
+        <div class="sc-metric"><span class="sc-metric-label">Élèves</span><span class="sc-metric-value">${s.placedEleves} / ${s.totalEleves}<span class="sc-metric-sub">placés dans les classes / total inscrits (étape 1)</span></span></div>
+        <div class="sc-metric"><span class="sc-metric-label">Classes créées</span><span class="sc-metric-value">${s.nbClasses}<span class="sc-metric-sub">plafond autorisé à l’étape 2 : ${s.maxClasses}</span></span></div>
+        <div class="sc-metric"><span class="sc-metric-label">Niveaux (lignes)</span><span class="sc-metric-value">${s.nbNiveaux}<span class="sc-metric-sub">dans la liste des effectifs</span></span></div>
+        ${s.nbErrors>0?`<div class="sc-metric"><span class="sc-metric-label">Problèmes</span><span class="sc-metric-value sc-warn">⚠ ${s.nbErrors} classe(s)</span></div>`:''}
+        ${s.remainingEleves>0?`<div class="sc-metric"><span class="sc-metric-label">Reste à placer</span><span class="sc-metric-value sc-warn">${s.remainingEleves} élève(s)</span></div>`:''}
       `;
 
     const otherIds=SCENARIO_IDS.filter(i=>i!==id);
-    return `<div class="sc-card${isActive?' active':''}">
-      <span class="sc-slot">${id}${isActive?' · actif':''}</span>
+    const dupBlock=!empty?`<div class="sc-copy-block"><span class="sc-copy-hint">Copier ce brouillon vers</span><div class="sc-copy-btns">${otherIds.map(oid=>`<button type="button" class="sc-btn sc-btn-dup" onclick="duplicateScenario('${id}','${oid}')" title="Remplace tout le contenu du slot ${oid} par une copie du slot ${id} (effectifs, classes, noms…)">Slot ${oid}</button>`).join('')}</div></div>`:'';
+    return `<div class="sc-card${isActive?' active':''}" role="listitem">
+      <span class="sc-slot">Emplacement ${id}${isActive?' · actif':''}</span>
       <div class="sc-card-name">
-        <input type="text" value="${esc(scenarioNames[id])}" maxlength="40"
-          aria-label="Nom du scénario ${id}"
+        <label for="sc-name-${id}">Nom affiché</label>
+        <input id="sc-name-${id}" type="text" value="${esc(scenarioNames[id])}" maxlength="40"
+          aria-label="Nom du brouillon ${id}"
           onchange="renameScenario('${id}',this.value)">
       </div>
       <div class="sc-card-summary">${summary}</div>
-      <div class="sc-card-actions">
+      <div class="sc-actions-col">
+        <div class="sc-row-primary">
         ${isActive
-          ? `<button class="sc-btn primary" disabled aria-current="true">✓ Actif</button>`
-          : `<button class="sc-btn primary" onclick="switchScenario('${id}')">Activer</button>`}
-        ${otherIds.map(oid=>`<button class="sc-btn" onclick="duplicateScenario('${id}','${oid}')" title="Copier le contenu de ${id} vers ${oid}">→ ${oid}</button>`).join('')}
-        ${!empty?`<button class="sc-btn danger" onclick="clearScenario('${id}')" title="Vider ce scénario">Vider</button>`:''}
+          ? `<button type="button" class="sc-btn primary" disabled aria-current="true">✓ Brouillon actif</button>`
+          : `<button type="button" class="sc-btn primary" onclick="switchScenario('${id}')">Activer ce slot</button>`}
+        ${!empty?`<button type="button" class="sc-btn danger" onclick="clearScenario('${id}')" title="Remet ce slot à zéro (effectifs et classes)">Vider</button>`:''}
+        </div>
+        ${dupBlock}
       </div>
     </div>`;
   }).join('');
@@ -1673,21 +1731,21 @@ function switchScenario(id){
   updateScenarioBadge();
   syncStepInputs();updateHistoryButtons();render();
   renderScenariosModal();
-  showToast(`✓ Scénario ${id} activé — ${scenarioNames[id]}`);
+  showToast(`✓ Slot ${id} activé — ${scenarioNames[id]}`);
 }
 async function duplicateScenario(fromId,toId){
   if(!SCENARIO_IDS.includes(fromId)||!SCENARIO_IDS.includes(toId)||fromId===toId)return;
   const target=readScenarioState(toId);
   if(target&&!target.isEmpty){
     const ok=await confirmDialog(
-      `Remplacer le scénario ${toId} ?`,
-      `Le contenu actuel du scénario <strong>${esc(scenarioNames[toId])}</strong> sera écrasé par une copie de <strong>${esc(scenarioNames[fromId])}</strong>.`,
+      `Remplacer le slot ${toId} ?`,
+      `Le contenu actuel du brouillon <strong>${esc(scenarioNames[toId])}</strong> (emplacement ${toId}) sera remplacé par une copie complète du slot <strong>${fromId}</strong> — <strong>${esc(scenarioNames[fromId])}</strong>.`,
       'warn'
     );
     if(!ok)return;
   }
   const src=fromId===activeScenario?state:readScenarioState(fromId);
-  if(!src){showToast('Source vide — rien à copier.');return;}
+  if(!src){showToast('Ce slot est vide — rien à copier.');return;}
   writeScenarioState(toId,src);
   if(toId===activeScenario){
     state=JSON.parse(JSON.stringify(src));window.state=state;
@@ -1696,12 +1754,12 @@ async function duplicateScenario(fromId,toId){
     syncStepInputs();render();
   }
   renderScenariosModal();
-  showToast(`✓ ${fromId} copié vers ${toId}`);
+  showToast(`✓ Slot ${fromId} copié vers ${toId}`);
 }
 async function clearScenario(id){
   const ok=await confirmDialog(
-    `Vider le scénario ${id} ?`,
-    `Tout le contenu de <strong>${esc(scenarioNames[id])}</strong> sera supprimé. Cette action est réversible avec Ctrl+Z si c'est le scénario actif.`,
+    `Vider le slot ${id} ?`,
+    `Tout le contenu du brouillon <strong>${esc(scenarioNames[id])}</strong> sera effacé (effectifs à 0, classes supprimées). Si ce slot est <strong>actif</strong>, vous pouvez encore annuler avec <kbd>Ctrl</kbd>+<kbd>Z</kbd> juste après.`,
     'del'
   );
   if(!ok)return;
@@ -1713,7 +1771,7 @@ async function clearScenario(id){
     syncStepInputs();render();
   }
   renderScenariosModal();
-  showToast(`✓ Scénario ${id} vidé`);
+  showToast(`✓ Slot ${id} vidé`);
 }
 
 async function removeNiveau(id){
