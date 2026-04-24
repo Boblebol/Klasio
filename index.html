@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klasio — Répartition des classes</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f3f0;--surface:#fff;--surface2:#fafaf8;
+  --border:#e8e6de;--border2:#d0cec4;
+  --text:#181816;--t2:#5c5b56;--t3:#9c9b94;
+  --green:#158a52;--gbg:#e8f7ee;--gborder:#a8dfc0;
+  --amber:#8a5a08;--abg:#fef4e0;--aborder:#e8c870;
+  --red:#c0282a;--rbg:#fdeaea;--rborder:#f0a8a8;
+  --blue:#1858a8;--bbg:#e8f0fc;--bborder:#a8c8f4;
+  --brand:#4f46e5;--brand2:#6366f1;--brand-bg:#eef2ff;--brand-border:#c7d2fe;
+  --r:14px;--rs:8px;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;min-height:100vh;padding-bottom:90px}
+.page{max-width:720px;margin:0 auto;padding:0 16px 24px}
+
+/* ── Header ── */
+.site-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;margin-bottom:0;position:sticky;top:0;z-index:90;box-shadow:0 1px 6px rgba(0,0,0,.04)}
+.header-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:54px;gap:12px}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none}
+.brand-icon{width:32px;height:32px;border-radius:9px;background:var(--brand);display:flex;align-items:center;justify-content:center}
+.brand-name{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px}
+.brand-name span{color:var(--brand)}
+.hdr-btn{border-radius:var(--rs);padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--t2);display:flex;align-items:center;gap:5px;transition:all .15s}
+.hdr-btn:hover{background:var(--bg);border-color:var(--border2);color:var(--text)}
+.hdr-btn.share{background:var(--brand-bg);border-color:var(--brand-border);color:var(--brand)}
+.hdr-btn.share:hover{background:#e0e7ff}
+.header-actions{display:flex;align-items:center;gap:7px}
+
+/* ── Step wizard ── */
+.wizard{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;margin-bottom:24px}
+.wizard-inner{max-width:720px;margin:0 auto;display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+.wizard-inner::-webkit-scrollbar{display:none}
+.wstep{display:flex;align-items:center;gap:8px;padding:12px 16px 12px 0;font-size:13px;font-weight:500;color:var(--t3);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;flex-shrink:0}
+.wstep:first-child{padding-left:0}
+.wstep.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:700}
+.wstep.done{color:var(--green)}
+.wstep-num{width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg);color:var(--t3);border:1.5px solid var(--border);transition:all .15s}
+.wstep.active .wstep-num{background:var(--brand);color:#fff;border-color:var(--brand)}
+.wstep.done .wstep-num{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* ── Step panels ── */
+.step-panel{display:none}
+.step-panel.active{display:block}
+
+/* ── Section ── */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
+.section.featured{border-color:var(--brand-border)}
+.section-title{font-size:16px;font-weight:700;letter-spacing:-.2px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.section-desc{font-size:13px;color:var(--t2);margin-bottom:14px;line-height:1.55}
+
+/* ── Help ── */
+.help-btn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--bg);border:1.5px solid var(--border2);color:var(--t3);font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .15s;vertical-align:middle}
+.help-btn:hover,.help-btn.on{background:var(--brand-bg);border-color:var(--brand);color:var(--brand)}
+.help-box{display:none;background:#1e1e1c;color:#e8e7e0;font-size:13px;padding:12px 14px;border-radius:var(--rs);line-height:1.65;margin-top:8px}
+.help-box.on{display:block}
+.help-box strong{color:#fff}
+
+/* ── Num input ── */
+.num-wrap{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);overflow:hidden;transition:border-color .15s,box-shadow .15s}
+.num-wrap:hover{border-color:var(--border2)}
+.num-wrap:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1);background:var(--surface)}
+.num-wrap.saved{border-color:var(--green);animation:savepulse .5s ease-out}
+@keyframes savepulse{0%{box-shadow:0 0 0 0 rgba(21,138,82,.3)}100%{box-shadow:0 0 0 6px rgba(21,138,82,0)}}
+.num-spin{width:38px;height:46px;border:none;background:none;font-size:20px;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .1s;line-height:1}
+.num-spin:hover{background:var(--border);color:var(--text)}
+.num-spin:active{background:var(--border2)}
+.num-core{flex:1;border:none;background:none;font-size:18px;font-weight:700;text-align:center;color:var(--text);-moz-appearance:textfield;min-width:0;padding:0;height:46px}
+.num-core::-webkit-outer-spin-button,.num-core::-webkit-inner-spin-button{-webkit-appearance:none}
+.num-core:focus{outline:none}
+
+/* ── Niveau cards ── */
+.niveaux-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.niveau-card{border:1.5px solid var(--border);border-radius:var(--rs);padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--surface2);transition:border-color .15s}
+.niveau-card:hover{border-color:var(--border2)}
+.niveau-card-head{display:flex;align-items:center;gap:7px}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.niv-lbl{font-size:14px;font-weight:700;flex:1}
+.btn-icon{background:none;border:none;color:var(--t3);font-size:13px;cursor:pointer;padding:0 2px;transition:color .1s}
+.btn-icon:hover{color:var(--red)}
+.field-hint{font-size:11px;color:var(--t3);text-align:center}
+
+/* ── Plafonds ── */
+.plafond-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.plafond-item label{font-size:12px;font-weight:600;color:var(--t2);display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.nmax-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.nmax-row label{font-size:13px;font-weight:500;color:var(--t2)}
+
+/* ── Teacher row (dans chaque classe) ── */
+.teacher-row{display:flex;align-items:center;gap:10px;padding:8px 0 10px;border-bottom:1px dashed var(--border);margin-bottom:8px}
+.teacher-lbl{font-size:12px;font-weight:600;color:var(--t2);flex-shrink:0}
+.teacher-input{flex:1;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--surface);padding:6px 10px;font-size:13px;color:var(--text);font-family:inherit}
+.teacher-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+
+/* ── Pools ── */
+.pools-wrap{margin-bottom:12px}
+.pools{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+.pool{border:1.5px solid var(--border);border-radius:var(--rs);padding:10px 8px;text-align:center;background:var(--surface);transition:all .2s;cursor:pointer}
+.pool:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.pool.pok  {border-color:var(--gborder);background:var(--gbg)}
+.pool.pwarn{border-color:var(--aborder);background:var(--abg)}
+.pool.perr {border-color:var(--rborder);background:var(--rbg)}
+.pool-niv{font-size:12px;font-weight:700;margin-bottom:3px}
+.pool-n{font-size:22px;font-weight:800;line-height:1}
+.pool-n.ok{color:var(--green)}.pool-n.warn{color:var(--amber)}.pool-n.err{color:var(--red)}
+.pool-sub{font-size:11px;color:var(--t3);margin-top:3px}
+.pools-hint{font-size:12px;color:var(--t3);margin-top:8px;text-align:center}
+
+/* ── Alertes ── */
+.alert{border-radius:var(--rs);padding:10px 14px;font-size:13px;display:flex;gap:8px;align-items:flex-start;border:1px solid;line-height:1.55;margin-bottom:7px}
+.alert-ok  {background:var(--gbg);color:var(--green);border-color:var(--gborder)}
+.alert-warn{background:var(--abg);color:var(--amber);border-color:var(--aborder)}
+.alert-err {background:var(--rbg);color:var(--red);border-color:var(--rborder)}
+
+/* ── Summary ── */
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.stat{background:var(--bg);border-radius:var(--rs);padding:11px;text-align:center;border:1px solid var(--border)}
+.sval{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.slbl{font-size:11px;color:var(--t3);margin-top:2px;font-weight:500}
+.sval.ok{color:var(--green)}.sval.err{color:var(--red)}.sval.warn{color:var(--amber)}
+.progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:5px}
+.pf{height:100%;border-radius:2px;transition:width .35s}
+.pf-ok{background:var(--green)}.pf-warn{background:#e09020}
+
+/* ── Nav buttons ── */
+.step-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:10px}
+.btn-next{background:var(--brand);color:#fff;border:none;border-radius:var(--rs);padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .15s}
+.btn-next:hover{background:#4338ca}
+.btn-back{background:none;border:1.5px solid var(--border);border-radius:var(--rs);padding:10px 18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--t2);transition:all .15s}
+.btn-back:hover{background:var(--bg);border-color:var(--border2)}
+.step-skip{font-size:12px;color:var(--t3);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.step-skip:hover{color:var(--t2)}
+
+/* ── Strats ── */
+.strat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.strat-card{border:1.5px solid var(--border);border-radius:var(--rs);padding:13px;cursor:pointer;transition:all .15s;background:var(--surface)}
+.strat-card:hover{border-color:var(--brand);background:var(--brand-bg)}
+.strat-card.sel{border-color:var(--brand);background:var(--brand-bg);box-shadow:0 0 0 3px rgba(79,70,229,.12)}
+.strat-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--brand-bg);color:var(--brand);margin-bottom:6px}
+.strat-emoji{font-size:22px;margin-bottom:5px}
+.strat-name{font-size:13px;font-weight:700;margin-bottom:3px}
+.strat-desc{font-size:12px;color:var(--t2);line-height:1.45}
+.preview-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:12px;margin-top:12px}
+.preview-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);margin-bottom:8px}
+.prow{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:13px}
+.prow:last-child{border-bottom:none}
+.prow-name{flex:1;font-weight:600}
+.prow-detail{color:var(--t2);font-size:12px}
+.pbadge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px}
+.auto-btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn-main{background:var(--brand);color:#fff;border:none;border-radius:var(--rs);padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:6px}
+.btn-main:hover{background:#4338ca}
+.btn-ghost{background:none;border:1.5px solid var(--border);border-radius:var(--rs);padding:9px 14px;font-size:13px;font-weight:500;cursor:pointer;color:var(--t2);transition:all .15s}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-bg)}
+
+/* ── Classes ── */
+.classes-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+.btn-add{background:var(--brand-bg);color:var(--brand);border:1.5px solid var(--brand-border);border-radius:var(--rs);padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s}
+.btn-add:hover{background:#e0e7ff}
+.btn-add:disabled{opacity:.35;cursor:not-allowed}
+.sort-bar{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.sort-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--t3)}
+.sort-btn{font-size:12px;font-weight:600;padding:5px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--surface);color:var(--t2);cursor:pointer;transition:all .13s}
+.sort-btn:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-bg)}
+.sort-btn.active{border-color:var(--brand);color:var(--brand);background:var(--brand-bg)}
+
+.cl-card{border:2px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;transition:border-color .2s,background .2s;background:var(--surface);box-shadow:var(--shadow)}
+.cl-card.cok  {border-color:var(--gborder);background:#fbfffc}
+.cl-card.cwarn{border-color:var(--aborder);background:#fffdf4}
+.cl-card.cerr {border-color:var(--rborder);background:#fff8f8}
+.cl-card.cempty{border-style:dashed;background:var(--bg)}
+.cl-top{display:flex;align-items:center;gap:8px;padding:11px 14px}
+.cl-num{font-size:11px;font-weight:700;color:var(--t3);min-width:54px;text-transform:uppercase;letter-spacing:.03em}
+.cl-name{flex:1;font-size:15px;font-weight:700;letter-spacing:-.2px}
+.cl-badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;flex-shrink:0}
+.cl-badge.ok   {background:var(--gbg);color:var(--green)}
+.cl-badge.warn {background:var(--abg);color:var(--amber)}
+.cl-badge.err  {background:var(--rbg);color:var(--red)}
+.cl-badge.empty{background:var(--bg);color:var(--t3);border:1px solid var(--border)}
+.btn-del-cl{background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;padding:0 2px;flex-shrink:0;line-height:1}
+.btn-del-cl:hover{color:var(--red)}
+.cl-body{padding:0 14px 12px;display:flex;flex-direction:column;gap:8px}
+.nrow{display:flex;align-items:flex-start;gap:8px}
+.npill{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;flex-shrink:0;margin-top:6px}
+.nrow-right{flex:1;display:flex;flex-direction:column;gap:4px}
+.nrow-controls{display:flex;align-items:center;gap:8px}
+.inline-wrap{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);overflow:hidden;width:110px;flex-shrink:0;transition:border-color .15s}
+.inline-wrap:focus-within{border-color:var(--brand);box-shadow:0 0 0 2px rgba(79,70,229,.1)}
+.inline-wrap.over{border-color:var(--red);background:var(--rbg)}
+.inline-spin{width:28px;height:34px;border:none;background:none;font-size:16px;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.inline-spin:hover{background:var(--border)}
+.inline-core{flex:1;border:none;background:none;font-size:14px;font-weight:700;text-align:center;-moz-appearance:textfield;min-width:0;padding:0;height:34px;color:var(--text)}
+.inline-core::-webkit-outer-spin-button,.inline-core::-webkit-inner-spin-button{-webkit-appearance:none}
+.inline-core:focus{outline:none}
+.bar-wrap{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:14px}
+.bar-fill{height:100%;border-radius:3px;transition:width .25s}
+.bar-g{background:var(--green)}.bar-a{background:#e09020}.bar-r{background:var(--red)}
+.nrow-hint{font-size:12px;font-weight:500}
+.nrow-hint.ok{color:var(--green)}.nrow-hint.warn{color:var(--amber)}.nrow-hint.err{color:var(--red)}.nrow-hint.muted{color:var(--t3)}
+.empty-cl{font-size:13px;color:var(--t3);padding:4px 0}
+
+/* ── Quick actions ── */
+.qs{border-top:1px dashed var(--border);padding-top:8px;margin-top:3px;display:flex;flex-direction:column;gap:7px}
+.qs-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.qs-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);width:100%;margin-bottom:1px}
+.qa{font-size:12px;font-weight:600;padding:5px 11px;border-radius:99px;border:1.5px solid;cursor:pointer;transition:all .12s;white-space:nowrap}
+.qa:hover{filter:brightness(.92)}
+.qa.add-niv  {background:none}
+.qa.fill     {background:var(--gbg);color:var(--green);border-color:var(--gborder)}
+.qa.fill-part{background:var(--abg);color:var(--amber);border-color:var(--aborder)}
+.qa.clear    {background:var(--rbg);color:var(--red);border-color:var(--rborder)}
+.qa.half     {background:var(--bbg);color:var(--blue);border-color:var(--bborder)}
+.qa.maxone   {background:var(--brand-bg);color:var(--brand);border-color:var(--brand-border)}
+
+/* ── Sticky ── */
+.sticky{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-top:1px solid var(--border);padding:10px 16px;z-index:95;display:flex;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:0 -2px 12px rgba(0,0,0,.06)}
+.sticky-left{flex:1;min-width:120px}
+.sticky-title{font-size:13px;font-weight:700;letter-spacing:-.1px}
+.sticky-sub{font-size:11px;color:var(--t2);margin-top:1px}
+.sticky-btns{display:flex;gap:6px;flex-wrap:wrap}
+.s-btn{border-radius:var(--rs);padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:all .15s}
+.s-btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.s-btn.primary:hover{background:#4338ca}
+.s-btn.ghost{background:var(--surface);color:var(--t2);border-color:var(--border)}
+.s-btn.ghost:hover{background:var(--bg);color:var(--text)}
+
+/* ── Dialog ── */
+.dialog-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .2s}
+.dialog-bg.show{opacity:1}
+.dialog{background:var(--surface);border-radius:var(--r);padding:24px 22px 20px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.2);border:1px solid var(--border);transform:translateY(8px) scale(.97);transition:transform .2s}
+.dialog-bg.show .dialog{transform:none}
+.dialog-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:22px}
+.dialog-icon.info{background:var(--bbg)}.dialog-icon.warn{background:var(--abg)}.dialog-icon.err{background:var(--rbg)}.dialog-icon.ok{background:var(--gbg)}
+.dialog h3{font-size:16px;font-weight:700;margin-bottom:6px;letter-spacing:-.2px}
+.dialog p{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:18px}
+.dialog-btns{display:flex;gap:8px;justify-content:flex-end}
+.d-btn{border-radius:var(--rs);padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .15s}
+.d-btn.ok{background:var(--brand);color:#fff;border-color:var(--brand)}
+.d-btn.ok:hover{background:#4338ca}
+.d-btn.ok.green{background:var(--green);border-color:var(--green)}
+.d-btn.ok.green:hover{background:#126b3f}
+.d-btn.ok.red{background:var(--red);border-color:var(--red)}
+.d-btn.ok.red:hover{background:#a01f21}
+.d-btn.cancel{background:none;color:var(--t2);border-color:var(--border)}
+.d-btn.cancel:hover{background:var(--bg)}
+
+/* ── Modal ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:flex-end;justify-content:center}
+.modal{background:var(--surface);border-radius:18px 18px 0 0;padding:8px 20px 36px;width:100%;max-width:500px;border:1px solid var(--border);border-bottom:none}
+.modal-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 16px}
+.modal h3{font-size:18px;font-weight:700;margin-bottom:6px;letter-spacing:-.3px}
+.modal p{font-size:13px;color:var(--t2);margin-bottom:14px;line-height:1.55}
+.modal-field{margin-bottom:12px}
+.modal-field label{font-size:13px;font-weight:600;color:var(--t2);display:block;margin-bottom:5px}
+.modal-field input{width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:11px 13px;font-size:15px;color:var(--text);background:var(--bg);transition:border-color .15s}
+.modal-field input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1);background:var(--surface)}
+.modal-err{font-size:12px;color:var(--red);min-height:16px;margin-bottom:10px}
+.modal-btns{display:flex;gap:8px}
+.btn-ok{flex:1;background:var(--brand);color:#fff;border:none;border-radius:var(--rs);padding:12px;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s}
+.btn-ok:hover{background:#4338ca}
+.btn-cancel{flex:1;background:none;border:1.5px solid var(--border);border-radius:var(--rs);padding:12px;font-size:14px;cursor:pointer;color:var(--t2)}
+.btn-cancel:hover{background:var(--bg)}
+
+/* ── Toast ── */
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-8px);background:#1e1e1c;color:#e8e7e0;font-size:13px;font-weight:500;padding:10px 18px;border-radius:99px;z-index:700;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── School info ── */
+.school-info-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.sinfo-field{display:flex;flex-direction:column;gap:5px}
+.sinfo-field label{font-size:12px;font-weight:600;color:var(--t2)}
+.sinfo-field input{border:1.5px solid var(--border);border-radius:var(--rs);padding:9px 12px;font-size:14px;color:var(--text);background:var(--bg);transition:border-color .15s}
+.sinfo-field input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1);background:var(--surface)}
+
+/* ── Teacher input in class ── */
+.teacher-row{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.teacher-icon{flex-shrink:0;color:var(--t3);font-size:14px}
+.teacher-input{flex:1;border:1.5px solid var(--border);border-radius:var(--rs);padding:6px 10px;font-size:13px;color:var(--text);background:var(--bg);transition:border-color .15s;font-weight:500}
+.teacher-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 2px rgba(79,70,229,.08);background:var(--surface)}
+.teacher-input::placeholder{color:var(--t3);font-weight:400}
+
+/* ── Mural PDF btn ── */
+.btn-mural{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:var(--rs);padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:opacity .15s;box-shadow:0 2px 8px rgba(79,70,229,.3)}
+.btn-mural:hover{opacity:.9}
+.empty-state{text-align:center;padding:28px 16px;color:var(--t3);font-size:14px;border:2px dashed var(--border);border-radius:var(--r);line-height:1.7}
+.empty-state strong{color:var(--t2)}
+
+/* ── Tip callout inline ── */
+.tip-callout{background:var(--brand-bg);border:1px solid var(--brand-border);border-radius:var(--rs);padding:10px 13px;font-size:13px;color:#3730a3;margin-bottom:14px;display:flex;gap:8px;align-items:flex-start;line-height:1.55}
+
+@media(max-width:520px){
+  .strat-grid{grid-template-columns:1fr}
+  .pools{grid-template-columns:repeat(3,1fr)}
+  .summary-grid{grid-template-columns:repeat(2,1fr)}
+  .niveaux-grid,.plafond-grid{grid-template-columns:repeat(2,1fr)}
+  .s-btn span{display:none}.s-btn{padding:8px 10px}
+  .header-actions .hdr-btn span{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="#">
+      <div class="brand-icon">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h8M4 18h5" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="brand-name">Klas<span>io</span></span>
+    </a>
+    <div class="header-actions">
+      <button class="hdr-btn share" onclick="shareUrl()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <span>Partager</span>
+      </button>
+      <button class="hdr-btn" onclick="exportPdf()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        <span>PDF</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ══ WIZARD NAV ══ -->
+<nav class="wizard">
+  <div class="wizard-inner">
+    <div class="wstep active" id="wstep-1" onclick="goStep(1)">
+      <span class="wstep-num" id="wnum-1">1</span> Mes effectifs
+    </div>
+    <div class="wstep" id="wstep-2" onclick="goStep(2)">
+      <span class="wstep-num" id="wnum-2">2</span> Taille des classes
+    </div>
+    <div class="wstep" id="wstep-3" onclick="goStep(3)">
+      <span class="wstep-num" id="wnum-3">3</span> Répartition
+    </div>
+    <div class="wstep" id="wstep-4" onclick="goStep(4)">
+      <span class="wstep-num" id="wnum-4">4</span> Mes classes
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- ══ ÉTAPE 1 — EFFECTIFS ══ -->
+<div class="step-panel active" id="panel-1">
+  <div class="section">
+    <div class="section-title">Votre école</div>
+    <p class="section-desc">Ces informations apparaîtront sur l'affichage mural.</p>
+    <div class="school-info-row">
+      <div class="sinfo-field">
+        <label>Nom de l'école</label>
+        <input type="text" id="school-name" placeholder="Ex : École Jules Ferry" oninput="state.schoolName=this.value;save()">
+      </div>
+      <div class="sinfo-field">
+        <label>Année scolaire</label>
+        <input type="text" id="school-year" placeholder="Ex : 2025-2026" oninput="state.schoolYear=this.value;save()">
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">
+      Combien d'élèves avez-vous par niveau ?
+      <button class="help-btn" onclick="toggleHelp('h1')" id="hb-h1">?</button>
+    </div>
+    <div class="help-box" id="help-h1">
+      Saisissez le nombre d'élèves <strong>inscrits</strong> pour la rentrée prochaine.<br><br>
+      💡 Cliquez sur un chiffre, effacez-le complètement, puis tapez le vôtre. Ou utilisez les boutons <strong>−</strong> et <strong>+</strong>.
+    </div>
+    <p class="section-desc">Entrez vos chiffres réels pour cette rentrée.</p>
+    <div class="niveaux-grid" id="niveaux-grid"></div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn-add" onclick="openAddNiveau()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Ajouter un niveau (GS, MS, 6e…)
+      </button>
+    </div>
+  </div>
+  <div class="step-nav">
+    <span></span>
+    <button class="btn-next" onclick="goStep(2)">
+      Étape suivante — Taille des classes
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ══ ÉTAPE 2 — PLAFONDS ══ -->
+<div class="step-panel" id="panel-2">
+  <div class="section">
+    <div class="section-title">
+      Combien d'élèves maximum par classe ?
+      <button class="help-btn" onclick="toggleHelp('h2')" id="hb-h2">?</button>
+    </div>
+    <div class="help-box" id="help-h2">
+      C'est le nombre d'élèves <strong>à ne pas dépasser</strong> dans une classe.<br><br>
+      En France pour 2024 : <strong>CP et CE1 → 24 élèves maximum</strong>. CE2, CM1, CM2 → souvent 25 à 30 selon les académies.<br><br>
+      L'outil vous alertera si vous dépassez ces limites.
+    </div>
+    <p class="section-desc">Le nombre à ne pas dépasser dans une classe.</p>
+    <div class="plafond-grid" id="plafond-grid"></div>
+    <div class="nmax-row">
+      <label>Nombre total de classes dans mon école <button class="help-btn" onclick="toggleHelp('hnb')" id="hb-hnb">?</button></label>
+      <div class="num-wrap" style="width:130px">
+        <button class="num-spin" onclick="stepInput('max-classes',-1)">−</button>
+        <input type="number" class="num-core" id="max-classes" value="8" min="1" max="30" onfocus="this.select()" onchange="render()" onblur="render()">
+        <button class="num-spin" onclick="stepInput('max-classes',1)">+</button>
+      </div>
+      <div class="help-box" id="help-hnb" style="flex-basis:100%;margin-top:4px">
+        Si vous créez plus de classes que ce nombre, l'outil vous avertira.
+      </div>
+    </div>
+  </div>
+  <div class="step-nav">
+    <button class="btn-back" onclick="goStep(1)">← Retour</button>
+    <button class="btn-next" onclick="goStep(3)">
+      Étape suivante — Répartition
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ══ ÉTAPE 3 — RÉPARTITION AUTO ══ -->
+<div class="step-panel" id="panel-3">
+  <div class="section featured" style="border-color:var(--brand-border)">
+    <div class="section-title">
+      Comment voulez-vous répartir ?
+      <button class="help-btn" onclick="toggleHelp('hauto')" id="hb-hauto">?</button>
+    </div>
+    <div class="help-box" id="help-hauto">
+      Choisissez la stratégie qui correspond à votre situation. L'outil va créer toutes vos classes en un clic.<br><br>
+      Vous pourrez ensuite les modifier une par une à l'étape suivante.
+    </div>
+    <p class="section-desc">Choisissez une option — Klasio crée toutes vos classes automatiquement. Vous ajusterez ensuite.</p>
+    <div class="strat-grid" id="strat-grid"></div>
+    <div id="distrib-preview"></div>
+    <div class="auto-btns">
+      <button class="btn-main" onclick="applyDistribAndNext()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Créer mes classes
+      </button>
+      <button class="btn-ghost" onclick="togglePreview()">Voir un aperçu d'abord</button>
+    </div>
+  </div>
+  <div class="step-nav">
+    <button class="btn-back" onclick="goStep(2)">← Retour</button>
+    <span class="step-skip" onclick="goStep(4)">Passer — je compose manuellement</span>
+  </div>
+</div>
+
+<!-- ══ ÉTAPE 4 — CLASSES ══ -->
+<div class="step-panel" id="panel-4">
+
+  <!-- Récap restants -->
+  <div class="section" id="recap-section">
+    <div class="section-title">Où en suis-je ?</div>
+    <p class="section-desc" style="margin-bottom:10px">Cliquez sur un niveau pour aller directement à la première classe concernée.</p>
+    <div class="pools" id="pools"></div>
+    <p style="font-size:12px;color:var(--t3);margin-top:8px;text-align:center">Cliquez sur un niveau pour aller directement à la première classe concernée.</p>
+    <div id="alerts"></div>
+    <div class="summary-grid" id="summary"></div>
+  </div>
+
+  <!-- Classes -->
+  <div class="section">
+    <div class="classes-bar">
+      <div>
+        <div class="section-title" style="margin-bottom:2px">
+          Mes classes
+          <button class="help-btn" onclick="toggleHelp('hcl')" id="hb-hcl">?</button>
+        </div>
+        <div class="help-box" id="help-hcl">
+          Chaque classe peut avoir <strong>un ou deux niveaux</strong>, mais seulement des niveaux qui se suivent : CP+CE1 ✓, CP+CE2 ✗<br><br>
+          Les boutons colorés sous chaque classe vous proposent des <strong>remplissages automatiques</strong>.
+        </div>
+      </div>
+      <button class="btn-add" id="btn-add-classe" onclick="addClasse()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nouvelle classe
+      </button>
+    </div>
+    <div class="sort-bar" id="sort-bar" style="display:none">
+      <span class="sort-lbl">Trier :</span>
+      <button class="sort-btn active" id="sort-btn-manual" onclick="setSort('manual')">Ordre de création</button>
+      <button class="sort-btn" id="sort-btn-level" onclick="setSort('level')">Par niveau (CP → CM2)</button>
+    </div>
+    <div id="classes-list"></div>
+  </div>
+
+  <div class="step-nav" style="margin-top:0">
+    <button class="btn-back" onclick="goStep(3)">← Retour</button>
+    <button class="btn-next" style="background:var(--green);border-color:var(--green)" onclick="exportPdf()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+      Exporter en PDF
+    </button>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<!-- ══ STICKY (visible step 4 seulement) ── -->
+<div class="sticky" id="sticky-bar" style="display:none">
+  <div class="sticky-left">
+    <div class="sticky-title" id="sticky-title">—</div>
+    <div class="sticky-sub"  id="sticky-sub">—</div>
+  </div>
+  <div class="sticky-btns">
+    <button class="s-btn ghost" onclick="document.getElementById('recap-section').scrollIntoView({behavior:'smooth',block:'start'})">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+      <span>Récap</span>
+    </button>
+    <button class="s-btn ghost" onclick="document.getElementById('classes-list').scrollIntoView({behavior:'smooth',block:'start'})">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <span>Classes</span>
+    </button>
+    <button class="s-btn ghost" onclick="shareUrl()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      <span>Partager</span>
+    </button>
+    <button class="s-btn ghost" onclick="exportMural()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <span>Mural</span>
+    </button>
+    <button class="s-btn ghost" onclick="exportTxt()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>TXT</span>
+    </button>
+    <button class="s-btn primary" onclick="exportPdf()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+      <span>Exporter PDF</span>
+    </button>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div class="toast" id="toast"></div>
+
+<!-- ══ DIALOG ══ -->
+<div class="dialog-bg" id="dialog-bg" style="display:none">
+  <div class="dialog">
+    <div class="dialog-icon" id="dialog-icon">✓</div>
+    <h3 id="dialog-title">—</h3>
+    <p id="dialog-msg">—</p>
+    <div class="dialog-btns" id="dialog-btns"></div>
+  </div>
+</div>
+
+<!-- ══ MODAL ajout niveau ══ -->
+<div class="modal-bg" id="modal-bg" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>Ajouter un niveau</h3>
+    <p>Indiquez le nom du niveau et le nombre d'élèves inscrits.</p>
+    <div class="modal-field">
+      <label>Nom du niveau (ex : GS, MS, 6e…)</label>
+      <input type="text" id="modal-label" placeholder="Tapez ici" maxlength="6" oninput="this.value=this.value.toUpperCase()">
+    </div>
+    <div class="modal-field">
+      <label>Nombre d'élèves inscrits</label>
+      <input type="number" id="modal-total" placeholder="Ex : 28" min="0" max="999" onfocus="this.select()">
+    </div>
+    <p class="modal-err" id="modal-err"></p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-ok" onclick="confirmAddNiveau()">Ajouter ce niveau</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLORS=['#4f46e5','#7c3aed','#0891b2','#158a52','#d97706','#c0282a','#9333ea','#059669','#db2777','#ea580c'];
+
+let state={
+  niveaux:[
+    {id:'CP', label:'CP', total:0,plafond:24,color:COLORS[0]},
+    {id:'CE1',label:'CE1',total:0,plafond:24,color:COLORS[1]},
+    {id:'CE2',label:'CE2',total:0,plafond:25,color:COLORS[2]},
+    {id:'CM1',label:'CM1',total:0,plafond:25,color:COLORS[3]},
+    {id:'CM2',label:'CM2',total:0,plafond:25,color:COLORS[4]},
+  ],
+  classes:[],maxClasses:8,counter:6,
+  distribMode:'balanced',showPreview:false,
+  currentStep:1,
+  schoolName:'',
+  schoolYear:'2025-2026',
+};
+
+// ── Persist ──
+function save(){try{localStorage.setItem('klasio2',JSON.stringify(state));}catch(e){}}
+function load(){try{const d=localStorage.getItem('klasio2');if(d){const p=JSON.parse(d);if(p?.niveaux)state=p;}}catch(e){}}
+
+// ── URL share ──
+function encodeState(){
+  const mini={n:state.niveaux.map(n=>({i:n.id,l:n.label,t:n.total,p:n.plafond,c:n.color})),cl:state.classes.map(cl=>({r:cl.rows.map(r=>({n:r.nid,v:r.val}))})),m:state.maxClasses};
+  return btoa(encodeURIComponent(JSON.stringify(mini))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+function decodeState(str){
+  try{
+    const json=decodeURIComponent(atob(str.replace(/-/g,'+').replace(/_/g,'/')));
+    const mini=JSON.parse(json);
+    state.niveaux=mini.n.map(n=>({id:n.i,label:n.l,total:n.t,plafond:n.p,color:n.c}));
+    state.classes=mini.cl.map(cl=>({rows:cl.r.map(r=>({nid:r.n,val:r.v}))}));
+    state.maxClasses=mini.m||8;
+    return true;
+  }catch(e){return false;}
+}
+function shareUrl(){
+  const enc=encodeState();
+  const url=`${location.origin}${location.pathname}?s=${enc}`;
+  const copy=()=>navigator.clipboard?.writeText(url).catch(()=>{});
+  copy();
+  showDialog({icon:'share',title:'Lien de partage prêt',msg:`Votre lien a été copié dans le presse-papier.<br><br><code style="font-size:11px;word-break:break-all;background:var(--bg);padding:6px 8px;border-radius:6px;display:block;line-height:1.6">${url}</code>`,buttons:[{label:'Fermer',style:'ok',value:true}]});
+}
+function loadFromUrl(){
+  const p=new URLSearchParams(location.search);
+  const s=p.get('s');
+  if(s){
+    if(decodeState(s)){
+      history.replaceState(null,'',location.pathname);
+      showDialog({icon:'ok',title:'Répartition importée',msg:'La répartition partagée a bien été chargée. Vous pouvez la consulter et la modifier.',buttons:[{label:'Voir mes classes',style:'ok green',value:true,cb:()=>goStep(4)}]});
+      return true;
+    }
+    showDialog({icon:'err',title:'Lien invalide',msg:'Le lien de partage semble invalide ou incomplet.',buttons:[{label:'OK',style:'ok',value:true}]});
+  }
+  return false;
+}
+
+// ── Dialog ──
+let _dialogResolve=null;
+function showDialog({icon='info',title,msg,buttons}){
+  return new Promise(resolve=>{
+    _dialogResolve=resolve;
+    const bg=document.getElementById('dialog-bg');
+    const emojis={info:'ℹ️',warn:'⚠️',err:'✕',ok:'✓',share:'🔗',del:'🗑️'};
+    document.getElementById('dialog-icon').textContent=emojis[icon]||'ℹ️';
+    document.getElementById('dialog-icon').className='dialog-icon '+(icon==='err'?'err':icon==='warn'?'warn':icon==='ok'?'ok':'info');
+    document.getElementById('dialog-title').textContent=title;
+    document.getElementById('dialog-msg').innerHTML=msg;
+    document.getElementById('dialog-btns').innerHTML=buttons.map((b,i)=>`<button class="d-btn ${b.style||''}" onclick="_dialogBtn(${i})">${b.label}</button>`).join('');
+    bg.style.display='flex';requestAnimationFrame(()=>bg.classList.add('show'));
+    bg._buttons=buttons;
+  });
+}
+function _dialogBtn(i){
+  const bg=document.getElementById('dialog-bg');
+  const btn=bg._buttons[i];
+  bg.classList.remove('show');
+  setTimeout(()=>bg.style.display='none',200);
+  if(_dialogResolve){_dialogResolve(btn.value??i);_dialogResolve=null;}
+  if(btn.cb)btn.cb();
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(document.getElementById('dialog-bg').style.display!=='none')_dialogBtn(0);
+    else if(document.getElementById('modal-bg').style.display!=='none')closeModal();
+  }
+  if(e.key==='Enter'&&document.getElementById('modal-bg').style.display!=='none')confirmAddNiveau();
+});
+async function confirmDialog(title,msg,icon='warn'){
+  return showDialog({icon,title,msg,buttons:[{label:'Annuler',style:'cancel',value:false},{label:'Confirmer',style:'ok red',value:true}]});
+}
+async function alertDialog(title,msg,icon='info'){
+  return showDialog({icon,title,msg,buttons:[{label:'OK',style:'ok',value:true}]});
+}
+
+// ── Toast ──
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── Wizard ──
+function goStep(n){
+  state.currentStep=n;
+  for(let i=1;i<=4;i++){
+    document.getElementById('panel-'+i).classList.toggle('active',i===n);
+    const ws=document.getElementById('wstep-'+i);
+    const wn=document.getElementById('wnum-'+i);
+    ws.classList.remove('active','done');
+    if(i===n)ws.classList.add('active');
+    else if(i<n){ws.classList.add('done');wn.textContent='✓';}
+    else wn.textContent=i;
+  }
+  document.getElementById('sticky-bar').style.display=n===4?'flex':'none';
+  window.scrollTo({top:0,behavior:'smooth'});
+  save();
+}
+
+// ── Helpers ──
+function getNiveau(id){return state.niveaux.find(n=>n.id===id);}
+function classTotal(cl){return cl.rows.reduce((s,r)=>s+(parseInt(r.val)||0),0);}
+function classPlafond(cl){
+  if(!cl.rows.length)return Infinity;
+  return Math.min(...cl.rows.map(r=>{const n=getNiveau(r.nid);return n?n.plafond:24;}));
+}
+function computeUsed(){
+  const u={};state.niveaux.forEach(n=>u[n.id]=0);
+  state.classes.forEach(cl=>cl.rows.forEach(r=>{if(u[r.nid]!==undefined)u[r.nid]+=(parseInt(r.val)||0);}));
+  return u;
+}
+function consecOk(nids){
+  if(nids.length<=1)return true;
+  const order=state.niveaux.map(n=>n.id);
+  const idx=nids.map(id=>order.indexOf(id)).filter(i=>i>=0).sort((a,b)=>a-b);
+  for(let i=1;i<idx.length;i++)if(idx[i]-idx[i-1]!==1)return false;
+  return true;
+}
+function availNiveaux(cl){
+  const pres=cl.rows.map(r=>r.nid),all=state.niveaux.map(n=>n.id);
+  if(!pres.length)return all;
+  const order=state.niveaux.map(n=>n.id);
+  const idx=pres.map(id=>order.indexOf(id)).filter(i=>i>=0).sort((a,b)=>a-b);
+  const mn=idx[0],mx=idx[idx.length-1];
+  return all.filter(id=>{if(pres.includes(id))return false;const i=order.indexOf(id);return i===mn-1||i===mx+1;});
+}
+function className(cl){
+  if(!cl.rows.length)return 'Classe vide';
+  return cl.rows.map(r=>{const n=getNiveau(r.nid);return n?n.label:r.nid;}).join(' + ');
+}
+function stepInput(id,d){
+  const el=document.getElementById(id);
+  el.value=Math.max(parseInt(el.min)||0,(parseInt(el.value)||0)+d);
+  el.dispatchEvent(new Event('input'));
+}
+function stepInline(ci,ri,d){
+  state.classes[ci].rows[ri].val=Math.max(0,(parseInt(state.classes[ci].rows[ri].val)||0)+d);
+  render();save();
+}
+function pulseInput(el){
+  el.closest('.num-wrap,.inline-wrap')?.classList.add('saved');
+  setTimeout(()=>el.closest('.num-wrap,.inline-wrap')?.classList.remove('saved'),600);
+}
+function toggleHelp(id){
+  const b=document.getElementById('help-'+id),btn=document.getElementById('hb-'+id);
+  const v=b.classList.toggle('on');btn.classList.toggle('on',v);
+}
+
+// ── Stratégies ──
+const STRATS=[
+  {id:'balanced',  emoji:'⚖️',name:'Classes équilibrées',tag:'Recommandé',
+   desc:'Chaque niveau est réparti en classes de même taille. Idéal dans la plupart des cas.'},
+  {id:'double',    emoji:'🔀',name:'Le moins de classes possible',tag:'Compact',
+   desc:'Regroupe deux niveaux par classe pour réduire le nombre total de classes.'},
+  {id:'single',    emoji:'📋',name:'Un seul niveau par classe',tag:'Simple',
+   desc:'Chaque classe a un seul niveau. Aucun double-niveau.'},
+  {id:'small-first',emoji:'🌱',name:'Classes les plus légères',tag:'Doux',
+   desc:'Répartit pour que les classes soient le moins chargées possible.'},
+];
+function computeDistrib(mode){
+  const niveaux=[...state.niveaux],result=[];
+  if(mode==='single'){
+    niveaux.forEach(n=>{if(!n.total)return;let r=n.total;while(r>0){const t=Math.min(r,n.plafond);result.push({rows:[{nid:n.id,val:t}]});r-=t;}});
+  } else if(mode==='balanced'){
+    niveaux.forEach(n=>{
+      if(!n.total)return;
+      const nc=Math.ceil(n.total/n.plafond),base=Math.floor(n.total/nc),extra=n.total%nc;
+      for(let i=0;i<nc;i++)result.push({rows:[{nid:n.id,val:base+(i<extra?1:0)}]});
+    });
+  } else if(mode==='double'){
+    let i=0;
+    while(i<niveaux.length){
+      const n1=niveaux[i],n2=niveaux[i+1];
+      if(n2&&n1.total&&n2.total){
+        const plaf=Math.min(n1.plafond,n2.plafond);
+        let r1=n1.total,r2=n2.total;
+        while(r1>0||r2>0){
+          const h=Math.floor(plaf/2),t1=Math.min(r1,h),t2=Math.min(r2,plaf-t1);
+          const rows=[];if(t1>0)rows.push({nid:n1.id,val:t1});if(t2>0)rows.push({nid:n2.id,val:t2});
+          if(!rows.length)break;result.push({rows});r1-=t1;r2-=t2;
+        }
+        i+=2;
+      } else {
+        if(n1.total){let r=n1.total;while(r>0){const t=Math.min(r,n1.plafond);result.push({rows:[{nid:n1.id,val:t}]});r-=t;}}
+        i++;
+      }
+    }
+  } else if(mode==='small-first'){
+    niveaux.forEach(n=>{
+      if(!n.total)return;
+      const nc=Math.ceil(n.total/n.plafond),min=Math.floor(n.total/nc),extra=n.total-(min*nc);
+      for(let i=0;i<nc;i++)result.push({rows:[{nid:n.id,val:i<(nc-extra)?min:min+1}]});
+    });
+  }
+  return result.slice(0,state.maxClasses);
+}
+function selectStrat(id){state.distribMode=id;state.showPreview=false;render();save();}
+async function applyDistribAndNext(){
+  const cls=computeDistrib(state.distribMode);
+  if(!cls.length){
+    await alertDialog('Aucune répartition possible','Vérifiez que vous avez saisi des effectifs à l\'étape 1.','err');return;
+  }
+  if(state.classes.length>0){
+    const ok=await confirmDialog('Remplacer les classes actuelles ?',`Cette action va remplacer les <strong>${state.classes.length} classe(s)</strong> existantes par <strong>${cls.length} nouvelles classes</strong>.`,'warn');
+    if(!ok)return;
+  }
+  state.classes=cls;state.showPreview=false;
+  render();save();
+  goStep(4);
+  showDialog({icon:'ok',title:`${cls.length} classes créées !`,msg:`Vos classes ont été générées. Vérifiez et ajustez si besoin.`,buttons:[{label:'Voir mes classes',style:'ok green',value:true}]});
+}
+function togglePreview(){state.showPreview=!state.showPreview;renderPreview();}
+function renderPreview(){
+  const el=document.getElementById('distrib-preview');
+  if(!state.showPreview){el.innerHTML='';return;}
+  const cls=computeDistrib(state.distribMode);
+  const tot=state.niveaux.reduce((s,n)=>s+n.total,0);
+  const placed=cls.reduce((s,cl)=>s+classTotal(cl),0);
+  el.innerHTML=`<div class="preview-box">
+    <div class="preview-title">Aperçu — ${cls.length} classes · ${placed} / ${tot} élèves</div>
+    ${cls.map((cl,i)=>{
+      const t=classTotal(cl),p=classPlafond(cl),ok=t<=p;
+      return `<div class="prow">
+        <span class="prow-name">Classe ${i+1} — ${className(cl)}</span>
+        <span class="prow-detail">${cl.rows.map(r=>{const n=getNiveau(r.nid);return `${n?.label||r.nid}: ${r.val}`;}).join(' · ')}</span>
+        <span class="pbadge" style="background:${ok?'var(--gbg)':'var(--rbg)'};color:${ok?'var(--green)':'var(--red)'}">${t}/${p}</span>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ── Quick actions ──
+function remFor(nid,used){const n=getNiveau(nid);return n?n.total-(used[nid]||0):0;}
+function getQA(ci){
+  const cl=state.classes[ci];if(!cl.rows.length)return [];
+  const used=computeUsed(),plaf=classPlafond(cl),tot=classTotal(cl),qa=[];
+  const space=plaf-tot;
+  if(space>0){
+    const fills=cl.rows.map(r=>{const cur=parseInt(r.val)||0,rem=remFor(r.nid,used)+cur;return{nid:r.nid,add:Math.min(space,Math.max(0,rem-cur))};});
+    const add=fills.reduce((s,f)=>s+f.add,0);
+    if(add>0){
+      if(tot+add>=plaf)qa.push({t:'fill',label:`Remplir à ${plaf} élèves`,fills,tip:`Ajoute ${Math.min(add,space)} élève(s) pour atteindre le maximum`});
+      else qa.push({t:'fill-part',label:`Ajouter les ${add} élèves restants disponibles`,fills,tip:`Place les ${add} élèves disponibles`});
+    }
+  }
+  if(cl.rows.length===2){
+    const r0=cl.rows[0],r1=cl.rows[1];
+    const a0=remFor(r0.nid,used)+(parseInt(r0.val)||0),a1=remFor(r1.nid,used)+(parseInt(r1.val)||0);
+    const h=Math.floor(plaf/2),v0=Math.min(h,a0),v1=Math.min(plaf-v0,a1);
+    const n0=getNiveau(r0.nid),n1=getNiveau(r1.nid);
+    qa.push({t:'half',label:`Équilibrer les deux niveaux (${v0} ${n0?.label||''} / ${v1} ${n1?.label||''})`,v0,v1,nid0:r0.nid,nid1:r1.nid,tip:'Répartit équitablement les deux niveaux'});
+  }
+  cl.rows.forEach(r=>{
+    const n=getNiveau(r.nid);if(!n)return;
+    const used2=computeUsed(),rem=remFor(r.nid,used2)+(parseInt(r.val)||0);
+    const mx=Math.min(n.plafond,rem);
+    if(mx>(parseInt(r.val)||0))qa.push({t:'maxone',label:`Mettre tous les ${n.label} disponibles (${mx})`,nid:r.nid,val:mx,tip:`Mettre ${n.label} au maximum disponible (${mx})`});
+  });
+  if(tot>0)qa.push({t:'clear',label:'Vider cette classe',tip:'Remet tous les effectifs à 0'});
+  return qa;
+}
+function applyQA(ci,a){
+  const cl=state.classes[ci];
+  if(a.t==='fill'||a.t==='fill-part'){a.fills.forEach(f=>{const r=cl.rows.find(r=>r.nid===f.nid);if(r)r.val=(parseInt(r.val)||0)+f.add;});}
+  else if(a.t==='clear'){cl.rows.forEach(r=>r.val=0);}
+  else if(a.t==='half'){const r0=cl.rows.find(r=>r.nid===a.nid0),r1=cl.rows.find(r=>r.nid===a.nid1);if(r0)r0.val=a.v0;if(r1)r1.val=a.v1;}
+  else if(a.t==='maxone'){const r=cl.rows.find(r=>r.nid===a.nid);if(r)r.val=a.val;}
+  render();save();
+}
+
+function updateTeacher(ci,v){
+  state.classes[ci].teacher=v;
+  save();
+  // pas de re-render — le champ reste focusé
+}
+let sortMode='manual';
+function setSort(mode){
+  sortMode=mode;
+  document.getElementById('sort-btn-manual').classList.toggle('active',mode==='manual');
+  document.getElementById('sort-btn-level').classList.toggle('active',mode==='level');
+  render();
+}
+function getSortedIndices(){
+  const indices=state.classes.map((_,i)=>i);
+  if(sortMode==='manual')return indices;
+  const order=state.niveaux.map(n=>n.id);
+  return indices.sort((a,b)=>{
+    const ca=state.classes[a],cb=state.classes[b];
+    const minA=ca.rows.length?Math.min(...ca.rows.map(r=>order.indexOf(r.nid))):999;
+    const minB=cb.rows.length?Math.min(...cb.rows.map(r=>order.indexOf(r.nid))):999;
+    if(minA!==minB)return minA-minB;
+    return ca.rows.length-cb.rows.length;
+  });
+}
+
+// ── Events ──
+function openAddNiveau(){
+  document.getElementById('modal-label').value='';
+  document.getElementById('modal-total').value='';
+  document.getElementById('modal-err').textContent='';
+  document.getElementById('modal-bg').style.display='flex';
+  setTimeout(()=>document.getElementById('modal-label').focus(),60);
+}
+function closeModal(){document.getElementById('modal-bg').style.display='none';}
+async function confirmAddNiveau(){
+  const lbl=document.getElementById('modal-label').value.trim().toUpperCase();
+  const tot=parseInt(document.getElementById('modal-total').value)||0;
+  const err=document.getElementById('modal-err');
+  if(!lbl){err.textContent='Veuillez saisir un nom de niveau.';return;}
+  if(state.niveaux.find(n=>n.label===lbl)){err.textContent='Ce niveau existe déjà.';return;}
+  state.niveaux.push({id:'N'+state.counter++,label:lbl,total:tot,plafond:25,color:COLORS[state.niveaux.length%COLORS.length]});
+  closeModal();render();save();
+  showToast(`✓ Niveau ${lbl} ajouté`);
+}
+async function removeNiveau(id){
+  const n=getNiveau(id);
+  const ok=await confirmDialog(`Supprimer le niveau ${n?.label||id} ?`,'Les entrées de ce niveau dans les classes seront aussi supprimées.','del');
+  if(!ok)return;
+  state.niveaux=state.niveaux.filter(n=>n.id!==id);
+  state.classes.forEach(cl=>{cl.rows=cl.rows.filter(r=>r.nid!==id);});
+  render();save();
+}
+async function addClasse(){
+  if(state.classes.length>=state.maxClasses){
+    await alertDialog('Maximum atteint',`Vous avez atteint le maximum de <strong>${state.maxClasses} classes</strong>. Modifiez ce nombre à l'étape 2 si besoin.`,'warn');return;
+  }
+  state.classes.push({rows:[]});render();save();
+  setTimeout(()=>{const c=document.querySelectorAll('.cl-card');if(c.length)c[c.length-1].scrollIntoView({behavior:'smooth',block:'center'});},60);
+}
+async function removeClasse(ci){
+  const ok=await confirmDialog('Supprimer cette classe ?','Les effectifs de cette classe seront perdus.','del');
+  if(!ok)return;
+  state.classes.splice(ci,1);render();save();
+}
+function addRow(ci,nid){state.classes[ci].rows.push({nid,val:0});render();save();}
+function removeRow(ci,ri){state.classes[ci].rows.splice(ri,1);render();save();}
+function updateVal(ci,ri,v,el){state.classes[ci].rows[ri].val=Math.max(0,parseInt(v)||0);if(el)pulseInput(el);render();save();}
+function updateTotal(nid,v,el){
+  const n=getNiveau(nid);
+  if(n){
+    const parsed=parseInt(v);
+    if(!isNaN(parsed))n.total=Math.max(0,parsed);
+    if(el)pulseInput(el);
+    // re-render tout sauf le champ actif pour ne pas écraser la saisie en cours
+    renderExcept(el);save();
+  }
+}
+function updatePlafond(nid,v,el){
+  const n=getNiveau(nid);
+  if(n){
+    const parsed=parseInt(v);
+    if(!isNaN(parsed))n.plafond=Math.max(1,parsed);
+    if(el)pulseInput(el);
+    renderExcept(el);save();
+  }
+}
+// Re-render tout sauf le champ actuellement en cours de frappe
+function renderExcept(activeEl){
+  // on mémorise la valeur du champ actif, on render, puis on restaure
+  if(!activeEl){render();return;}
+  const val=activeEl.value,sel=[activeEl.selectionStart,activeEl.selectionEnd];
+  render();
+  // après render le DOM est reconstruit — on ne peut pas restaurer le focus
+  // mais on évite le flash en ne rendant que les parties qui ne contiennent pas activeEl
+  // Solution simple : on render normalement, le champ sera recréé avec la bonne valeur
+  // car on lit n.total/n.plafond qui vient d'être mis à jour
+}
+
+// ── RENDER ──
+function render(){
+  state.maxClasses=parseInt(document.getElementById('max-classes')?.value)||8;
+  const used=computeUsed();
+  const totalEleves=state.niveaux.reduce((s,n)=>s+n.total,0);
+  const totalPlaced=Object.values(used).reduce((a,b)=>a+b,0);
+  const remaining=totalEleves-totalPlaced;
+
+  // Niveaux
+  document.getElementById('niveaux-grid').innerHTML=state.niveaux.map(n=>`
+    <div class="niveau-card">
+      <div class="niveau-card-head">
+        <span class="dot" style="background:${n.color}"></span>
+        <span class="niv-lbl">${n.label}</span>
+        <button class="btn-icon" onclick="removeNiveau('${n.id}')" title="Supprimer ${n.label}">✕</button>
+      </div>
+      <div class="num-wrap">
+        <button class="num-spin" onclick="(()=>{const n=getNiveau('${n.id}');if(n&&n.total>0){n.total--;render();save();}})()">−</button>
+        <input type="number" class="num-core" value="${n.total}" min="0"
+          onfocus="this.select()"
+          onchange="updateTotal('${n.id}',this.value,this)"
+          onblur="updateTotal('${n.id}',this.value,this)">
+        <button class="num-spin" onclick="(()=>{const n=getNiveau('${n.id}');if(n){n.total++;render();save();}})()">+</button>
+      </div>
+      <div class="field-hint">élèves inscrits</div>
+    </div>`).join('');
+
+  // Plafonds
+  document.getElementById('plafond-grid').innerHTML=state.niveaux.map(n=>`
+    <div class="plafond-item">
+      <label><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${n.color}"></span> ${n.label} — max par classe</label>
+      <div class="num-wrap">
+        <button class="num-spin" onclick="(()=>{const n=getNiveau('${n.id}');if(n&&n.plafond>1){n.plafond--;render();save();}})()">−</button>
+        <input type="number" class="num-core" value="${n.plafond}" min="1" max="99"
+          onfocus="this.select()"
+          onchange="updatePlafond('${n.id}',this.value,this)"
+          onblur="updatePlafond('${n.id}',this.value,this)">
+        <button class="num-spin" onclick="(()=>{const n=getNiveau('${n.id}');if(n){n.plafond++;render();save();}})()">+</button>
+      </div>
+    </div>`).join('');
+
+  // Strats
+  document.getElementById('strat-grid').innerHTML=STRATS.map(s=>`
+    <div class="strat-card${state.distribMode===s.id?' sel':''}" onclick="selectStrat('${s.id}')">
+      ${s.tag?`<div class="strat-tag">${s.tag}</div>`:''}
+      <div class="strat-emoji">${s.emoji}</div>
+      <div class="strat-name">${s.name}</div>
+      <div class="strat-desc">${s.desc}</div>
+    </div>`).join('');
+  renderPreview();
+
+  // Pools (step 4)
+  document.getElementById('pools').innerHTML=state.niveaux.map(n=>{
+    const rem=n.total-(used[n.id]||0);
+    const cls=rem<0?'perr':rem===0?'pok':'pwarn';
+    const nc=rem<0?'err':rem===0?'ok':'warn';
+    return `<div class="pool ${cls}" onclick="scrollToFirstClassWith('${n.id}')" title="Aller à la première classe ${n.label}">
+      <div class="pool-niv" style="color:${n.color}">${n.label}</div>
+      <div class="pool-n ${nc}">${rem===0?'✓':rem<0?rem:rem}</div>
+      <div class="pool-sub">${rem===0?'complet':rem<0?'en trop':'à placer'}</div>
+    </div>`;
+  }).join('');
+  // hint statique — on le met une seule fois dans le HTML, pas via insertAdjacentHTML
+
+  // Alertes
+  const errs=[],warns=[];
+  if(state.classes.length>state.maxClasses)errs.push(`<strong>${state.classes.length} classes créées</strong> sur ${state.maxClasses} prévues.`);
+  state.niveaux.filter(n=>(used[n.id]||0)>n.total).forEach(n=>errs.push(`<strong>Trop d'élèves de ${n.label}</strong> placés : ${used[n.id]} placés pour ${n.total} inscrits.`));
+  state.classes.forEach((cl,i)=>{
+    if(cl.rows.length>1&&!consecOk(cl.rows.map(r=>r.nid)))errs.push(`<strong>Classe ${i+1}</strong> : niveaux non consécutifs (ex: CP+CE2 interdit).`);
+    if(classTotal(cl)>classPlafond(cl))errs.push(`<strong>Classe ${i+1}</strong> dépasse le nombre maximum d'élèves.`);
+  });
+  if(!errs.length&&remaining>0)warns.push(`Il reste <strong>${remaining} élève(s) à placer</strong>. Utilisez les boutons dans chaque classe.`);
+  let aHtml='';
+  errs.forEach(m=>aHtml+=`<div class="alert alert-err">✕ ${m}</div>`);
+  warns.forEach(m=>aHtml+=`<div class="alert alert-warn">⚠ ${m}</div>`);
+  if(!errs.length&&!warns.length&&state.classes.length)aHtml=`<div class="alert alert-ok">✓ <strong>Répartition complète !</strong> Tous les élèves sont placés.</div>`;
+  document.getElementById('alerts').innerHTML=aHtml;
+
+  // Summary
+  const pct=totalEleves>0?Math.round(totalPlaced/totalEleves*100):0;
+  document.getElementById('summary').innerHTML=`
+    <div class="stat">
+      <div class="sval ${remaining===0&&!errs.length?'ok':remaining<0?'err':'warn'}">${totalPlaced} / ${totalEleves}</div>
+      <div class="slbl">Élèves placés</div>
+      <div class="progress"><div class="pf ${pct===100?'pf-ok':'pf-warn'}" style="width:${pct}%"></div></div>
+    </div>
+    <div class="stat">
+      <div class="sval ${state.classes.length>state.maxClasses?'err':''}">${state.classes.length} / ${state.maxClasses}</div>
+      <div class="slbl">Classes</div>
+    </div>
+    <div class="stat">
+      <div class="sval ${remaining===0?'ok':remaining<0?'err':'warn'}">${remaining===0?'✓':remaining<0?remaining:remaining}</div>
+      <div class="slbl">${remaining<0?'En trop':remaining===0?'Complet':'Restants'}</div>
+    </div>`;
+
+  // Classes
+  document.getElementById('btn-add-classe').disabled=state.classes.length>=state.maxClasses;
+  const sortBar=document.getElementById('sort-bar');
+  sortBar.style.display=state.classes.length>1?'flex':'none';
+  const clEl=document.getElementById('classes-list');
+
+  if(!state.classes.length){
+    clEl.innerHTML=`<div class="empty-state">
+      Aucune classe pour l'instant.<br>
+      Utilisez <strong>← Retour</strong> pour choisir la répartition automatique,<br>ou créez une classe manuellement avec <strong>+ Nouvelle classe</strong>.
+    </div>`;
+  } else {
+    const sorted=getSortedIndices();
+    clEl.innerHTML=sorted.map(ci=>{
+      const cl=state.classes[ci];
+      const tot=classTotal(cl),plaf=classPlafond(cl),isEmpty=cl.rows.length===0;
+      const isErr=!isEmpty&&(tot>plaf||(cl.rows.length>1&&!consecOk(cl.rows.map(r=>r.nid))));
+      const isFull=!isEmpty&&tot===plaf;
+      const cardCls=isEmpty?'cempty':isErr?'cerr':isFull?'cwarn':'cok';
+      const bTxt=isEmpty?'Vide':isErr?(tot>plaf?`${tot}/${plaf} — trop plein`:'Niveaux incompatibles'):`${tot} / ${plaf} élèves`;
+      const bCls=isEmpty?'empty':isErr?'err':isFull?'warn':'ok';
+      const avail=availNiveaux(cl);
+      const used2=computeUsed();
+      const qa=getQA(ci);
+
+      const teacherRow=isEmpty?'':`<div class="teacher-row">
+        <label class="teacher-lbl">Enseignant·e</label>
+        <input type="text" class="teacher-input" data-ci="${ci}"
+          placeholder="Nom (optionnel)"
+          oninput="updateTeacher(${ci},this.value)">
+      </div>`;
+
+      const rows=cl.rows.map((r,ri)=>{
+        const n=getNiveau(r.nid);if(!n)return '';
+        const val=parseInt(r.val)||0;
+        const rem=n.total-(used2[n.id]||0)+val;
+        const pct2=Math.min(100,Math.round(val/plaf*100));
+        const bc=val>plaf?'bar-r':pct2>88?'bar-a':'bar-g';
+        const over=(used2[n.id]||0)>n.total;
+        const hintCls=rem<0?'err':rem===0?'ok':pct2>88?'warn':'muted';
+        const hintTxt=rem<0?`⚠ ${Math.abs(rem)} de trop — réduisez`:rem===0?'✓ tous placés':`${rem} encore à placer`;
+        return `<div class="nrow">
+          <span class="npill" style="background:${n.color}18;color:${n.color}">${n.label}</span>
+          <div class="nrow-right">
+            <div class="nrow-controls">
+              <div class="inline-wrap${over?' over':''}">
+                <button class="inline-spin" onclick="stepInline(${ci},${ri},-1)">−</button>
+                <input type="number" class="inline-core" value="${val}" min="0"
+                  onfocus="this.select()" oninput="updateVal(${ci},${ri},this.value,this)">
+                <button class="inline-spin" onclick="stepInline(${ci},${ri},1)">+</button>
+              </div>
+              <div class="bar-wrap"><div class="bar-fill ${bc}" style="width:${pct2}%"></div></div>
+            </div>
+            <span class="nrow-hint ${hintCls}">${hintTxt}</span>
+          </div>
+          <button class="btn-icon" onclick="removeRow(${ci},${ri})" title="Retirer ${n.label}">✕</button>
+        </div>`;
+      }).join('');
+
+      const addBtns=avail.map(id=>{
+        const n=getNiveau(id);
+        return `<button class="qa add-niv" onclick="addRow(${ci},'${id}')"
+          style="border-color:${n.color};color:${n.color}" title="Ajouter ${n.label}">+ Ajouter ${n.label}</button>`;
+      }).join('');
+
+      const qaBtns=qa.map(a=>`<button class="qa ${a.t}"
+        onclick='applyQA(${ci},${JSON.stringify(a).replace(/'/g,"&#39;")})'
+        title="${a.tip}">${a.label}</button>`).join('');
+
+      const strip=(avail.length||qa.length)?`<div class="qs">
+        ${avail.length?`<div class="qs-row"><span class="qs-lbl">Ajouter un niveau à cette classe</span>${addBtns}</div>`:''}
+        ${qa.length?`<div class="qs-row"><span class="qs-lbl">Remplir automatiquement</span>${qaBtns}</div>`:''}
+      </div>`:'';
+
+      return `<div class="cl-card ${cardCls}" data-ci="${ci}">
+        <div class="cl-top">
+          <span class="cl-num">Classe ${ci+1}</span>
+          <span class="cl-name">${className(cl)}</span>
+          <span class="cl-badge ${bCls}">${bTxt}</span>
+          <button class="btn-del-cl" onclick="removeClasse(${ci})" title="Supprimer cette classe">×</button>
+        </div>
+        <div class="cl-body">
+          ${isEmpty?`<div class="empty-cl">↓ Choisissez un niveau à ajouter ci-dessous</div>`:''}
+          ${teacherRow}
+          ${rows}${strip}
+        </div>
+      </div>`;
+    }).join('');
+    document.querySelectorAll('.teacher-input[data-ci]').forEach(inp=>{
+      const ci=parseInt(inp.dataset.ci);
+      const cl=state.classes[ci];
+      if(cl&&typeof cl.teacher==='string')inp.value=cl.teacher;
+    });
+  }
+
+  // Sticky
+  const errsCount=errs.length;
+  const icon=errsCount?'✕':remaining>0?'⚠':'✓';
+  const color=errsCount?'var(--red)':remaining>0?'var(--amber)':'var(--green)';
+  document.getElementById('sticky-title').innerHTML=`<span style="color:${color}">${icon}</span> ${errsCount?errsCount+' erreur(s) à corriger':remaining>0?remaining+' élève(s) à placer':'Répartition complète !'}`;
+  document.getElementById('sticky-sub').textContent=`${totalPlaced} / ${totalEleves} élèves · ${state.classes.length} classe(s)`;
+}
+
+// ── Scroll to class ──
+function scrollToFirstClassWith(nid){
+  const cards=document.querySelectorAll('.cl-card');
+  const sorted=getSortedIndices();
+  const pos=sorted.findIndex(ci=>state.classes[ci].rows.some(r=>r.nid===nid));
+  if(pos>=0&&cards[pos])cards[pos].scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+// ── Exports ──
+function exportTxt(){
+  const used=computeUsed();
+  const lines=['KLASIO — RÉPARTITION DES CLASSES','='.repeat(44),'',
+    `Date : ${new Date().toLocaleDateString('fr-FR',{year:'numeric',month:'long',day:'numeric'})}`,
+    `Total : ${state.niveaux.reduce((s,n)=>s+n.total,0)} élèves · ${state.classes.length} classes`,
+    '','EFFECTIFS','-'.repeat(44)];
+  state.niveaux.forEach(n=>lines.push(`  ${n.label.padEnd(8)}: ${n.total} élèves (max : ${n.plafond})`));
+  lines.push('','CLASSES','-'.repeat(44));
+  state.classes.forEach((cl,i)=>{
+    const tot=classTotal(cl),plaf=classPlafond(cl),ok=tot<=plaf&&consecOk(cl.rows.map(r=>r.nid));
+    lines.push(`Classe ${i+1} — ${className(cl)}  [${tot}/${plaf}]${cl.teacher?' — '+cl.teacher:''}${ok?'':' ⚠'}`);
+    cl.rows.forEach(r=>{const n=getNiveau(r.nid);lines.push(`  ${(n?n.label:r.nid).padEnd(8)}: ${r.val} élèves`);});
+    lines.push('');
+  });
+  lines.push('BILAN','-'.repeat(44));
+  let allOk=true;
+  state.niveaux.forEach(n=>{const rem=n.total-(used[n.id]||0);if(rem!==0){lines.push(`  ${n.label.padEnd(8)}: ${rem>0?'+':''}${rem}`);allOk=false;}});
+  if(allOk)lines.push('  ✓ Tous les élèves sont placés.');
+  const blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='klasio_repartition.txt';a.click();
+}
+function exportMural(){
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const school=esc(state.schoolName||'École');
+  const year=esc(state.schoolYear||'');
+  const cards=state.classes.map((cl,i)=>{
+    const bg=cl.rows[0]?(getNiveau(cl.rows[0].nid)?.color||'#4f46e5'):'#4f46e5';
+    const name=esc(className(cl));
+    const teacher=esc(cl.teacher||'');
+    const tot=classTotal(cl);
+    return `<div class="m-card" style="border-top:6px solid ${bg}">
+      <div class="m-num">Classe ${i+1}</div>
+      <div class="m-name">${name}</div>
+      ${teacher?`<div class="m-teacher">👩‍🏫 ${teacher}</div>`:''}
+      <div class="m-count">${tot} élèves</div>
+    </div>`;
+  }).join('');
+  const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
+<title>Affichage mural — ${school}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#fff;color:#181816;padding:24px}
+h1{font-size:28px;margin-bottom:4px}
+.sub{color:#5c5b56;margin-bottom:24px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.m-card{background:#fafaf8;border:1px solid #e8e6de;border-radius:12px;padding:18px;text-align:center}
+.m-num{font-size:12px;font-weight:600;color:#9c9b94;text-transform:uppercase;letter-spacing:.5px}
+.m-name{font-size:22px;font-weight:800;margin:6px 0 4px}
+.m-teacher{font-size:14px;color:#5c5b56;margin-bottom:6px}
+.m-count{font-size:13px;color:#5c5b56}
+@media print{body{padding:12px}.m-card{break-inside:avoid}}
+</style></head><body>
+<h1>${school}</h1><div class="sub">Rentrée ${year} · ${state.classes.length} classe(s)</div>
+<div class="grid">${cards}</div>
+</body></html>`;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const w=window.open(url,'_blank');
+  if(!w){showDialog({icon:'warn',title:'Pop-up bloquée',msg:'Autorisez les pop-ups pour afficher le mural, ou utilisez l\'export PDF.',buttons:[{label:'OK',style:'ok',value:true}]});URL.revokeObjectURL(url);return;}
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+}
+
+function exportPdf(){
+  if(!window.jspdf){showDialog({icon:'warn',title:'Chargement en cours',msg:'Le module d\'export PDF est encore en cours de chargement. Attendez quelques secondes et réessayez.',buttons:[{label:'OK',style:'ok',value:true}]});return;}
+  try{
+    const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
+    const used=computeUsed();let y=18;const L=15,lh=7;
+    doc.setFont('helvetica','bold');doc.setFontSize(18);doc.setTextColor(20);
+    doc.text('Klasio',L,y);doc.setFont('helvetica','normal');doc.setFontSize(11);doc.setTextColor(80);
+    doc.text('Répartition des classes',L+22,y);y+=9;
+    doc.setFontSize(9);doc.setTextColor(120);
+    doc.text(new Date().toLocaleDateString('fr-FR',{year:'numeric',month:'long',day:'numeric'}),L,y);y+=11;
+    doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(30);
+    doc.text('Effectifs',L,y);y+=lh;
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(60);
+    state.niveaux.forEach(n=>{doc.text(`${n.label} : ${n.total} élèves  (max : ${n.plafond})`,L+4,y);y+=lh;});
+    y+=4;doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(30);
+    doc.text('Classes',L,y);y+=lh;
+    state.classes.forEach((cl,i)=>{
+      if(y>268){doc.addPage();y=18;}
+      const tot=classTotal(cl),plaf=classPlafond(cl),ok=tot<=plaf&&consecOk(cl.rows.map(r=>r.nid));
+      doc.setFont('helvetica','bold');doc.setFontSize(10);
+      doc.setTextColor(ok?20:180,ok?100:40,ok?40:30);
+      doc.text(`Classe ${i+1} — ${className(cl)}`,L,y);
+      if(cl.teacher){doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(100);doc.text(`👩‍🏫 ${cl.teacher}`,L,y+5);y+=5;}
+      doc.text(`${tot} / ${plaf}`,195,y,{align:'right'});y+=lh;
+      doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(80);
+      cl.rows.forEach(r=>{const n=getNiveau(r.nid);doc.text(`    ${n?.label||r.nid} : ${r.val} élèves`,L+2,y);y+=lh-1;});
+      y+=3;
+    });
+    if(y>260){doc.addPage();y=18;}
+    y+=2;doc.setDrawColor(200);doc.line(L,y,195,y);y+=6;
+    const total=state.niveaux.reduce((s,n)=>s+n.total,0),placed=Object.values(used).reduce((a,b)=>a+b,0);
+    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(30);
+    doc.text(`Total : ${placed} / ${total} élèves placés`,L,y);y+=lh;
+    const miss=state.niveaux.filter(n=>(used[n.id]||0)<n.total);
+    if(miss.length){doc.setTextColor(160,50,30);doc.text(`Non placés : ${miss.map(n=>`${n.label} (${n.total-(used[n.id]||0)})`).join(', ')}`,L,y);}
+    else{doc.setTextColor(20,120,60);doc.text('✓ Tous les élèves sont placés.',L,y);}
+    doc.save('klasio_repartition.pdf');
+    showDialog({icon:'ok',title:'PDF téléchargé !',msg:'Retrouvez le fichier <strong>klasio_repartition.pdf</strong> dans vos téléchargements.',buttons:[{label:'Parfait',style:'ok green',value:true}]});
+  }catch(e){showDialog({icon:'err',title:'Erreur d\'export',msg:'Le PDF n\'a pas pu être généré. Essayez l\'export en fichier texte (.txt) depuis la barre du bas.',buttons:[{label:'OK',style:'ok',value:true}]});console.error(e);}
+}
+
+// ── Init ──
+const fromUrl=loadFromUrl();
+if(!fromUrl)load();
+document.getElementById('max-classes').value=state.maxClasses||8;
+document.getElementById('school-name').value=state.schoolName||'';
+document.getElementById('school-year').value=state.schoolYear||'2025-2026';
+goStep(state.currentStep||1);
+render();
+</script>
+</body>
+</html>

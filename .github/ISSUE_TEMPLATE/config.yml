@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📘 Documentation
+    url: https://github.com/OWNER/klasio#readme
+    about: Consulter le README avant d'ouvrir une issue
+  - name: 🗺️ Roadmap
+    url: https://github.com/OWNER/klasio/blob/main/ROADMAP.md
+    about: Voir ce qui est déjà planifié
