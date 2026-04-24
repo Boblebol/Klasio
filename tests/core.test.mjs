@@ -8,6 +8,7 @@ import {
   classPlafond,
   computeDistrib,
   computeMoveTargets,
+  summariseState,
   encodeState,
   decodeState,
   parseCsvEffectifs,
@@ -403,6 +404,57 @@ describe('computeMoveTargets()', () => {
     const t = targets.find(x => x.ti === 1);
     expect(t).toBeDefined();
     expect(t.space).toBe(2);
+  });
+});
+
+describe('summariseState()', () => {
+  it('renvoie un résumé vide pour un state falsy', () => {
+    const s = summariseState(null);
+    expect(s.isEmpty).toBe(true);
+    expect(s.totalEleves).toBe(0);
+    expect(s.nbClasses).toBe(0);
+  });
+
+  it('compte niveaux, classes, élèves et placements', () => {
+    const s = summariseState({
+      niveaux: [
+        { id: 'CP', label: 'CP', total: 24, plafond: 24, color: '#000' },
+        { id: 'CE1', label: 'CE1', total: 22, plafond: 24, color: '#111' },
+      ],
+      classes: [
+        { rows: [{ nid: 'CP', val: 12 }, { nid: 'CE1', val: 10 }] },
+        { rows: [{ nid: 'CP', val: 12 }, { nid: 'CE1', val: 12 }] },
+      ],
+      maxClasses: 8,
+    });
+    expect(s.totalEleves).toBe(46);
+    expect(s.placedEleves).toBe(46);
+    expect(s.remainingEleves).toBe(0);
+    expect(s.nbNiveaux).toBe(2);
+    expect(s.nbClasses).toBe(2);
+    expect(s.nbErrors).toBe(0);
+    expect(s.isEmpty).toBe(false);
+  });
+
+  it('compte les erreurs : dépassement de plafond', () => {
+    const s = summariseState({
+      niveaux: [{ id: 'CP', label: 'CP', total: 30, plafond: 24, color: '#000' }],
+      classes: [{ rows: [{ nid: 'CP', val: 30 }] }],
+    });
+    expect(s.nbErrors).toBe(1);
+  });
+
+  it('compte les erreurs : niveaux non consécutifs', () => {
+    const s = summariseState({
+      niveaux: NIV,
+      classes: [{ rows: [{ nid: 'CP', val: 12 }, { nid: 'CE2', val: 10 }] }],
+    });
+    expect(s.nbErrors).toBeGreaterThan(0);
+  });
+
+  it('détecte un état vide', () => {
+    const s = summariseState({ niveaux: [], classes: [] });
+    expect(s.isEmpty).toBe(true);
   });
 });
 

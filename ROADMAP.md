@@ -18,7 +18,7 @@
 - ✅ **Import CSV des effectifs** — coller `CP,24 / CE1,22 / …` à l'étape 1 pour pré-remplir.
 - ✅ **Sauvegarde/ouverture de fichiers `.klasio`** (JSON) à l'étape 4.
 - ✅ **Déplacer des élèves entre classes** — bouton → sur chaque ligne, modal avec classes cibles compatibles et quantité paramétrable.
-- 🎯 **Multi-profils** — garder plusieurs répartitions (ex. scénarios A / B / C) côte à côte, switch rapide.
+- ✅ **Multi-scénarios A/B/C** — trois slots indépendants avec noms éditables, modal de comparaison (élèves placés, classes, erreurs), undo/redo isolé par scénario.
 - **Dupliquer une répartition** (pour tester une variante).
 - **Commentaire par classe** (notes libres : « privilégier élèves calmes », « jumeaux à séparer »…).
 - **Total par genre F/M** optionnel, avec badge d'équilibre (si l'école entre cette donnée).

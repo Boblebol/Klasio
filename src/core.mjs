@@ -195,6 +195,45 @@ export function computeDistrib(niveaux, maxClasses, mode = 'balanced') {
   return result.slice(0, maxClasses);
 }
 
+// ── Résumé d'état (pour l'UI de comparaison de scénarios) ──
+/**
+ * Calcule un résumé synthétique d'un état, utilisé notamment pour comparer
+ * plusieurs scénarios côte à côte.
+ *
+ * @returns {{
+ *   totalEleves:number, placedEleves:number, remainingEleves:number,
+ *   nbNiveaux:number, nbClasses:number, nbErrors:number,
+ *   isEmpty:boolean, maxClasses:number
+ * }}
+ */
+export function summariseState(state) {
+  if (!state || !Array.isArray(state.niveaux) || !Array.isArray(state.classes)) {
+    return {
+      totalEleves: 0, placedEleves: 0, remainingEleves: 0,
+      nbNiveaux: 0, nbClasses: 0, nbErrors: 0, isEmpty: true, maxClasses: 0,
+    };
+  }
+  const totalEleves = state.niveaux.reduce((s, n) => s + (parseInt(n.total) || 0), 0);
+  const placedEleves = state.classes.reduce((s, cl) => s + classTotal(cl), 0);
+
+  let nbErrors = 0;
+  state.classes.forEach(cl => {
+    if (classTotal(cl) > classPlafond(cl, state.niveaux)) nbErrors++;
+    if (cl.rows.length > 1 && !consecOk(cl.rows.map(r => r.nid), state.niveaux)) nbErrors++;
+  });
+
+  return {
+    totalEleves,
+    placedEleves,
+    remainingEleves: totalEleves - placedEleves,
+    nbNiveaux: state.niveaux.length,
+    nbClasses: state.classes.length,
+    nbErrors,
+    isEmpty: totalEleves === 0 && state.classes.length === 0,
+    maxClasses: state.maxClasses || 0,
+  };
+}
+
 // ── Partage via URL ──
 export function encodeState(state) {
   const mini = {

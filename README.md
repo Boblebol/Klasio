@@ -6,7 +6,7 @@
 [![Status](https://img.shields.io/badge/status-alpha-orange.svg)]()
 [![No dependencies](https://img.shields.io/badge/build-static%20HTML-informational)]()
 [![CI](https://github.com/Boblebol/Klasio/actions/workflows/check.yml/badge.svg)](https://github.com/Boblebol/Klasio/actions/workflows/check.yml)
-[![Tests](https://img.shields.io/badge/tests-51%20passing-success)]()
+[![Tests](https://img.shields.io/badge/tests-56%20passing-success)]()
 
 Klasio est une application **100 % côté client** (un seul fichier `index.html`). Aucune donnée ne quitte le navigateur : tout est stocké localement (`localStorage`). Aucun compte, aucun backend, aucun tracker.
 
@@ -110,7 +110,7 @@ klasio/
 ├── src/
 │   └── core.mjs            # Noyau pur (validation, répartition, parsing CSV…)
 ├── tests/
-│   └── core.test.mjs       # 51 tests Vitest
+│   └── core.test.mjs       # 56 tests Vitest
 ├── package.json            # scripts + devDependencies (vitest)
 ├── vitest.config.mjs
 ├── README.md               # Ce fichier

@@ -329,6 +329,36 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 .csv-preview .csv-row.err{color:var(--red)}
 .csv-preview .csv-summary{font-weight:600;color:var(--text);margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
 
+/* Modal scénarios */
+.sc-modal{max-width:720px}
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
+@media(max-width:640px){.sc-grid{grid-template-columns:1fr}}
+.sc-card{position:relative;border:1.5px solid var(--border);border-radius:var(--rs);padding:14px;background:var(--bg);display:flex;flex-direction:column;gap:8px;transition:border-color .12s,background .12s}
+.sc-card.active{border-color:var(--brand);background:var(--surface);box-shadow:0 0 0 3px rgba(79,70,229,.08)}
+.sc-card .sc-slot{position:absolute;top:10px;right:12px;font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.6px;text-transform:uppercase}
+.sc-card.active .sc-slot{color:var(--brand)}
+.sc-card-name{font-size:14px;font-weight:700;color:var(--text);margin-top:4px;padding-right:32px;line-height:1.2}
+.sc-card-name input{background:transparent;border:1px dashed transparent;border-radius:6px;padding:3px 6px;font:inherit;color:inherit;width:100%;transition:border-color .12s}
+.sc-card-name input:hover{border-color:var(--border)}
+.sc-card-name input:focus{outline:none;border-color:var(--brand);background:var(--bg)}
+.sc-card-summary{font-size:12px;color:var(--t2);line-height:1.55;min-height:56px}
+.sc-card-summary .sc-metric{display:flex;justify-content:space-between;gap:8px;padding:2px 0}
+.sc-card-summary .sc-metric-label{color:var(--t3)}
+.sc-card-summary .sc-metric-value{font-weight:600;color:var(--text)}
+.sc-card-summary .sc-warn{color:var(--red);font-weight:600}
+.sc-card-summary .sc-empty{font-style:italic;color:var(--t3)}
+.sc-card-actions{display:flex;gap:6px;flex-wrap:wrap}
+.sc-btn{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;transition:all .12s;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.sc-btn:hover{background:var(--surface);border-color:var(--border2);color:var(--text)}
+.sc-btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.sc-btn.primary:hover{background:#4338ca;border-color:#4338ca}
+.sc-btn.danger:hover{background:rgba(192,40,42,.08);border-color:var(--red);color:var(--red)}
+.sc-card.active .sc-btn.primary{background:var(--green);border-color:var(--green)}
+.sc-card.active .sc-btn.primary:hover{background:#117043;border-color:#117043}
+
+/* Bouton scénario dans le header */
+.hdr-btn.scenario-btn strong{font-weight:700;color:var(--brand);margin-left:2px}
+
 /* Modal déplacement */
 .move-modal{max-width:560px}
 .move-targets{display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto;margin-bottom:14px}
@@ -430,6 +460,10 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
       </button>
       <button class="hdr-btn icon-only" id="btn-redo" onclick="historyRedo()" title="Rétablir (Ctrl+Y)" aria-label="Rétablir" disabled>
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 15-6.7L21 13"/></svg>
+      </button>
+      <button class="hdr-btn scenario-btn" id="btn-scenarios" onclick="openScenarios()" title="Gérer les scénarios (A / B / C)" aria-label="Gérer les scénarios">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span>Scénario <strong id="scenario-current-label">A</strong></span>
       </button>
       <button class="hdr-btn icon-only" id="btn-theme" onclick="toggleTheme()" title="Basculer le thème" aria-label="Basculer le thème clair/sombre">
         <svg id="icon-sun" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
@@ -756,6 +790,19 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
   </div>
 </div>
 
+<!-- ══ MODAL scénarios A/B/C ══ -->
+<div class="modal-bg" id="sc-modal-bg" style="display:none" onclick="if(event.target===this)closeScenarios()">
+  <div class="modal sc-modal" role="dialog" aria-modal="true" aria-labelledby="sc-modal-title">
+    <div class="modal-handle"></div>
+    <h3 id="sc-modal-title">Scénarios de répartition</h3>
+    <p>Comparez jusqu'à trois répartitions en parallèle (ex : effectifs haut/bas, avec ou sans une nouvelle classe). Le scénario <strong>actif</strong> est celui que vous éditez.</p>
+    <div class="sc-grid" id="sc-grid"></div>
+    <div class="modal-btns" style="margin-top:14px">
+      <button class="btn-cancel" onclick="closeScenarios()">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ MODAL déplacement d'élèves ══ -->
 <div class="modal-bg" id="move-modal-bg" style="display:none" onclick="if(event.target===this)closeMoveDialog()">
   <div class="modal move-modal" role="dialog" aria-modal="true" aria-labelledby="move-modal-title">
@@ -806,6 +853,7 @@ import {
   consecOk as _consecOkPure,
   computeDistrib as _computeDistribPure,
   computeMoveTargets as _computeMoveTargetsPure,
+  summariseState,
   encodeState as _encodeStatePure,
   decodeState as _decodeStatePure,
   parseCsvEffectifs, applyCsvItems,
@@ -820,6 +868,54 @@ const encodeState = () => _encodeStatePure(state);
 
 let state = DEFAULT_STATE();
 window.state = state;
+
+// ── Scénarios A / B / C ──
+// Chaque slot a sa propre clé localStorage (klasio-scenario-{ID}). Un scénario
+// actif est mémorisé dans klasio-active-scenario. Les noms sont dans une
+// seule clé JSON (klasio-scenario-names). Historique undo/redo par scénario.
+const SCENARIO_IDS=['A','B','C'];
+const SCENARIO_KEY=id=>`klasio-scenario-${id}`;
+const ACTIVE_KEY='klasio-active-scenario';
+const NAMES_KEY='klasio-scenario-names';
+let activeScenario='A';
+let scenarioNames={A:'Scénario A',B:'Scénario B',C:'Scénario C'};
+
+function loadScenarioMeta(){
+  try{
+    const a=localStorage.getItem(ACTIVE_KEY);
+    if(SCENARIO_IDS.includes(a))activeScenario=a;
+    const names=JSON.parse(localStorage.getItem(NAMES_KEY)||'{}');
+    SCENARIO_IDS.forEach(id=>{
+      if(typeof names[id]==='string'&&names[id].trim())
+        scenarioNames[id]=String(names[id]).slice(0,40);
+    });
+  }catch(e){}
+}
+function persistScenarioNames(){
+  try{localStorage.setItem(NAMES_KEY,JSON.stringify(scenarioNames));}catch(e){}
+}
+function persistActiveScenario(){
+  try{localStorage.setItem(ACTIVE_KEY,activeScenario);}catch(e){}
+}
+function migrateLegacyStorage(){
+  // Si v0.2 a laissé un klasio2, on le migre vers le slot A (sans écraser si A a déjà quelque chose).
+  try{
+    const legacy=localStorage.getItem('klasio2');
+    if(legacy&&!localStorage.getItem(SCENARIO_KEY('A'))){
+      localStorage.setItem(SCENARIO_KEY('A'),legacy);
+    }
+  }catch(e){}
+}
+function readScenarioState(id){
+  try{
+    const d=localStorage.getItem(SCENARIO_KEY(id));
+    if(!d)return null;
+    return validateState(JSON.parse(d));
+  }catch(e){return null;}
+}
+function writeScenarioState(id,s){
+  try{localStorage.setItem(SCENARIO_KEY(id),JSON.stringify(s));}catch(e){}
+}
 
 // ── Persist ──
 // Tous les `save()` sont appelés APRÈS une mutation. On snapshot la version
@@ -846,18 +942,12 @@ function save(){
       _saveTimer=setTimeout(flushHistorySnapshot,800);
     }
     _lastSnapshot=cur;
-    localStorage.setItem('klasio2',cur);
+    localStorage.setItem(SCENARIO_KEY(activeScenario),cur);
   }catch(e){}
 }
 function load(){
-  try{
-    const d=localStorage.getItem('klasio2');
-    if(!d)return;
-    const parsed=JSON.parse(d);
-    const valid=validateState(parsed);
-    if(valid){state=valid;window.state=state;}
-    else console.warn('[Klasio] données locales invalides, réinitialisation');
-  }catch(e){console.warn('[Klasio] load():',e);}
+  const valid=readScenarioState(activeScenario);
+  if(valid){state=valid;window.state=state;}
 }
 
 // ── Historique undo/redo ──
@@ -873,7 +963,7 @@ function historyUndo(){
   try{state=JSON.parse(prev);window.state=state;}catch(e){return;}
   _historySuppress=true;
   _lastSnapshot=prev;
-  try{localStorage.setItem('klasio2',prev);}catch(e){}
+  try{localStorage.setItem(SCENARIO_KEY(activeScenario),prev);}catch(e){}
   syncStepInputs();render();
   _historySuppress=false;
   updateHistoryButtons();
@@ -888,7 +978,7 @@ function historyRedo(){
   try{state=JSON.parse(next);window.state=state;}catch(e){return;}
   _historySuppress=true;
   _lastSnapshot=next;
-  try{localStorage.setItem('klasio2',next);}catch(e){}
+  try{localStorage.setItem(SCENARIO_KEY(activeScenario),next);}catch(e){}
   syncStepInputs();render();
   _historySuppress=false;
   updateHistoryButtons();
@@ -1009,6 +1099,7 @@ function _dialogBtn(i){
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     if(document.getElementById('dialog-bg').style.display!=='none')_dialogBtn(0);
+    else if(document.getElementById('sc-modal-bg').style.display!=='none')closeScenarios();
     else if(document.getElementById('move-modal-bg').style.display!=='none')closeMoveDialog();
     else if(document.getElementById('csv-modal-bg').style.display!=='none')closeCsvImport();
     else if(document.getElementById('modal-bg').style.display!=='none')closeModal();
@@ -1396,6 +1487,126 @@ function confirmMove(ti){
   closeMoveDialog();render();save();
   const nLabel=getNiveau(row.nid)?.label||row.nid;
   showToast(`✓ ${actual} ${nLabel} déplacé(s) vers Classe ${ti+1}`);
+}
+
+// ── Gestion des scénarios ──
+function updateScenarioBadge(){
+  const el=document.getElementById('scenario-current-label');
+  if(el)el.textContent=activeScenario;
+  const btn=document.getElementById('btn-scenarios');
+  if(btn)btn.title=`Scénario actif : ${scenarioNames[activeScenario]} (clic pour gérer)`;
+}
+function openScenarios(){
+  renderScenariosModal();
+  document.getElementById('sc-modal-bg').style.display='flex';
+}
+function closeScenarios(){
+  document.getElementById('sc-modal-bg').style.display='none';
+}
+function renderScenariosModal(){
+  const grid=document.getElementById('sc-grid');
+  grid.innerHTML=SCENARIO_IDS.map(id=>{
+    const slot=id===activeScenario?state:readScenarioState(id);
+    const s=slot?summariseState(slot):null;
+    const empty=!s||s.isEmpty;
+    const isActive=id===activeScenario;
+
+    const summary=empty
+      ? `<span class="sc-empty">Aucune donnée. Activez ce slot pour commencer une nouvelle répartition.</span>`
+      : `
+        <div class="sc-metric"><span class="sc-metric-label">Élèves placés</span><span class="sc-metric-value">${s.placedEleves} / ${s.totalEleves}</span></div>
+        <div class="sc-metric"><span class="sc-metric-label">Classes</span><span class="sc-metric-value">${s.nbClasses} / ${s.maxClasses}</span></div>
+        <div class="sc-metric"><span class="sc-metric-label">Niveaux</span><span class="sc-metric-value">${s.nbNiveaux}</span></div>
+        ${s.nbErrors>0?`<div class="sc-metric"><span class="sc-metric-label">Erreurs</span><span class="sc-metric-value sc-warn">⚠ ${s.nbErrors}</span></div>`:''}
+        ${s.remainingEleves>0?`<div class="sc-metric"><span class="sc-metric-label">Non placés</span><span class="sc-metric-value sc-warn">${s.remainingEleves}</span></div>`:''}
+      `;
+
+    const otherIds=SCENARIO_IDS.filter(i=>i!==id);
+    return `<div class="sc-card${isActive?' active':''}">
+      <span class="sc-slot">${id}${isActive?' · actif':''}</span>
+      <div class="sc-card-name">
+        <input type="text" value="${esc(scenarioNames[id])}" maxlength="40"
+          aria-label="Nom du scénario ${id}"
+          onchange="renameScenario('${id}',this.value)">
+      </div>
+      <div class="sc-card-summary">${summary}</div>
+      <div class="sc-card-actions">
+        ${isActive
+          ? `<button class="sc-btn primary" disabled aria-current="true">✓ Actif</button>`
+          : `<button class="sc-btn primary" onclick="switchScenario('${id}')">Activer</button>`}
+        ${otherIds.map(oid=>`<button class="sc-btn" onclick="duplicateScenario('${id}','${oid}')" title="Copier le contenu de ${id} vers ${oid}">→ ${oid}</button>`).join('')}
+        ${!empty?`<button class="sc-btn danger" onclick="clearScenario('${id}')" title="Vider ce scénario">Vider</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function renameScenario(id,name){
+  const clean=String(name||'').trim().slice(0,40)||`Scénario ${id}`;
+  scenarioNames[id]=clean;
+  persistScenarioNames();
+  updateScenarioBadge();
+  renderScenariosModal();
+}
+function switchScenario(id){
+  if(!SCENARIO_IDS.includes(id)||id===activeScenario)return;
+  // Flush historique courant et persister l'état actif AVANT de basculer
+  clearTimeout(_saveTimer);flushHistorySnapshot();
+  try{localStorage.setItem(SCENARIO_KEY(activeScenario),JSON.stringify(state));}catch(e){}
+
+  activeScenario=id;
+  persistActiveScenario();
+  history.past.length=0;history.future.length=0;
+  _lastSnapshot=null;_pendingBaseline=null;
+
+  const loaded=readScenarioState(id);
+  state=loaded||DEFAULT_STATE();
+  window.state=state;
+  _lastSnapshot=JSON.stringify(state);
+
+  updateScenarioBadge();
+  syncStepInputs();updateHistoryButtons();render();
+  renderScenariosModal();
+  showToast(`✓ Scénario ${id} activé — ${scenarioNames[id]}`);
+}
+async function duplicateScenario(fromId,toId){
+  if(!SCENARIO_IDS.includes(fromId)||!SCENARIO_IDS.includes(toId)||fromId===toId)return;
+  const target=readScenarioState(toId);
+  if(target&&!target.isEmpty){
+    const ok=await confirmDialog(
+      `Remplacer le scénario ${toId} ?`,
+      `Le contenu actuel du scénario <strong>${esc(scenarioNames[toId])}</strong> sera écrasé par une copie de <strong>${esc(scenarioNames[fromId])}</strong>.`,
+      'warn'
+    );
+    if(!ok)return;
+  }
+  const src=fromId===activeScenario?state:readScenarioState(fromId);
+  if(!src){showToast('Source vide — rien à copier.');return;}
+  writeScenarioState(toId,src);
+  if(toId===activeScenario){
+    state=JSON.parse(JSON.stringify(src));window.state=state;
+    _lastSnapshot=JSON.stringify(state);
+    history.past.length=0;history.future.length=0;updateHistoryButtons();
+    syncStepInputs();render();
+  }
+  renderScenariosModal();
+  showToast(`✓ ${fromId} copié vers ${toId}`);
+}
+async function clearScenario(id){
+  const ok=await confirmDialog(
+    `Vider le scénario ${id} ?`,
+    `Tout le contenu de <strong>${esc(scenarioNames[id])}</strong> sera supprimé. Cette action est réversible avec Ctrl+Z si c'est le scénario actif.`,
+    'del'
+  );
+  if(!ok)return;
+  try{localStorage.removeItem(SCENARIO_KEY(id));}catch(e){}
+  if(id===activeScenario){
+    state=DEFAULT_STATE();window.state=state;
+    _lastSnapshot=JSON.stringify(state);
+    history.past.length=0;history.future.length=0;updateHistoryButtons();
+    syncStepInputs();render();
+  }
+  renderScenariosModal();
+  showToast(`✓ Scénario ${id} vidé`);
 }
 
 async function removeNiveau(id){
@@ -1844,6 +2055,8 @@ if(window.matchMedia){
     if((localStorage.getItem('klasio-theme')||'auto')==='auto')applyTheme('auto');
   });
 }
+migrateLegacyStorage();
+loadScenarioMeta();
 const fromUrl=loadFromUrl();
 if(!fromUrl)load();
 _lastSnapshot=JSON.stringify(state);
@@ -1851,6 +2064,7 @@ document.getElementById('max-classes').value=state.maxClasses||8;
 document.getElementById('school-name').value=state.schoolName||'';
 document.getElementById('school-year').value=state.schoolYear||'2025-2026';
 goStep(state.currentStep||1);
+updateScenarioBadge();
 render();
 updateHistoryButtons();
 if(!fromUrl&&!localStorage.getItem('klasio-onb-seen')){
@@ -1873,6 +2087,8 @@ Object.assign(window, {
   openCsvImport, closeCsvImport, fillCsvExample, loadCsvFile,
   updateCsvPreview, confirmCsvImport,
   openMoveDialog, closeMoveDialog, moveInputStep, confirmMove,
+  openScenarios, closeScenarios, switchScenario, renameScenario,
+  duplicateScenario, clearScenario,
   openOnboarding, closeOnboarding, onbNext, onbPrev,
 });
 </script>

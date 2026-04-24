@@ -15,7 +15,8 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 - **Onboarding de première visite** : 3 écrans présentant l'outil, le wizard et les raccourcis (vu une seule fois, bouton *Passer* toujours disponible).
 - **Import CSV des effectifs** à l'étape 1 : coller une liste `CP,24 / CE1,22 / …` (séparateurs virgule, point-virgule, tabulation ou pipe) ou charger un fichier `.csv`. Aperçu en temps réel des niveaux mis à jour / créés, avec remontée des lignes invalides.
 - **Déplacer des élèves entre classes** : bouton → sur chaque ligne de niveau, modal listant les classes compatibles (même niveau ou niveau consécutif, places disponibles), avec sélecteur de quantité. Supprime automatiquement la ligne source si elle tombe à zéro, ou fusionne avec une ligne existante côté cible.
-- **Suite de tests unitaires** (Vitest) sur le noyau pur (`src/core.mjs`) : 51 tests couvrant `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `computeMoveTargets`, `encodeState/decodeState`, `parseCsvEffectifs`, `applyCsvItems`, `esc`. Exécutés en CI sur chaque push.
+- **Multi-scénarios A / B / C** : trois répartitions indépendantes que vous pouvez éditer et comparer côte à côte. Bouton *Scénario A* dans le header → modal avec résumé de chaque scénario (élèves placés, classes, erreurs) et actions *Activer* / *Copier vers* / *Vider*. Noms éditables, undo/redo isolé par scénario. Migration transparente des données existantes vers le slot A.
+- **Suite de tests unitaires** (Vitest) sur le noyau pur (`src/core.mjs`) : 56 tests couvrant `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `computeMoveTargets`, `summariseState`, `encodeState/decodeState`, `parseCsvEffectifs`, `applyCsvItems`, `esc`. Exécutés en CI sur chaque push.
 - **Configuration Netlify** (`netlify.toml`) pour déploiement zéro-config avec en-têtes de sécurité (CSP, X-Frame-Options, Referrer-Policy, Permissions-Policy).
 
 ### Corrigé
