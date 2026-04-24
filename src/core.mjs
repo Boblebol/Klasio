@@ -76,6 +76,7 @@ export function validateState(s) {
       rows: cl.rows.map(r => ({ nid: r.nid, val: Math.max(0, parseInt(r.val) || 0) })),
       teacher: typeof cl.teacher === 'string' ? cl.teacher.slice(0, 80) : '',
       name: typeof cl.name === 'string' ? cl.name.slice(0, 60) : '',
+      comment: typeof cl.comment === 'string' ? cl.comment.slice(0, 280) : '',
     })),
     maxClasses: Number.isFinite(s.maxClasses) && s.maxClasses >= 1 && s.maxClasses <= 50 ? s.maxClasses : 8,
     counter: Number.isFinite(s.counter) ? s.counter : 6,

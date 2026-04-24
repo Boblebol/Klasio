@@ -20,7 +20,7 @@
 - ✅ **Déplacer des élèves entre classes** — bouton → sur chaque ligne, modal avec classes cibles compatibles et quantité paramétrable.
 - ✅ **Multi-scénarios A/B/C** — trois slots indépendants avec noms éditables, modal de comparaison (élèves placés, classes, erreurs), undo/redo isolé par scénario.
 - **Dupliquer une répartition** (pour tester une variante).
-- **Commentaire par classe** (notes libres : « privilégier élèves calmes », « jumeaux à séparer »…).
+- ✅ **Commentaire par classe** — note libre (280 caractères) dépliable sous chaque classe, reprise dans les exports TXT et PDF (mais pas dans le mural public).
 - **Total par genre F/M** optionnel, avec badge d'équilibre (si l'école entre cette donnée).
 - **Indicateur de charge** par enseignant·e (utile si une maîtresse a 2 demi-classes à cheval).
 

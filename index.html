@@ -455,6 +455,34 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 /* Les styles .teacher-row / .teacher-input actualisés sont définis plus bas */
 .teacher-input::placeholder{color:var(--t3);font-weight:400}
 
+/* ── Commentaire par classe ── */
+.comment-row{margin:8px 0 4px 0}
+.comment-toggle{
+  display:flex;align-items:center;gap:7px;width:100%;
+  background:transparent;border:1px dashed var(--border);border-radius:8px;
+  padding:8px 11px;font:inherit;font-size:12px;color:var(--t2);
+  cursor:pointer;text-align:left;transition:all .12s;
+}
+.comment-toggle:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-bg)}
+.comment-toggle svg{flex-shrink:0}
+.comment-toggle .comment-preview{
+  flex:1;min-width:0;color:var(--t3);font-weight:400;font-size:12px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.comment-row.open .comment-toggle{border-style:solid;border-color:var(--brand-border);background:var(--brand-bg);color:var(--brand)}
+.comment-row.open .comment-toggle .comment-preview{display:none}
+.comment-box{display:none;margin-top:7px}
+.comment-row.open .comment-box{display:block}
+.comment-input{
+  width:100%;border:1.5px solid var(--border);border-radius:var(--rs);
+  background:var(--surface);padding:9px 11px;font:inherit;font-size:13px;
+  color:var(--text);resize:vertical;min-height:52px;line-height:1.5;
+}
+.comment-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+.comment-input::placeholder{color:var(--t3)}
+.comment-meta{display:flex;justify-content:flex-end;margin-top:4px}
+.comment-count{font-size:11px;color:var(--t3);font-variant-numeric:tabular-nums}
+
 /* ── Mural PDF btn ── */
 .btn-mural{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:var(--rs);padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:opacity .15s;box-shadow:0 2px 8px rgba(79,70,229,.3)}
 .btn-mural:hover{opacity:.9}
@@ -1311,6 +1339,26 @@ function updateTeacher(ci,v){
   save();
   // pas de re-render — le champ reste focusé
 }
+function updateComment(ci,v){
+  state.classes[ci].comment=String(v||'').slice(0,280);
+  save();
+  const counter=document.getElementById(`comment-count-${ci}`);
+  if(counter)counter.textContent=`${state.classes[ci].comment.length} / 280`;
+}
+function toggleCommentBox(ci){
+  const row=document.querySelector(`.cl-card[data-ci="${ci}"] .comment-row`);
+  if(!row)return;
+  const nowOpen=!row.classList.contains('open');
+  row.classList.toggle('open',nowOpen);
+  const toggle=row.querySelector('.comment-toggle');
+  if(toggle)toggle.setAttribute('aria-expanded',nowOpen?'true':'false');
+  if(nowOpen){
+    setTimeout(()=>{
+      const ta=row.querySelector('.comment-input');
+      if(ta)ta.focus();
+    },60);
+  }
+}
 let sortMode='manual';
 function setSort(mode){
   sortMode=mode;
@@ -1865,6 +1913,25 @@ function render(){
         </div>
       </div>`;
 
+      const hasComment=!!(cl.comment&&cl.comment.trim());
+      const commentRow=isEmpty?'':`<div class="comment-row${hasComment?' open':''}">
+        <button type="button" class="comment-toggle" onclick="toggleCommentBox(${ci})"
+          aria-expanded="${hasComment?'true':'false'}" aria-controls="comment-box-${ci}">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <span>${hasComment?'Note':'+ Ajouter une note'}</span>
+          ${hasComment?`<span class="comment-preview">${esc(cl.comment.slice(0,80))}${cl.comment.length>80?'…':''}</span>`:''}
+        </button>
+        <div class="comment-box" id="comment-box-${ci}">
+          <textarea class="comment-input" data-ci="${ci}" maxlength="280" rows="2"
+            placeholder="Note libre : contraintes, rappels, profil de la classe…"
+            aria-label="Note libre pour la classe ${ci+1}"
+            oninput="updateComment(${ci},this.value)"></textarea>
+          <div class="comment-meta">
+            <span class="comment-count" id="comment-count-${ci}">0 / 280</span>
+          </div>
+        </div>
+      </div>`;
+
       const rows=cl.rows.map((r,ri)=>{
         const n=getNiveau(r.nid);if(!n)return '';
         const val=parseInt(r.val)||0;
@@ -1924,6 +1991,7 @@ function render(){
         <div class="cl-body">
           ${isEmpty?`<div class="empty-cl">↓ Choisissez un niveau à ajouter ci-dessous</div>`:''}
           ${teacherRow}
+          ${commentRow}
           ${rows}${strip}
         </div>
       </div>`;
@@ -1937,6 +2005,14 @@ function render(){
       const ci=parseInt(inp.dataset.ci);
       const cl=state.classes[ci];
       if(cl&&typeof cl.name==='string')inp.value=cl.name;
+    });
+    document.querySelectorAll('.comment-input[data-ci]').forEach(inp=>{
+      const ci=parseInt(inp.dataset.ci);
+      const cl=state.classes[ci];
+      const txt=(cl&&typeof cl.comment==='string')?cl.comment:'';
+      inp.value=txt;
+      const counter=document.getElementById(`comment-count-${ci}`);
+      if(counter)counter.textContent=`${txt.length} / 280`;
     });
   }
 
@@ -1969,6 +2045,9 @@ function exportTxt(){
     const tot=classTotal(cl),plaf=classPlafond(cl),ok=tot<=plaf&&consecOk(cl.rows.map(r=>r.nid));
     lines.push(`Classe ${i+1} — ${className(cl)}  [${tot}/${plaf}]${cl.teacher?' — '+cl.teacher:''}${ok?'':' ⚠'}`);
     cl.rows.forEach(r=>{const n=getNiveau(r.nid);lines.push(`  ${(n?n.label:r.nid).padEnd(8)}: ${r.val} élèves`);});
+    if(cl.comment&&cl.comment.trim()){
+      lines.push(`  Note : ${cl.comment.trim().replace(/\s+/g,' ')}`);
+    }
     lines.push('');
   });
   lines.push('BILAN','-'.repeat(44));
@@ -2099,6 +2178,14 @@ function exportPdf(){
       doc.text(`${tot} / ${plaf}`,195,y,{align:'right'});y+=lh;
       doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(80);
       cl.rows.forEach(r=>{const n=getNiveau(r.nid);doc.text(`    ${n?.label||r.nid} : ${r.val} élèves`,L+2,y);y+=lh-1;});
+      if(cl.comment&&cl.comment.trim()){
+        doc.setFont('helvetica','italic');doc.setFontSize(8);doc.setTextColor(110);
+        const noteLines=doc.splitTextToSize(`Note : ${cl.comment.trim()}`,170);
+        noteLines.forEach(ln=>{
+          if(y>280){doc.addPage();y=18;}
+          doc.text(ln,L+2,y);y+=lh-2;
+        });
+      }
       y+=3;
     });
     if(y>260){doc.addPage();y=18;}
@@ -2147,7 +2234,7 @@ Object.assign(window, {
   stepInput, stepInline, applyDistribAndNext, togglePreview,
   selectStrat, setSort, addClasse, addRow, removeRow, removeClasse,
   removeNiveau, getNiveau, updateTotal, updatePlafond, updateVal,
-  updateTeacher, updateClassName, applyQA, _dialogBtn,
+  updateTeacher, updateClassName, updateComment, toggleCommentBox, applyQA, _dialogBtn,
   scrollToFirstClassWith,
   exportPdf, exportTxt, exportMural, exportKlasio, importKlasio,
   openCsvImport, closeCsvImport, fillCsvExample, loadCsvFile,

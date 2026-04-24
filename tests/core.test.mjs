@@ -123,6 +123,30 @@ describe('validateState()', () => {
     expect(v.classes[0].name).toBe('Les abeilles');
     expect(v.classes[0].teacher).toBe('Mme X');
   });
+
+  it('préserve le commentaire libre par classe et le coupe à 280 caractères', () => {
+    const v = validateState({
+      ...DEFAULT_STATE(),
+      classes: [
+        { rows: [{ nid: 'CP', val: 20 }], comment: 'Privilégier élèves calmes · séparer les jumeaux Dupont' },
+        { rows: [{ nid: 'CE1', val: 20 }], comment: 'x'.repeat(500) },
+      ],
+    });
+    expect(v.classes[0].comment).toBe('Privilégier élèves calmes · séparer les jumeaux Dupont');
+    expect(v.classes[1].comment.length).toBe(280);
+  });
+
+  it('commentaire absent ou non-string → chaîne vide', () => {
+    const v = validateState({
+      ...DEFAULT_STATE(),
+      classes: [
+        { rows: [{ nid: 'CP', val: 20 }] },
+        { rows: [{ nid: 'CE1', val: 20 }], comment: 42 },
+      ],
+    });
+    expect(v.classes[0].comment).toBe('');
+    expect(v.classes[1].comment).toBe('');
+  });
 });
 
 describe('consecOk()', () => {
