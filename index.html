@@ -18,6 +18,33 @@
   --blue:#1858a8;--bbg:#e8f0fc;--bborder:#a8c8f4;
   --brand:#4f46e5;--brand2:#6366f1;--brand-bg:#eef2ff;--brand-border:#c7d2fe;
   --r:14px;--rs:8px;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  color-scheme:light;
+}
+html[data-theme="dark"]{
+  --bg:#15151a;--surface:#1e1e24;--surface2:#27272f;
+  --border:#33333c;--border2:#4a4a55;
+  --text:#f0f0f2;--t2:#b8b8c0;--t3:#7a7a85;
+  --green:#4ade80;--gbg:#0f2a1b;--gborder:#1f5138;
+  --amber:#fbbf24;--abg:#2d2210;--aborder:#5a4315;
+  --red:#f87171;--rbg:#2a1414;--rborder:#5a2525;
+  --blue:#60a5fa;--bbg:#0f1f3a;--bborder:#1f3a5a;
+  --brand:#818cf8;--brand2:#a5b4fc;--brand-bg:#1e1b4b;--brand-border:#3730a3;
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: dark){
+  html:not([data-theme]){
+    --bg:#15151a;--surface:#1e1e24;--surface2:#27272f;
+    --border:#33333c;--border2:#4a4a55;
+    --text:#f0f0f2;--t2:#b8b8c0;--t3:#7a7a85;
+    --green:#4ade80;--gbg:#0f2a1b;--gborder:#1f5138;
+    --amber:#fbbf24;--abg:#2d2210;--aborder:#5a4315;
+    --red:#f87171;--rbg:#2a1414;--rborder:#5a2525;
+    --blue:#60a5fa;--bbg:#0f1f3a;--bborder:#1f3a5a;
+    --brand:#818cf8;--brand2:#a5b4fc;--brand-bg:#1e1b4b;--brand-border:#3730a3;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+    color-scheme:dark;
+  }
 }
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;min-height:100vh;padding-bottom:90px}
 .page{max-width:720px;margin:0 auto;padding:0 16px 24px}
@@ -30,9 +57,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .brand-name{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px}
 .brand-name span{color:var(--brand)}
 .hdr-btn{border-radius:var(--rs);padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--t2);display:flex;align-items:center;gap:5px;transition:all .15s}
-.hdr-btn:hover{background:var(--bg);border-color:var(--border2);color:var(--text)}
+.hdr-btn:hover:not(:disabled){background:var(--bg);border-color:var(--border2);color:var(--text)}
+.hdr-btn:disabled{opacity:.4;cursor:not-allowed}
+.hdr-btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.hdr-btn.icon-only{padding:7px 9px}
 .hdr-btn.share{background:var(--brand-bg);border-color:var(--brand-border);color:var(--brand)}
-.hdr-btn.share:hover{background:#e0e7ff}
+.hdr-btn.share:hover{background:var(--brand-bg);filter:brightness(.95)}
 .header-actions{display:flex;align-items:center;gap:7px}
 
 /* ── Step wizard ── */
@@ -318,6 +348,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <span class="brand-name">Klas<span>io</span></span>
     </a>
     <div class="header-actions">
+      <button class="hdr-btn icon-only" id="btn-undo" onclick="historyUndo()" title="Annuler (Ctrl+Z)" aria-label="Annuler" disabled>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg>
+      </button>
+      <button class="hdr-btn icon-only" id="btn-redo" onclick="historyRedo()" title="Rétablir (Ctrl+Y)" aria-label="Rétablir" disabled>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 15-6.7L21 13"/></svg>
+      </button>
+      <button class="hdr-btn icon-only" id="btn-theme" onclick="toggleTheme()" title="Basculer le thème" aria-label="Basculer le thème clair/sombre">
+        <svg id="icon-sun" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg id="icon-moon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
       <button class="hdr-btn share" onclick="shareUrl()">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         <span>Partager</span>
@@ -578,7 +618,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 <script>
 const COLORS=['#4f46e5','#7c3aed','#0891b2','#158a52','#d97706','#c0282a','#9333ea','#059669','#db2777','#ea580c'];
 
-let state={
+const DEFAULT_STATE={
   niveaux:[
     {id:'CP', label:'CP', total:0,plafond:24,color:COLORS[0]},
     {id:'CE1',label:'CE1',total:0,plafond:24,color:COLORS[1]},
@@ -592,10 +632,157 @@ let state={
   schoolName:'',
   schoolYear:'2025-2026',
 };
+let state=JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+// ── Helper : échappement HTML sûr ──
+// À utiliser pour toute donnée saisie par l'utilisateur injectée dans un template.
+function esc(s){
+  if(s==null)return '';
+  return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ── Validation de schéma ──
+// Garde-fou pour résister aux données corrompues (localStorage ancien, URL manipulée).
+const STRATS_IDS=['balanced','double','single','small-first'];
+function isValidNiveau(n){
+  return n&&typeof n==='object'
+    &&typeof n.id==='string'&&/^[A-Za-z0-9_-]{1,20}$/.test(n.id)
+    &&typeof n.label==='string'&&n.label.length<=20
+    &&Number.isFinite(n.total)&&n.total>=0&&n.total<10000
+    &&Number.isFinite(n.plafond)&&n.plafond>=1&&n.plafond<200
+    &&(typeof n.color==='string'?/^#[0-9a-f]{3,8}$/i.test(n.color):true);
+}
+function isValidClasse(cl,validIds){
+  if(!cl||!Array.isArray(cl.rows)||cl.rows.length>5)return false;
+  return cl.rows.every(r=>r&&typeof r.nid==='string'&&validIds.has(r.nid)&&Number.isFinite(parseInt(r.val)));
+}
+function validateState(s){
+  if(!s||typeof s!=='object')return null;
+  if(!Array.isArray(s.niveaux)||s.niveaux.length===0||s.niveaux.length>30)return null;
+  if(!s.niveaux.every(isValidNiveau))return null;
+  const ids=new Set(s.niveaux.map(n=>n.id));
+  if(ids.size!==s.niveaux.length)return null;
+  const classes=Array.isArray(s.classes)?s.classes:[];
+  if(classes.length>50||!classes.every(cl=>isValidClasse(cl,ids)))return null;
+  return {
+    niveaux:s.niveaux.map(n=>({id:n.id,label:n.label,total:n.total,plafond:n.plafond,color:n.color})),
+    classes:classes.map(cl=>({
+      rows:cl.rows.map(r=>({nid:r.nid,val:Math.max(0,parseInt(r.val)||0)})),
+      teacher:typeof cl.teacher==='string'?cl.teacher.slice(0,80):''
+    })),
+    maxClasses:Number.isFinite(s.maxClasses)&&s.maxClasses>=1&&s.maxClasses<=50?s.maxClasses:8,
+    counter:Number.isFinite(s.counter)?s.counter:6,
+    distribMode:STRATS_IDS.includes(s.distribMode)?s.distribMode:'balanced',
+    showPreview:!!s.showPreview,
+    currentStep:[1,2,3,4].includes(s.currentStep)?s.currentStep:1,
+    schoolName:typeof s.schoolName==='string'?s.schoolName.slice(0,120):'',
+    schoolYear:typeof s.schoolYear==='string'?s.schoolYear.slice(0,20):'2025-2026',
+  };
+}
 
 // ── Persist ──
-function save(){try{localStorage.setItem('klasio2',JSON.stringify(state));}catch(e){}}
-function load(){try{const d=localStorage.getItem('klasio2');if(d){const p=JSON.parse(d);if(p?.niveaux)state=p;}}catch(e){}}
+// Tous les `save()` sont appelés APRÈS une mutation. On snapshot la version
+// *précédente* dans l'historique si elle diffère de la courante.
+// Les mutations rapprochées (<800ms, typiquement une saisie au clavier) sont
+// coalescées : on ne garde que le point de départ.
+let _lastSnapshot=null;
+let _saveTimer=null;
+let _pendingBaseline=null;
+function flushHistorySnapshot(){
+  if(_pendingBaseline===null)return;
+  history.past.push(_pendingBaseline);
+  if(history.past.length>HISTORY_MAX)history.past.shift();
+  history.future.length=0;
+  _pendingBaseline=null;
+  updateHistoryButtons();
+}
+function save(){
+  try{
+    const cur=JSON.stringify(state);
+    if(!_historySuppress&&_lastSnapshot!==null&&_lastSnapshot!==cur){
+      if(_pendingBaseline===null)_pendingBaseline=_lastSnapshot;
+      clearTimeout(_saveTimer);
+      _saveTimer=setTimeout(flushHistorySnapshot,800);
+    }
+    _lastSnapshot=cur;
+    localStorage.setItem('klasio2',cur);
+  }catch(e){}
+}
+function load(){
+  try{
+    const d=localStorage.getItem('klasio2');
+    if(!d)return;
+    const parsed=JSON.parse(d);
+    const valid=validateState(parsed);
+    if(valid)state=valid;
+    else console.warn('[Klasio] données locales invalides, réinitialisation');
+  }catch(e){console.warn('[Klasio] load():',e);}
+}
+
+// ── Historique undo/redo ──
+const HISTORY_MAX=20;
+const history={past:[],future:[]};
+let _historySuppress=false;
+function historyUndo(){
+  clearTimeout(_saveTimer);flushHistorySnapshot();
+  if(!history.past.length)return;
+  const cur=JSON.stringify(state);
+  history.future.push(cur);
+  const prev=history.past.pop();
+  try{state=JSON.parse(prev);}catch(e){return;}
+  _historySuppress=true;
+  _lastSnapshot=prev;
+  try{localStorage.setItem('klasio2',prev);}catch(e){}
+  syncStepInputs();render();
+  _historySuppress=false;
+  updateHistoryButtons();
+  showToast('Action annulée');
+}
+function historyRedo(){
+  clearTimeout(_saveTimer);flushHistorySnapshot();
+  if(!history.future.length)return;
+  const cur=JSON.stringify(state);
+  history.past.push(cur);
+  const next=history.future.pop();
+  try{state=JSON.parse(next);}catch(e){return;}
+  _historySuppress=true;
+  _lastSnapshot=next;
+  try{localStorage.setItem('klasio2',next);}catch(e){}
+  syncStepInputs();render();
+  _historySuppress=false;
+  updateHistoryButtons();
+  showToast('Action rétablie');
+}
+function updateHistoryButtons(){
+  const u=document.getElementById('btn-undo'),r=document.getElementById('btn-redo');
+  if(u)u.disabled=!history.past.length;
+  if(r)r.disabled=!history.future.length;
+}
+function syncStepInputs(){
+  const el=document.getElementById('max-classes');if(el)el.value=state.maxClasses;
+  const sn=document.getElementById('school-name');if(sn)sn.value=state.schoolName||'';
+  const sy=document.getElementById('school-year');if(sy)sy.value=state.schoolYear||'';
+}
+
+// ── Thème clair / sombre ──
+function applyTheme(t){
+  if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);
+  else document.documentElement.removeAttribute('data-theme');
+  const sun=document.getElementById('icon-sun'),moon=document.getElementById('icon-moon');
+  if(sun&&moon){
+    const isDark=t==='dark'||(t!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+    sun.style.display=isDark?'none':'block';
+    moon.style.display=isDark?'block':'none';
+  }
+}
+function toggleTheme(){
+  const cur=localStorage.getItem('klasio-theme')||'auto';
+  const order=['auto','light','dark'];
+  const next=order[(order.indexOf(cur)+1)%order.length];
+  localStorage.setItem('klasio-theme',next);
+  applyTheme(next);
+  showToast(next==='auto'?'Thème : automatique':next==='dark'?'Thème : sombre':'Thème : clair');
+}
 
 // ── URL share ──
 function encodeState(){
@@ -606,9 +793,16 @@ function decodeState(str){
   try{
     const json=decodeURIComponent(atob(str.replace(/-/g,'+').replace(/_/g,'/')));
     const mini=JSON.parse(json);
-    state.niveaux=mini.n.map(n=>({id:n.i,label:n.l,total:n.t,plafond:n.p,color:n.c}));
-    state.classes=mini.cl.map(cl=>({rows:cl.r.map(r=>({nid:r.n,val:r.v}))}));
-    state.maxClasses=mini.m||8;
+    if(!mini||!Array.isArray(mini.n)||!Array.isArray(mini.cl))return false;
+    const candidate={
+      ...DEFAULT_STATE,
+      niveaux:mini.n.map(n=>({id:String(n.i||''),label:String(n.l||''),total:parseInt(n.t)||0,plafond:parseInt(n.p)||25,color:String(n.c||'#4f46e5')})),
+      classes:mini.cl.map(cl=>({rows:(cl.r||[]).map(r=>({nid:String(r.n||''),val:parseInt(r.v)||0})),teacher:''})),
+      maxClasses:parseInt(mini.m)||8,
+    };
+    const valid=validateState(candidate);
+    if(!valid)return false;
+    state=valid;
     return true;
   }catch(e){return false;}
 }
@@ -663,6 +857,12 @@ document.addEventListener('keydown',e=>{
     else if(document.getElementById('modal-bg').style.display!=='none')closeModal();
   }
   if(e.key==='Enter'&&document.getElementById('modal-bg').style.display!=='none')confirmAddNiveau();
+  const mod=e.ctrlKey||e.metaKey;
+  if(mod&&!e.altKey){
+    const k=e.key.toLowerCase();
+    if(k==='z'&&!e.shiftKey){e.preventDefault();historyUndo();}
+    else if((k==='y')||(k==='z'&&e.shiftKey)){e.preventDefault();historyRedo();}
+  }
 });
 async function confirmDialog(title,msg,icon='warn'){
   return showDialog({icon,title,msg,buttons:[{label:'Annuler',style:'cancel',value:false},{label:'Confirmer',style:'ok red',value:true}]});
@@ -819,8 +1019,8 @@ function renderPreview(){
     ${cls.map((cl,i)=>{
       const t=classTotal(cl),p=classPlafond(cl),ok=t<=p;
       return `<div class="prow">
-        <span class="prow-name">Classe ${i+1} — ${className(cl)}</span>
-        <span class="prow-detail">${cl.rows.map(r=>{const n=getNiveau(r.nid);return `${n?.label||r.nid}: ${r.val}`;}).join(' · ')}</span>
+        <span class="prow-name">Classe ${i+1} — ${esc(className(cl))}</span>
+        <span class="prow-detail">${cl.rows.map(r=>{const n=getNiveau(r.nid);return `${esc(n?.label||r.nid)}: ${r.val}`;}).join(' · ')}</span>
         <span class="pbadge" style="background:${ok?'var(--gbg)':'var(--rbg)'};color:${ok?'var(--green)':'var(--red)'}">${t}/${p}</span>
       </div>`;
     }).join('')}
@@ -912,7 +1112,7 @@ async function confirmAddNiveau(){
 }
 async function removeNiveau(id){
   const n=getNiveau(id);
-  const ok=await confirmDialog(`Supprimer le niveau ${n?.label||id} ?`,'Les entrées de ce niveau dans les classes seront aussi supprimées.','del');
+  const ok=await confirmDialog(`Supprimer le niveau ${esc(n?.label||id)} ?`,'Les entrées de ce niveau dans les classes seront aussi supprimées.','del');
   if(!ok)return;
   state.niveaux=state.niveaux.filter(n=>n.id!==id);
   state.classes.forEach(cl=>{cl.rows=cl.rows.filter(r=>r.nid!==id);});
@@ -976,9 +1176,9 @@ function render(){
   document.getElementById('niveaux-grid').innerHTML=state.niveaux.map(n=>`
     <div class="niveau-card">
       <div class="niveau-card-head">
-        <span class="dot" style="background:${n.color}"></span>
-        <span class="niv-lbl">${n.label}</span>
-        <button class="btn-icon" onclick="removeNiveau('${n.id}')" title="Supprimer ${n.label}">✕</button>
+        <span class="dot" style="background:${esc(n.color)}"></span>
+        <span class="niv-lbl">${esc(n.label)}</span>
+        <button class="btn-icon" onclick="removeNiveau('${esc(n.id)}')" title="Supprimer ${esc(n.label)}" aria-label="Supprimer ${esc(n.label)}">✕</button>
       </div>
       <div class="num-wrap">
         <button class="num-spin" onclick="(()=>{const n=getNiveau('${n.id}');if(n&&n.total>0){n.total--;render();save();}})()">−</button>
@@ -994,7 +1194,7 @@ function render(){
   // Plafonds
   document.getElementById('plafond-grid').innerHTML=state.niveaux.map(n=>`
     <div class="plafond-item">
-      <label><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${n.color}"></span> ${n.label} — max par classe</label>
+      <label><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${esc(n.color)}"></span> ${esc(n.label)} — max par classe</label>
       <div class="num-wrap">
         <button class="num-spin" onclick="(()=>{const n=getNiveau('${n.id}');if(n&&n.plafond>1){n.plafond--;render();save();}})()">−</button>
         <input type="number" class="num-core" value="${n.plafond}" min="1" max="99"
@@ -1020,8 +1220,8 @@ function render(){
     const rem=n.total-(used[n.id]||0);
     const cls=rem<0?'perr':rem===0?'pok':'pwarn';
     const nc=rem<0?'err':rem===0?'ok':'warn';
-    return `<div class="pool ${cls}" onclick="scrollToFirstClassWith('${n.id}')" title="Aller à la première classe ${n.label}">
-      <div class="pool-niv" style="color:${n.color}">${n.label}</div>
+    return `<div class="pool ${cls}" onclick="scrollToFirstClassWith('${esc(n.id)}')" title="Aller à la première classe ${esc(n.label)}">
+      <div class="pool-niv" style="color:${esc(n.color)}">${esc(n.label)}</div>
       <div class="pool-n ${nc}">${rem===0?'✓':rem<0?rem:rem}</div>
       <div class="pool-sub">${rem===0?'complet':rem<0?'en trop':'à placer'}</div>
     </div>`;
@@ -1031,7 +1231,7 @@ function render(){
   // Alertes
   const errs=[],warns=[];
   if(state.classes.length>state.maxClasses)errs.push(`<strong>${state.classes.length} classes créées</strong> sur ${state.maxClasses} prévues.`);
-  state.niveaux.filter(n=>(used[n.id]||0)>n.total).forEach(n=>errs.push(`<strong>Trop d'élèves de ${n.label}</strong> placés : ${used[n.id]} placés pour ${n.total} inscrits.`));
+  state.niveaux.filter(n=>(used[n.id]||0)>n.total).forEach(n=>errs.push(`<strong>Trop d'élèves de ${esc(n.label)}</strong> placés : ${used[n.id]} placés pour ${n.total} inscrits.`));
   state.classes.forEach((cl,i)=>{
     if(cl.rows.length>1&&!consecOk(cl.rows.map(r=>r.nid)))errs.push(`<strong>Classe ${i+1}</strong> : niveaux non consécutifs (ex: CP+CE2 interdit).`);
     if(classTotal(cl)>classPlafond(cl))errs.push(`<strong>Classe ${i+1}</strong> dépasse le nombre maximum d'élèves.`);
@@ -1102,7 +1302,7 @@ function render(){
         const hintCls=rem<0?'err':rem===0?'ok':pct2>88?'warn':'muted';
         const hintTxt=rem<0?`⚠ ${Math.abs(rem)} de trop — réduisez`:rem===0?'✓ tous placés':`${rem} encore à placer`;
         return `<div class="nrow">
-          <span class="npill" style="background:${n.color}18;color:${n.color}">${n.label}</span>
+          <span class="npill" style="background:${esc(n.color)}18;color:${esc(n.color)}">${esc(n.label)}</span>
           <div class="nrow-right">
             <div class="nrow-controls">
               <div class="inline-wrap${over?' over':''}">
@@ -1115,19 +1315,19 @@ function render(){
             </div>
             <span class="nrow-hint ${hintCls}">${hintTxt}</span>
           </div>
-          <button class="btn-icon" onclick="removeRow(${ci},${ri})" title="Retirer ${n.label}">✕</button>
+          <button class="btn-icon" onclick="removeRow(${ci},${ri})" title="Retirer ${esc(n.label)}" aria-label="Retirer ${esc(n.label)}">✕</button>
         </div>`;
       }).join('');
 
       const addBtns=avail.map(id=>{
         const n=getNiveau(id);
-        return `<button class="qa add-niv" onclick="addRow(${ci},'${id}')"
-          style="border-color:${n.color};color:${n.color}" title="Ajouter ${n.label}">+ Ajouter ${n.label}</button>`;
+        return `<button class="qa add-niv" onclick="addRow(${ci},'${esc(id)}')"
+          style="border-color:${esc(n.color)};color:${esc(n.color)}" title="Ajouter ${esc(n.label)}">+ Ajouter ${esc(n.label)}</button>`;
       }).join('');
 
-      const qaBtns=qa.map(a=>`<button class="qa ${a.t}"
-        onclick='applyQA(${ci},${JSON.stringify(a).replace(/'/g,"&#39;")})'
-        title="${a.tip}">${a.label}</button>`).join('');
+      const qaBtns=qa.map(a=>`<button class="qa ${esc(a.t)}"
+        onclick='applyQA(${ci},${esc(JSON.stringify(a))})'
+        title="${esc(a.tip)}">${esc(a.label)}</button>`).join('');
 
       const strip=(avail.length||qa.length)?`<div class="qs">
         ${avail.length?`<div class="qs-row"><span class="qs-lbl">Ajouter un niveau à cette classe</span>${addBtns}</div>`:''}
@@ -1137,7 +1337,7 @@ function render(){
       return `<div class="cl-card ${cardCls}" data-ci="${ci}">
         <div class="cl-top">
           <span class="cl-num">Classe ${ci+1}</span>
-          <span class="cl-name">${className(cl)}</span>
+          <span class="cl-name">${esc(className(cl))}</span>
           <span class="cl-badge ${bCls}">${bTxt}</span>
           <button class="btn-del-cl" onclick="removeClasse(${ci})" title="Supprimer cette classe">×</button>
         </div>
@@ -1276,13 +1476,21 @@ function exportPdf(){
 }
 
 // ── Init ──
+applyTheme(localStorage.getItem('klasio-theme')||'auto');
+if(window.matchMedia){
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{
+    if((localStorage.getItem('klasio-theme')||'auto')==='auto')applyTheme('auto');
+  });
+}
 const fromUrl=loadFromUrl();
 if(!fromUrl)load();
+_lastSnapshot=JSON.stringify(state);
 document.getElementById('max-classes').value=state.maxClasses||8;
 document.getElementById('school-name').value=state.schoolName||'';
 document.getElementById('school-year').value=state.schoolYear||'2025-2026';
 goStep(state.currentStep||1);
 render();
+updateHistoryButtons();
 </script>
 </body>
 </html>

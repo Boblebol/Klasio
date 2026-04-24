@@ -7,6 +7,19 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+### Ajouté (Phase 1 — en cours)
+- **Mode sombre** avec trois modes : clair / sombre / automatique (suit la préférence système). Toggle dans le header, choix persisté dans `localStorage`.
+- **Annuler / Rétablir** via les boutons du header et les raccourcis `Ctrl+Z` / `Ctrl+Y` (et `Cmd+Z` / `Cmd+Shift+Z` sur macOS). Historique de 20 états avec coalescence des modifications rapprochées (<800 ms) pour éviter le spam de snapshots lors de la saisie clavier.
+- **Configuration Netlify** (`netlify.toml`) pour déploiement zéro-config avec en-têtes de sécurité (CSP, X-Frame-Options, Referrer-Policy, Permissions-Policy).
+
+### Changé
+- Bascule de la configuration de déploiement de GitHub Pages vers Netlify.
+
+### Sécurité
+- **Échappement HTML systématique** de toutes les données saisies par l'utilisateur injectées dans les templates de rendu (labels de niveaux, nom de classe, libellés de boutons, attributs `title`, actions rapides). Un helper `esc()` centralisé remplace les concaténations directes.
+- **Validation stricte du schéma** à la lecture (`localStorage` + paramètre URL `?s=…`). Un état corrompu ou manipulé est rejeté silencieusement plutôt que de casser l'application ou de permettre une injection.
+- **Restriction des identifiants de niveau** à `/^[A-Za-z0-9_-]{1,20}$/` pour couper la surface d'injection via les handlers `onclick`.
+
 ### À venir
 Voir [ROADMAP.md](./ROADMAP.md) pour les prochaines fonctionnalités planifiées.
 
