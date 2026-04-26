@@ -443,28 +443,39 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 /* ── Onboarding ── */
 .onb-bg{position:fixed;inset:0;background:rgba(20,20,26,.55);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;animation:onb-fade .25s ease-out}
 @keyframes onb-fade{from{opacity:0}to{opacity:1}}
-.onb-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:26px 24px 22px;max-width:420px;width:100%;box-shadow:0 12px 48px rgba(0,0,0,.22);position:relative;animation:onb-up .3s cubic-bezier(.2,.8,.2,1)}
+.onb-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px 24px 20px;max-width:460px;width:100%;box-shadow:0 12px 48px rgba(0,0,0,.22);position:relative;animation:onb-up .3s cubic-bezier(.2,.8,.2,1)}
 @keyframes onb-up{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-.onb-skip{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--t3);font-size:12px;font-weight:600;cursor:pointer;padding:4px 8px;border-radius:var(--rs)}
+.onb-skip{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--t3);font-size:12px;font-weight:600;cursor:pointer;padding:5px 9px;border-radius:var(--rs)}
 .onb-skip:hover{color:var(--text);background:var(--bg)}
-.onb-dots{display:flex;gap:6px;justify-content:center;margin-bottom:14px}
+.onb-top{display:flex;align-items:center;gap:10px;padding-right:62px;margin-bottom:16px}
+.onb-brandmark{width:34px;height:34px;border-radius:10px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;box-shadow:0 6px 16px rgba(79,70,229,.24)}
+.onb-step-label{font-size:11px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.08em}
+.onb-dots{display:flex;gap:6px;margin-top:4px}
 .onb-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);transition:all .2s}
 .onb-dot.on{background:var(--brand);width:18px;border-radius:3px}
 .onb-slides{position:relative}
-.onb-slide{display:none;text-align:center;padding:4px 0 12px}
+.onb-slide{display:none;text-align:left;padding:0 0 12px}
 .onb-slide.active{display:block}
-.onb-ill{font-size:44px;margin-bottom:8px;line-height:1}
-.onb-slide h3{font-size:19px;font-weight:800;margin-bottom:8px;letter-spacing:-.3px}
-.onb-slide p{font-size:14px;color:var(--t2);margin-bottom:12px;line-height:1.55}
+.onb-kicker{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--brand);background:var(--brand-bg);border:1px solid var(--brand-border);border-radius:99px;padding:4px 8px;margin-bottom:10px}
+.onb-slide h3{font-size:22px;font-weight:850;margin-bottom:7px;letter-spacing:-.45px;line-height:1.12}
+.onb-slide p{font-size:14px;color:var(--t2);margin-bottom:14px;line-height:1.6}
+.onb-flow,.onb-points{display:flex;flex-direction:column;gap:8px}
+.onb-point,.onb-step-card{display:flex;gap:10px;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 11px}
+.onb-point-icon,.onb-step-num{flex:0 0 auto;width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:var(--surface);border:1px solid var(--border);color:var(--brand)}
+.onb-point strong,.onb-step-card strong{display:block;font-size:13px;color:var(--text);margin-bottom:1px}
+.onb-point span:last-child,.onb-step-card span:last-child{display:block;font-size:12px;color:var(--t2);line-height:1.45}
+.onb-note{background:var(--gbg);border:1px solid var(--gborder);color:var(--green);border-radius:12px;padding:10px 12px;font-size:13px;font-weight:600;line-height:1.45;margin-top:10px}
 .onb-list{font-size:13px;color:var(--t2);line-height:1.7;text-align:left;max-width:340px;margin:0 auto;padding-left:20px}
 .onb-list li{margin-bottom:4px}
 .onb-list strong{color:var(--text)}
-.onb-list code{background:var(--bg);padding:1px 6px;border-radius:4px;font-size:12px}
-.onb-actions{display:flex;justify-content:space-between;gap:10px;margin-top:10px}
+.onb-list code,.onb-slide p code{background:var(--bg);padding:1px 6px;border-radius:4px;font-size:12px;border:1px solid var(--border)}
+.onb-actions{display:flex;justify-content:space-between;gap:10px;margin-top:10px;padding-top:12px;border-top:1px solid var(--border)}
 .onb-btn{border:1.5px solid var(--border);background:var(--surface);color:var(--t2);border-radius:var(--rs);padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}
 .onb-btn:hover{border-color:var(--border2);color:var(--text)}
+.onb-btn:disabled{visibility:hidden}
 .onb-btn.primary{background:var(--brand);border-color:var(--brand);color:#fff;margin-left:auto}
 .onb-btn.primary:hover{filter:brightness(1.08)}
+@media(max-width:420px){.onb-card{padding:20px 18px 18px}.onb-slide h3{font-size:20px}.onb-top{padding-right:56px}}
 
 /* ── School info ── */
 .school-info-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
@@ -824,46 +835,82 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
 </div>
 
 <!-- ══ ONBOARDING ══ -->
-<div class="onb-bg" id="onb-bg" style="display:none" role="dialog" aria-modal="true" aria-labelledby="onb-title">
+<div class="onb-bg" id="onb-bg" style="display:none" role="dialog" aria-modal="true" aria-labelledby="onb-title" aria-describedby="onb-desc">
   <div class="onb-card">
     <button class="onb-skip" onclick="closeOnboarding(true)" aria-label="Passer l'introduction">Passer</button>
-    <div class="onb-dots">
-      <span class="onb-dot on"></span><span class="onb-dot"></span><span class="onb-dot"></span>
+    <h2 class="sr-only" id="onb-title">Introduction à Klasio</h2>
+    <p class="sr-only" id="onb-desc">Présentation rapide en trois écrans : confidentialité, méthode de répartition et sauvegarde.</p>
+    <div class="onb-top" aria-hidden="true">
+      <div class="onb-brandmark">K</div>
+      <div>
+        <div class="onb-step-label" id="onb-step-label">Vos données</div>
+        <div class="onb-dots">
+          <span class="onb-dot on"></span><span class="onb-dot"></span><span class="onb-dot"></span>
+        </div>
+      </div>
     </div>
     <div class="onb-slides">
-      <div class="onb-slide active">
-        <div class="onb-ill">👋</div>
-        <h3 id="onb-title">Bienvenue dans Klasio</h3>
-        <p>Un outil simple pour répartir vos élèves en classes — y compris les doubles niveaux typiques du primaire.</p>
-        <ul class="onb-list">
-          <li>Tout est <strong>local à votre navigateur</strong>. Rien n'est envoyé sur internet.</li>
-          <li>Vous pouvez exporter en <strong>PDF</strong>, <strong>TXT</strong> ou en affichage <strong>mural</strong>.</li>
-          <li>Pour partager, un lien copiable contient toute votre répartition.</li>
-        </ul>
+      <div class="onb-slide active" data-step-label="Vos données">
+        <div class="onb-kicker">Confidentialité</div>
+        <h3>Vos données restent dans ce navigateur</h3>
+        <p>Klasio vous aide à composer les classes sans compte, sans serveur et sans suivi. Vous gardez la main sur vos fichiers et vos liens.</p>
+        <div class="onb-points">
+          <div class="onb-point">
+            <span class="onb-point-icon">✓</span>
+            <div><strong>Aucun compte à créer</strong><span>L'application fonctionne directement depuis cette page.</span></div>
+          </div>
+          <div class="onb-point">
+            <span class="onb-point-icon">✓</span>
+            <div><strong>Travail enregistré localement</strong><span>Votre brouillon reste dans le navigateur utilisé.</span></div>
+          </div>
+          <div class="onb-point">
+            <span class="onb-point-icon">✓</span>
+            <div><strong>Partage volontaire</strong><span>Un lien partagé contient la répartition : envoyez-le seulement aux personnes concernées.</span></div>
+          </div>
+        </div>
       </div>
-      <div class="onb-slide">
-        <div class="onb-ill">🧭</div>
-        <h3>4 étapes guidées</h3>
-        <p>Klasio vous accompagne pas à pas :</p>
-        <ol class="onb-list">
-          <li><strong>Effectifs</strong> — combien d'élèves par niveau.</li>
-          <li><strong>Plafonds</strong> — nombre max par classe (24 pour CP/CE1).</li>
-          <li><strong>Répartition auto</strong> — 4 stratégies au choix.</li>
-          <li><strong>Ajustement</strong> — peaufinez manuellement.</li>
-        </ol>
+      <div class="onb-slide" data-step-label="Méthode">
+        <div class="onb-kicker">Parcours conseillé</div>
+        <h3>Commencez simple, ajustez ensuite</h3>
+        <p>Le plus rapide : laissez Klasio proposer une base, puis corrigez les cas particuliers avec l'équipe.</p>
+        <div class="onb-flow">
+          <div class="onb-step-card">
+            <span class="onb-step-num">1</span>
+            <div><strong>Saisissez les effectifs</strong><span>Indiquez le nombre d'élèves par niveau, ou importez un CSV.</span></div>
+          </div>
+          <div class="onb-step-card">
+            <span class="onb-step-num">2</span>
+            <div><strong>Choisissez une stratégie</strong><span>Classes équilibrées, doubles niveaux, niveau unique ou classes légères.</span></div>
+          </div>
+          <div class="onb-step-card">
+            <span class="onb-step-num">3</span>
+            <div><strong>Ajustez les classes</strong><span>Déplacez des élèves, ajoutez une note, renseignez enseignant·e et équilibre F/M.</span></div>
+          </div>
+        </div>
       </div>
-      <div class="onb-slide">
-        <div class="onb-ill">💡</div>
-        <h3>Deux astuces à connaître</h3>
-        <ul class="onb-list">
-          <li><strong>Ctrl+Z</strong> (ou Cmd+Z) annule votre dernière action.</li>
-          <li>Le bouton <strong>Sauver</strong> (étape 4) télécharge un fichier <code>.klasio</code> que vous pourrez rouvrir plus tard.</li>
-          <li>Le bouton <strong>🌙</strong> en haut à droite bascule le thème clair/sombre.</li>
-        </ul>
+      <div class="onb-slide" data-step-label="Sauvegarde">
+        <div class="onb-kicker">À ne pas oublier</div>
+        <h3>Sauvez avant de fermer</h3>
+        <p>Le navigateur garde votre travail, mais le fichier <code>.klasio</code> reste la meilleure sauvegarde pour revenir dessus plus tard.</p>
+        <div class="onb-points">
+          <div class="onb-point">
+            <span class="onb-point-icon">⌘</span>
+            <div><strong>Annuler / rétablir</strong><span>Utilisez Ctrl+Z / Ctrl+Y, ou Cmd+Z sur Mac.</span></div>
+          </div>
+          <div class="onb-point">
+            <span class="onb-point-icon">A</span>
+            <div><strong>Brouillons A/B/C</strong><span>Testez plusieurs variantes sans écraser votre répartition principale.</span></div>
+          </div>
+          <div class="onb-point">
+            <span class="onb-point-icon">↓</span>
+            <div><strong>Exports prêts pour l'école</strong><span>PDF, TXT, affichage mural et fichier .klasio depuis l'étape 4.</span></div>
+          </div>
+        </div>
+        <div class="onb-note">Astuce : créez un fichier .klasio avant de changer d'ordinateur ou de navigateur.</div>
       </div>
     </div>
     <div class="onb-actions">
-      <button class="onb-btn ghost" id="onb-prev" onclick="onbPrev()" style="visibility:hidden">← Précédent</button>
+      <button class="onb-btn ghost" id="onb-prev" onclick="onbPrev()" disabled>← Précédent</button>
       <button class="onb-btn primary" id="onb-next" onclick="onbNext()">Suivant →</button>
     </div>
   </div>
@@ -1125,14 +1172,19 @@ function syncStepInputs(){
 
 // ── Onboarding ──
 let _onbIdx=0;
+let _onbOpener=null;
 function openOnboarding(){
+  _onbOpener=document.activeElement;
   _onbIdx=0;
   updateOnb();
   document.getElementById('onb-bg').style.display='flex';
+  setTimeout(()=>document.getElementById('onb-next')?.focus(),60);
 }
 function closeOnboarding(){
   localStorage.setItem('klasio-onb-seen','1');
   document.getElementById('onb-bg').style.display='none';
+  if(_onbOpener&&typeof _onbOpener.focus==='function')_onbOpener.focus();
+  _onbOpener=null;
 }
 function updateOnb(){
   const slides=document.querySelectorAll('.onb-slide');
@@ -1141,8 +1193,12 @@ function updateOnb(){
   dots.forEach((d,i)=>d.classList.toggle('on',i===_onbIdx));
   const prev=document.getElementById('onb-prev');
   const next=document.getElementById('onb-next');
-  prev.style.visibility=_onbIdx===0?'hidden':'visible';
+  const label=document.getElementById('onb-step-label');
+  const current=slides[_onbIdx];
+  if(label)label.textContent=current?.dataset.stepLabel||`Écran ${_onbIdx+1}`;
+  prev.disabled=_onbIdx===0;
   next.textContent=_onbIdx===slides.length-1?'C\'est parti !':'Suivant →';
+  next.setAttribute('aria-label',_onbIdx===slides.length-1?'Fermer l’introduction et commencer':'Afficher l’écran suivant');
 }
 function onbNext(){
   const slides=document.querySelectorAll('.onb-slide');
@@ -1231,6 +1287,7 @@ document.addEventListener('keydown',e=>{
     else if(document.getElementById('move-modal-bg').style.display!=='none')closeMoveDialog();
     else if(document.getElementById('csv-modal-bg').style.display!=='none')closeCsvImport();
     else if(document.getElementById('modal-bg').style.display!=='none')closeModal();
+    else if(document.getElementById('onb-bg').style.display!=='none')closeOnboarding();
   }
   if(e.key==='Enter'&&document.getElementById('modal-bg').style.display!=='none')confirmAddNiveau();
   const mod=e.ctrlKey||e.metaKey;

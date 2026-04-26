@@ -40,6 +40,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 - Bascule de la configuration de déploiement de Netlify vers GitHub Pages.
 - **Début de décomposition du monolithe** : le code JavaScript devient un module ES (`<script type="module">`) qui importe ses fonctions pures depuis `src/core.mjs`. Les handlers inline restants sont exposés explicitement via `window.*`. Ouvre la voie au build Vite prévu en Phase 2.
+- **Onboarding clarifié** : introduction recentrée sur la confidentialité, le parcours conseillé et la sauvegarde `.klasio`, avec une hiérarchie visuelle plus sobre.
 
 ### Sécurité
 
