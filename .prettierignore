@@ -4,7 +4,8 @@ package-lock.json
 *.min.js
 .netlify
 
-# On ne formate pas index.html : fichier monolithe avec styles/JS inline
-# qui suit une convention compacte manuelle (un « split » propre viendra
-# avec Vite dans une itération future).
+# On ne formate pas les pages HTML autonomes : elles mélangent HTML + CSS
+# inline, et app.html garde la convention compacte du monolithe historique
+# jusqu'au split Vite/esbuild prévu en roadmap.
 index.html
+app.html

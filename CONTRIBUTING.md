@@ -10,7 +10,11 @@ Merci de votre intérêt pour Klasio ! Ce guide couvre les conventions du projet
 
 ## 🧑‍💻 Setup
 
-Klasio est un projet **sans build**. Tout se passe dans `index.html`.
+Klasio est un site statique **sans build runtime** :
+
+- `index.html` : landing publique GitHub Pages.
+- `app.html` : application Klasio.
+- `src/core.mjs` : noyau pur testé avec Vitest.
 
 ```bash
 git clone https://github.com/Boblebol/Klasio.git
@@ -26,7 +30,7 @@ Ouvrez <http://localhost:8080>.
 Le projet étant mono-fichier, on garde une **cohérence stricte** avec l'existant :
 
 - **Indentation** : 2 espaces (voir `.editorconfig`).
-- **JS** : vanilla, pas de framework. Fonctions courtes, état global dans `state`.
+- **JS** : vanilla, pas de framework. Fonctions courtes, état global dans `state` côté app.
 - **CSS** : custom properties dans `:root`, classes utilitaires courtes.
 - **Nommage** : camelCase pour le JS, kebab-case pour le CSS.
 - **Pas de dépendances npm runtime** — l'application doit rester du HTML/CSS/JS servi en statique. Les dépendances npm sont réservées aux outils de développement et de test.
@@ -50,19 +54,22 @@ npm test
 npm run lint
 npm run format:check
 npm run build:pages
+npm run verify:pages
 ```
 
 Checklist minimale :
 
+- [ ] La landing (`/`) ouvre bien `app.html` et `privacy.html`.
 - [ ] Les 4 étapes du wizard fonctionnent sans erreur console.
 - [ ] `Partager` copie un lien, et ce lien recharge bien la répartition.
 - [ ] Export PDF ouvre un fichier valide.
 - [ ] Export TXT téléchargé et lisible.
+- [ ] Export CSV téléchargé et lisible dans un tableur.
 - [ ] Export mural s'ouvre dans un nouvel onglet, imprimable.
 - [ ] Ajout / suppression de niveau custom OK.
 - [ ] Pas de warning XSS lors d'une saisie contenant `<script>` ou `"`.
 
-Le workflow GitHub Actions exécute ces vérifications sur chaque pull request. Le déploiement GitHub Pages ne se fait que sur un push vers `main`, après réussite des vérifications.
+Le workflow GitHub Actions exécute les vérifications automatisées sur chaque pull request. Le déploiement GitHub Pages ne se fait que sur un push vers `main`, après réussite des vérifications.
 
 ## 📦 Commits
 

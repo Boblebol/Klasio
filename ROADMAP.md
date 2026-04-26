@@ -41,10 +41,10 @@ _Objectif : rendre la v0.1 fiable, testable et agréable au quotidien. 1–3 sem
 
 ### Technique
 
-- ✅ **Tests Vitest** sur `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `genderBalanceStatus`, `encodeState/decodeState`, `parseCsvEffectifs` (64 tests).
+- ✅ **Tests Vitest** sur `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `genderBalanceStatus`, `encodeState/decodeState`, `parseCsvEffectifs`, `createDemoState`, `buildClassesCsv` (67 tests).
 - ✅ **Validation stricte des états importés** (localStorage + URL + fichier `.klasio`).
 - ✅ **Échappement HTML centralisé** via `esc()` sur toutes les données utilisateur.
-- ✅ **Début de split du monolithe** : les fonctions pures sont dans `src/core.mjs`, `index.html` est un `<script type="module">` qui les importe.
+- ✅ **Début de split du monolithe** : les fonctions pures sont dans `src/core.mjs`, `app.html` est un `<script type="module">` qui les importe.
 - 🧱 **Terminer le split du monolithe** en fichiers séparés :
   ```
   src/
@@ -55,9 +55,11 @@ _Objectif : rendre la v0.1 fiable, testable et agréable au quotidien. 1–3 sem
     js/exports.js    # PDF, TXT, mural
     js/share.js      # encodage URL
   ```
-  Build minimal : concaténation avec [esbuild](https://esbuild.github.io/) ou [Vite](https://vitejs.dev/), mais **garder la possibilité** de servir le fichier unique en prod (one-file-build).
+  Build minimal : concaténation avec [esbuild](https://esbuild.github.io/) ou [Vite](https://vitejs.dev/), mais **garder la possibilité** de servir l'application comme page statique autonome.
 - ✅ **Linting** : ESLint 9 (flat config) + Prettier, intégrés au CI.
 - ✅ **GitHub Pages via Actions** : tests, lint, format, build statique et déploiement automatique sur `main`.
+- ✅ **Landing GitHub Pages** : page publique en racine, application séparée dans `app.html`, lien direct vers la démo et la page vie privée.
+- ✅ **Vérification de l'artefact Pages** : contrôle local de `dist/` avant upload en CI.
 - ✅ **jsPDF hébergé localement** (`vendor/jspdf/`) — plus de CDN runtime, CSP durcie, offline complet.
 
 ---
@@ -84,7 +86,7 @@ _Objectif : passer d'un outil pour directeur d'école primaire à une solution p
 
 ### Comms / site
 
-- 🎯 **Landing page** simple (fr) avec démo live, captures, témoignages.
+- ✅ **Landing page** simple (fr) avec accès app, démo, confidentialité et repository.
 - 🎯 **Domaine dédié** (ex. `klasio.fr` ou `klasio.app`).
 - ✅ **Page « Vie privée »** détaillée sur le fonctionnement local, les liens de partage et les exports.
 - **Article de blog** : « Pourquoi Klasio (et pas un tableur) ».
@@ -146,7 +148,7 @@ Le projet est actuellement MIT et gratuit. Si la base utilisateurs grossit, plus
 - **Conventions mairies / académies** : accompagnement, formation.
 - **Marque blanche** pour les éditeurs de logiciels scolaires.
 
-Quelle que soit la piste, **le fichier `index.html` standalone doit rester gratuit et open-source**, c'est l'ADN du projet.
+Quelle que soit la piste, **l'application statique `app.html` doit rester gratuite et open-source**, c'est l'ADN du projet.
 
 ---
 
@@ -159,7 +161,7 @@ Quelle que soit la piste, **le fichier `index.html` standalone doit rester gratu
 | `renderExcept` ne restaure pas le focus (code mort, commentaire reconnaît le problème) | `render()`      | 🟡 Basse   |
 | ~~Dépendance CDN jsPDF (pas d'offline)~~ — vendorisé dans `vendor/jspdf/`              | `<head>`        | ✅ Réglé   |
 | Aucun test automatisé                                                                  | —               | 🟠 Moyenne |
-| 1229 lignes dans un seul fichier                                                       | `index.html`    | 🟠 Moyenne |
+| Monolithe HTML/CSS/JS encore volumineux                                                | `app.html`      | 🟠 Moyenne |
 | Pas de CSP header                                                                      | `<head>` (meta) | 🟡 Basse   |
 | `load()` fait un `state=p` sans merger — plante si le schéma évolue                    | `load()`        | 🟠 Moyenne |
 

@@ -41,9 +41,8 @@ jobs:
       - name: Build GitHub Pages artifact
         run: npm run build:pages
 
-      - name: Validate HTML
-        run: npx --yes html-validate index.html
-        continue-on-error: true
+      - name: Validate GitHub Pages artifact
+        run: npm run verify:pages
 
       - name: Upload GitHub Pages artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

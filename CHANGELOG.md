@@ -16,7 +16,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 - **Onboarding de première visite** : 3 écrans présentant l'outil, le wizard et les raccourcis (vu une seule fois, bouton _Passer_ toujours disponible).
 - **Import CSV des effectifs** à l'étape 1 : coller une liste `CP,24 / CE1,22 / …` (séparateurs virgule, point-virgule, tabulation ou pipe) ou charger un fichier `.csv`. Aperçu en temps réel des niveaux mis à jour / créés, avec remontée des lignes invalides.
 - **Déplacer des élèves entre classes** : bouton → sur chaque ligne de niveau, modal listant les classes compatibles (même niveau ou niveau consécutif, places disponibles), avec sélecteur de quantité. Supprime automatiquement la ligne source si elle tombe à zéro, ou fusionne avec une ligne existante côté cible.
-- **ESLint + Prettier** : configuration flat config (ESLint 9) sur `src/core.mjs`, `tests/` et les configs. Règles `eqeqeq`, `no-var`, `prefer-const`, `no-unused-vars` (en warning). Prettier sur tous les fichiers JS/MD/YAML/JSON (hors `index.html` et `vendor/`). Nouveaux scripts `npm run lint`, `lint:fix`, `format`, `format:check`, et nouveau job `lint` dans le CI GitHub Actions.
+- **ESLint + Prettier** : configuration flat config (ESLint 9) sur `src/core.mjs`, `tests/` et les configs. Règles `eqeqeq`, `no-var`, `prefer-const`, `no-unused-vars` (en warning). Prettier sur tous les fichiers JS/MD/YAML/JSON (hors pages HTML autonomes et `vendor/`). Nouveaux scripts `npm run lint`, `lint:fix`, `format`, `format:check`, et nouveau job `lint` dans le CI GitHub Actions.
 - **jsPDF hébergé localement** (`vendor/jspdf/jspdf.umd.min.js`, version 2.5.2) : plus aucune dépendance runtime sur un CDN. Fonctionnement 100 % hors ligne après le premier chargement, CSP renforcée (`script-src 'self' 'unsafe-inline'`, retrait de `cdnjs.cloudflare.com`), aucune requête sortie du navigateur du directeur pour exporter un PDF. Documentation de la procédure de mise à jour dans `vendor/jspdf/README.md`.
 - **Commentaire libre par classe** (280 caractères max) : bouton « + Ajouter une note » qui déplie une zone de saisie sous chaque classe (ex. _« privilégier élèves calmes »_, _« séparer jumeaux Dupont »_). La note est reprise dans les exports **TXT** et **PDF** (en italique sous la classe), mais **pas dans le mural** — le mural étant destiné à l'affichage public.
 - **Multi-scénarios A / B / C** : trois répartitions indépendantes que vous pouvez éditer et comparer côte à côte. Bouton _Scénario A_ dans le header → modal avec résumé de chaque scénario (élèves placés, classes, erreurs) et actions _Activer_ / _Copier vers_ / _Vider_. Noms éditables, undo/redo isolé par scénario. Migration transparente des données existantes vers le slot A.
@@ -24,6 +24,8 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 - **Mode démo** : bouton _Charger un exemple_ à l'étape 1 pour ouvrir une école fictive complète avec effectifs, classes, enseignant·es, notes et totaux F/M.
 - **Export CSV tableur** : bouton _CSV_ dans la barre d'exports de l'étape 4, avec une ligne par niveau de classe et des cellules échappées pour Excel/LibreOffice.
 - **Page vie privée** : page statique `privacy.html` expliquant le stockage local, les fichiers `.klasio`, les liens de partage, les exports et les limites à connaître.
+- **Landing GitHub Pages** : `index.html` devient une page publique complète, avec accès à l'application dans `app.html`, à la démo, à la page vie privée et au repository GitHub.
+- **Vérification d'artefact Pages** : script `npm run verify:pages` pour contrôler que `dist/` contient les pages, modules et liens indispensables avant déploiement.
 - **Accessibilité** : passe complète pour conforter la navigation clavier et les lecteurs d'écran.
   - Lien « Aller au contenu principal » (skip link) apparaissant au focus clavier.
   - Landmark `<main>` sur la zone centrale, nav étapes annoncée et `aria-current="step"` sur l'étape active.
@@ -42,6 +44,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 ### Changé
 
 - Bascule de la configuration de déploiement de Netlify vers GitHub Pages.
+- Séparation de la landing publique (`index.html`) et de l'application (`app.html`) pour une présentation GitHub Pages plus lisible.
 - **Début de décomposition du monolithe** : le code JavaScript devient un module ES (`<script type="module">`) qui importe ses fonctions pures depuis `src/core.mjs`. Les handlers inline restants sont exposés explicitement via `window.*`. Ouvre la voie au build Vite prévu en Phase 2.
 - **Onboarding clarifié** : introduction recentrée sur la confidentialité, le parcours conseillé et la sauvegarde `.klasio`, avec une hiérarchie visuelle plus sobre.
 

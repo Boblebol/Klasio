@@ -4,11 +4,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Status](https://img.shields.io/badge/status-alpha-orange.svg)]()
-[![No dependencies](https://img.shields.io/badge/build-static%20HTML-informational)]()
+[![No dependencies](https://img.shields.io/badge/runtime-static%20HTML-informational)]()
 [![CI](https://github.com/Boblebol/Klasio/actions/workflows/check.yml/badge.svg)](https://github.com/Boblebol/Klasio/actions/workflows/check.yml)
 [![Tests](https://img.shields.io/badge/tests-67%20unitaires-success)]()
 
-Klasio est une application **100 % côté client** (un seul fichier `index.html`). Aucune donnée ne quitte le navigateur : tout est stocké localement (`localStorage`). Aucun compte, aucun backend, aucun tracker.
+Klasio est une application **100 % côté client** servie depuis `app.html`, avec une landing publique en `index.html`. Aucune donnée ne quitte le navigateur : tout est stocké localement (`localStorage`). Aucun compte, aucun backend, aucun tracker.
 
 ---
 
@@ -34,14 +34,16 @@ Klasio est une application **100 % côté client** (un seul fichier `index.html`
 
 ## 🚀 Démarrage rapide
 
-Klasio est un fichier HTML statique. Il suffit de l'ouvrir dans un navigateur moderne.
+Klasio est une application HTML statique. Il suffit de l'ouvrir dans un navigateur moderne.
 
 ### En local
 
 ```bash
 git clone https://github.com/Boblebol/Klasio.git
 cd Klasio
-open index.html        # macOS
+open app.html          # macOS : ouvre directement l'application
+# ou
+open index.html        # landing publique
 ```
 
 ### Via un petit serveur local (recommandé)
@@ -60,15 +62,20 @@ La version publique est déployée automatiquement par GitHub Actions :
 
 <https://boblebol.github.io/Klasio/>
 
-Le workflow `.github/workflows/check.yml` exécute les tests, le lint, le formatage et prépare un dossier `dist/`. Sur un push vers `main`, ce dossier est publié sur GitHub Pages.
+L'application est accessible depuis la landing, ou directement via :
+
+<https://boblebol.github.io/Klasio/app.html>
+
+Le workflow `.github/workflows/check.yml` exécute les tests, le lint, le formatage, le build Pages et une vérification d'artefact (`npm run verify:pages`). Sur un push vers `main`, ce dossier est publié sur GitHub Pages.
 
 Pour un fork, activez **Settings → Pages → Source: GitHub Actions**, puis poussez sur `main`.
 
 ```bash
 npm run build:pages
+npm run verify:pages
 ```
 
-Le dossier `dist/` contient uniquement les fichiers nécessaires à l'application (`index.html`, `privacy.html`, `src/`, `vendor/`, `.nojekyll`).
+Le dossier `dist/` contient uniquement les fichiers nécessaires au site public (`index.html`, `app.html`, `privacy.html`, `src/`, `vendor/`, `.nojekyll`).
 
 ## 🧭 Utilisation
 
@@ -81,7 +88,7 @@ Le dossier `dist/` contient uniquement les fichiers nécessaires à l'applicatio
 
 ## 🛠️ Stack technique
 
-- HTML / CSS / JavaScript vanilla — **aucune dépendance runtime externe**, aucun bundler nécessaire pour servir l'app.
+- HTML / CSS / JavaScript vanilla — **aucune dépendance runtime externe**, aucun bundler nécessaire pour servir le site.
 - `<script type="module">` avec imports ES6 vers `src/core.mjs` (fonctions pures testables).
 - [jsPDF](https://github.com/parallax/jsPDF) 2.5.2 **hébergé localement** dans `vendor/jspdf/` pour l'export PDF (offline, vie privée, CSP stricte).
 - Police [Inter](https://rsms.me/inter/) via Google Fonts (seule ressource externe restante).
@@ -101,7 +108,7 @@ npm run test:watch
 
 ## 🧹 Lint & format
 
-ESLint (flat config) et Prettier sont configurés sur le noyau JS (`src/`), les tests (`tests/`) et les configs. `index.html` est volontairement exclu — il sera splitté dans une itération future avec Vite.
+ESLint (flat config) et Prettier sont configurés sur le noyau JS (`src/`), les tests (`tests/`) et les configs. Les pages HTML autonomes (`index.html`, `app.html`) sont volontairement exclues — l'app sera splittée dans une itération future avec Vite.
 
 ```bash
 npm run lint           # ESLint (0 warning attendu)
@@ -109,15 +116,17 @@ npm run lint:fix       # autofix
 npm run format         # reformatte avec Prettier
 npm run format:check   # vérifie sans écrire (CI)
 npm run build:pages    # prépare l'artefact GitHub Pages dans dist/
+npm run verify:pages   # vérifie les fichiers et liens clés de dist/
 ```
 
-Les deux tournent aussi dans le CI GitHub Actions (job `lint`).
+Ces commandes tournent aussi dans le CI GitHub Actions.
 
 ## 📁 Structure du projet
 
 ```
 klasio/
-├── index.html              # UI complète (HTML + CSS + JS inline)
+├── index.html              # Landing publique GitHub Pages
+├── app.html                # Application Klasio (HTML + CSS + JS inline)
 ├── privacy.html            # Page vie privée statique
 ├── src/
 │   └── core.mjs            # Noyau pur (validation, répartition, parsing CSV…)
@@ -126,13 +135,15 @@ klasio/
 ├── tests/
 │   └── core.test.mjs       # 67 tests Vitest
 ├── scripts/
-│   └── build-pages.mjs     # Prépare dist/ pour GitHub Pages
+│   ├── build-pages.mjs     # Prépare dist/ pour GitHub Pages
+│   └── verify-pages-build.mjs # Vérifie l'artefact Pages
 ├── package.json            # scripts + devDependencies de test/lint
 ├── vitest.config.mjs
 ├── README.md               # Ce fichier
 ├── ROADMAP.md              # Feuille de route produit
 ├── CHANGELOG.md            # Historique des versions
 ├── CONTRIBUTING.md         # Guide de contribution
+├── SUPPORT.md              # Aide, issues et sécurité
 ├── LICENSE                 # MIT
 ├── .editorconfig
 ├── .gitignore
