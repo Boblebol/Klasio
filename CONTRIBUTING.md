@@ -15,7 +15,8 @@ Klasio est un projet **sans build**. Tout se passe dans `index.html`.
 ```bash
 git clone https://github.com/Boblebol/Klasio.git
 cd Klasio
-python3 -m http.server 8080   # ou `npx serve .`
+npm install
+npm run dev
 ```
 
 Ouvrez <http://localhost:8080>.
@@ -28,19 +29,27 @@ Le projet étant mono-fichier, on garde une **cohérence stricte** avec l'exista
 - **JS** : vanilla, pas de framework. Fonctions courtes, état global dans `state`.
 - **CSS** : custom properties dans `:root`, classes utilitaires courtes.
 - **Nommage** : camelCase pour le JS, kebab-case pour le CSS.
-- **Pas de dépendances npm** — on reste sur du HTML/CSS/JS servi en statique.
-- **jsPDF** : chargé via CDN, ne pas déplacer sans discussion.
+- **Pas de dépendances npm runtime** — l'application doit rester du HTML/CSS/JS servi en statique. Les dépendances npm sont réservées aux outils de développement et de test.
+- **jsPDF** : vendorisé dans `vendor/jspdf/`, ne pas déplacer sans discussion.
 
 ## 🔒 Sécurité
 
 - **Jamais** d'injection directe en HTML de données saisies par l'utilisateur — utiliser `textContent`, `.value` sur un `input`, ou une fonction d'échappement dédiée.
-- Pas de requêtes réseau vers des tiers (hors police Google Fonts et CDN jsPDF déjà présents).
+- Pas de requêtes réseau vers des tiers (hors police Google Fonts et ressources explicitement documentées).
 
 ## 🌐 i18n
 
 Le projet est actuellement en français uniquement. Si vous voulez ouvrir à d'autres langues, discutons-en via issue — c'est prévu dans la roadmap (phase 2).
 
 ## 🧪 Tester manuellement avant une PR
+
+Vérifications automatisées :
+
+```bash
+npm test
+npm run lint
+npm run format:check
+```
 
 Checklist minimale :
 

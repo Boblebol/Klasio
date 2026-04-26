@@ -8,6 +8,7 @@ import {
   classPlafond,
   computeDistrib,
   computeMoveTargets,
+  genderBalanceStatus,
   summariseState,
   encodeState,
   decodeState,
@@ -152,6 +153,82 @@ describe('validateState()', () => {
     expect(v.classes[0].comment).toBe('');
     expect(v.classes[1].comment).toBe('');
   });
+
+  it('préserve et normalise les totaux filles/garçons par classe', () => {
+    const v = validateState({
+      ...DEFAULT_STATE(),
+      classes: [
+        { rows: [{ nid: 'CP', val: 20 }], girls: 11, boys: 9 },
+        { rows: [{ nid: 'CE1', val: 20 }], girls: -4, boys: 1200 },
+        { rows: [{ nid: 'CE2', val: 20 }], girls: 'abc', boys: '12' },
+      ],
+    });
+    expect(v.classes[0].girls).toBe(11);
+    expect(v.classes[0].boys).toBe(9);
+    expect(v.classes[1].girls).toBe(0);
+    expect(v.classes[1].boys).toBe(999);
+    expect(v.classes[2].girls).toBe(0);
+    expect(v.classes[2].boys).toBe(12);
+  });
+});
+
+describe('genderBalanceStatus()', () => {
+  it('renvoie empty quand aucune donnée F/M n’est saisie', () => {
+    expect(
+      genderBalanceStatus({ rows: [{ nid: 'CP', val: 20 }], girls: 0, boys: 0 }),
+    ).toMatchObject({
+      status: 'empty',
+      label: 'À compléter',
+      severity: 'muted',
+    });
+  });
+
+  it('renvoie incomplete quand le total F/M est inférieur au total de classe', () => {
+    expect(
+      genderBalanceStatus({ rows: [{ nid: 'CP', val: 20 }], girls: 8, boys: 7 }),
+    ).toMatchObject({
+      status: 'incomplete',
+      label: 'À compléter',
+      severity: 'warn',
+    });
+  });
+
+  it('renvoie invalid quand le total F/M dépasse le total de classe', () => {
+    expect(
+      genderBalanceStatus({ rows: [{ nid: 'CP', val: 20 }], girls: 12, boys: 12 }),
+    ).toMatchObject({
+      status: 'invalid',
+      label: 'Total incohérent',
+      severity: 'err',
+    });
+  });
+
+  it('classe les répartitions complètes selon l’écart F/M', () => {
+    expect(
+      genderBalanceStatus({ rows: [{ nid: 'CP', val: 20 }], girls: 11, boys: 9 }),
+    ).toMatchObject({
+      status: 'balanced',
+      label: 'Équilibré',
+      severity: 'ok',
+      diff: 2,
+    });
+    expect(
+      genderBalanceStatus({ rows: [{ nid: 'CP', val: 20 }], girls: 13, boys: 7 }),
+    ).toMatchObject({
+      status: 'unbalanced',
+      label: 'Déséquilibré',
+      severity: 'err',
+      diff: 6,
+    });
+    expect(
+      genderBalanceStatus({ rows: [{ nid: 'CP', val: 20 }], girls: 12, boys: 8 }),
+    ).toMatchObject({
+      status: 'watch',
+      label: 'À surveiller',
+      severity: 'warn',
+      diff: 4,
+    });
+  });
 });
 
 describe('consecOk()', () => {
@@ -279,6 +356,8 @@ describe('encodeState() / decodeState()', () => {
           ],
           teacher: '',
           name: '',
+          girls: 11,
+          boys: 11,
         },
         { rows: [{ nid: 'CE2', val: 18 }], teacher: '', name: '' },
       ],
@@ -295,6 +374,8 @@ describe('encodeState() / decodeState()', () => {
     expect(decoded.niveaux.map((n) => n.id)).toEqual(NIV.map((n) => n.id));
     expect(decoded.classes).toHaveLength(2);
     expect(decoded.classes[0].rows[0].val).toBe(12);
+    expect(decoded.classes[0].girls).toBe(11);
+    expect(decoded.classes[0].boys).toBe(11);
     expect(decoded.maxClasses).toBe(6);
   });
 
@@ -536,6 +617,20 @@ describe('summariseState()', () => {
   it('détecte un état vide', () => {
     const s = summariseState({ niveaux: [], classes: [] });
     expect(s.isEmpty).toBe(true);
+  });
+
+  it('compte les classes avec équilibre F/M à surveiller ou incohérent', () => {
+    const s = summariseState({
+      niveaux: [{ id: 'CP', label: 'CP', total: 80, plafond: 24, color: '#000' }],
+      classes: [
+        { rows: [{ nid: 'CP', val: 20 }], girls: 11, boys: 9 },
+        { rows: [{ nid: 'CP', val: 20 }], girls: 12, boys: 8 },
+        { rows: [{ nid: 'CP', val: 20 }], girls: 14, boys: 6 },
+        { rows: [{ nid: 'CP', val: 20 }], girls: 12, boys: 12 },
+      ],
+      maxClasses: 8,
+    });
+    expect(s.genderWarnings).toBe(3);
   });
 });
 

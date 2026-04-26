@@ -27,6 +27,7 @@ pnpm-debug.log*
 .env
 .env.local
 .env.*.local
+.superpowers/
 
 # Build / dist
 dist/
@@ -40,6 +41,6 @@ build/
 tmp/
 temp/
 
-# Tests (futur)
+# Tests
 coverage/
 .nyc_output/

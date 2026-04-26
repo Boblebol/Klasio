@@ -102,6 +102,12 @@ export function isValidClasse(cl, validIds) {
   );
 }
 
+function normaliseCount(value, max = 999) {
+  const parsed = parseInt(value);
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.min(max, Math.max(0, parsed));
+}
+
 export function validateState(s) {
   if (!s || typeof s !== 'object') return null;
   if (!Array.isArray(s.niveaux) || s.niveaux.length === 0 || s.niveaux.length > 30) return null;
@@ -124,6 +130,8 @@ export function validateState(s) {
       teacher: typeof cl.teacher === 'string' ? cl.teacher.slice(0, 80) : '',
       name: typeof cl.name === 'string' ? cl.name.slice(0, 60) : '',
       comment: typeof cl.comment === 'string' ? cl.comment.slice(0, 280) : '',
+      girls: normaliseCount(cl.girls),
+      boys: normaliseCount(cl.boys),
     })),
     maxClasses:
       Number.isFinite(s.maxClasses) && s.maxClasses >= 1 && s.maxClasses <= 50 ? s.maxClasses : 8,
@@ -139,6 +147,32 @@ export function validateState(s) {
 // ── Helpers de classes ──
 export function classTotal(cl) {
   return cl.rows.reduce((s, r) => s + (parseInt(r.val) || 0), 0);
+}
+
+export function genderBalanceStatus(cl) {
+  const girls = normaliseCount(cl?.girls);
+  const boys = normaliseCount(cl?.boys);
+  const total = cl && Array.isArray(cl.rows) ? classTotal(cl) : 0;
+  const entered = girls + boys;
+  const diff = Math.abs(girls - boys);
+  const base = { girls, boys, total, entered, diff };
+
+  if (entered === 0) {
+    return { ...base, status: 'empty', label: 'À compléter', severity: 'muted' };
+  }
+  if (entered < total) {
+    return { ...base, status: 'incomplete', label: 'À compléter', severity: 'warn' };
+  }
+  if (entered > total) {
+    return { ...base, status: 'invalid', label: 'Total incohérent', severity: 'err' };
+  }
+  if (diff <= 2) {
+    return { ...base, status: 'balanced', label: 'Équilibré', severity: 'ok' };
+  }
+  if (diff <= 5) {
+    return { ...base, status: 'watch', label: 'À surveiller', severity: 'warn' };
+  }
+  return { ...base, status: 'unbalanced', label: 'Déséquilibré', severity: 'err' };
 }
 
 export function classPlafond(cl, niveaux) {
@@ -269,6 +303,7 @@ export function summariseState(state) {
       nbNiveaux: 0,
       nbClasses: 0,
       nbErrors: 0,
+      genderWarnings: 0,
       isEmpty: true,
       maxClasses: 0,
     };
@@ -277,6 +312,7 @@ export function summariseState(state) {
   const placedEleves = state.classes.reduce((s, cl) => s + classTotal(cl), 0);
 
   let nbErrors = 0;
+  let genderWarnings = 0;
   state.classes.forEach((cl) => {
     if (classTotal(cl) > classPlafond(cl, state.niveaux)) nbErrors++;
     if (
@@ -287,6 +323,9 @@ export function summariseState(state) {
       )
     )
       nbErrors++;
+
+    const genderStatus = genderBalanceStatus(cl).status;
+    if (['watch', 'unbalanced', 'invalid'].includes(genderStatus)) genderWarnings++;
   });
 
   return {
@@ -296,6 +335,7 @@ export function summariseState(state) {
     nbNiveaux: state.niveaux.length,
     nbClasses: state.classes.length,
     nbErrors,
+    genderWarnings,
     isEmpty: totalEleves === 0 && state.classes.length === 0,
     maxClasses: state.maxClasses || 0,
   };
@@ -305,7 +345,11 @@ export function summariseState(state) {
 export function encodeState(state) {
   const mini = {
     n: state.niveaux.map((n) => ({ i: n.id, l: n.label, t: n.total, p: n.plafond, c: n.color })),
-    cl: state.classes.map((cl) => ({ r: cl.rows.map((r) => ({ n: r.nid, v: r.val })) })),
+    cl: state.classes.map((cl) => ({
+      r: cl.rows.map((r) => ({ n: r.nid, v: r.val })),
+      g: normaliseCount(cl.girls),
+      b: normaliseCount(cl.boys),
+    })),
     m: state.maxClasses,
   };
   return btoa(encodeURIComponent(JSON.stringify(mini)))
@@ -335,6 +379,8 @@ export function decodeState(str) {
         rows: (cl.r || []).map((r) => ({ nid: String(r.n || ''), val: parseInt(r.v) || 0 })),
         teacher: '',
         name: '',
+        girls: cl.g,
+        boys: cl.b,
       })),
       maxClasses: parseInt(mini.m) || 8,
     };

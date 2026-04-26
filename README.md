@@ -6,7 +6,7 @@
 [![Status](https://img.shields.io/badge/status-alpha-orange.svg)]()
 [![No dependencies](https://img.shields.io/badge/build-static%20HTML-informational)]()
 [![CI](https://github.com/Boblebol/Klasio/actions/workflows/check.yml/badge.svg)](https://github.com/Boblebol/Klasio/actions/workflows/check.yml)
-[![Tests](https://img.shields.io/badge/tests-58%20passing-success)]()
+[![Tests](https://img.shields.io/badge/tests-64%20unitaires-success)]()
 
 Klasio est une application **100 % côté client** (un seul fichier `index.html`). Aucune donnée ne quitte le navigateur : tout est stocké localement (`localStorage`). Aucun compte, aucun backend, aucun tracker.
 
@@ -92,21 +92,21 @@ Les en-têtes de sécurité (CSP, X-Frame-Options, Referrer-Policy…) sont déj
 - [jsPDF](https://github.com/parallax/jsPDF) 2.5.2 **hébergé localement** dans `vendor/jspdf/` pour l'export PDF (offline, vie privée, CSP stricte).
 - Police [Inter](https://rsms.me/inter/) via Google Fonts (seule ressource externe restante).
 - Persistance locale via `localStorage`, partage via encodage Base64URL dans l'URL.
-- [Vitest](https://vitest.dev) en dépendance **dev uniquement** pour la suite de tests.
+- [Vitest](https://vitest.dev) en dépendance **dev uniquement** pour les tests unitaires.
 
 ## 🧪 Tests
 
 Le noyau de logique (validation, répartition, parsing CSV, échappement HTML, encode/decode URL) vit dans `src/core.mjs` et est couvert par une suite de tests Vitest.
 
 ```bash
-npm install      # installe vitest en dev
+npm install      # installe les outils de dev
 npm test         # exécution unique (CI)
 npm run test:watch
 ```
 
 ## 🧹 Lint & format
 
-ESLint (flat config) et Prettier sont configurés sur le noyau JS (`src/`, `tests/`, configs). `index.html` est volontairement exclu — il sera splitté dans une itération future avec Vite.
+ESLint (flat config) et Prettier sont configurés sur le noyau JS (`src/`), les tests (`tests/`) et les configs. `index.html` est volontairement exclu — il sera splitté dans une itération future avec Vite.
 
 ```bash
 npm run lint           # ESLint (0 warning attendu)
@@ -127,8 +127,8 @@ klasio/
 ├── vendor/
 │   └── jspdf/              # jsPDF 2.5.2 vendorisé (UMD + LICENSE)
 ├── tests/
-│   └── core.test.mjs       # 58 tests Vitest
-├── package.json            # scripts + devDependencies (vitest)
+│   └── core.test.mjs       # 64 tests Vitest
+├── package.json            # scripts + devDependencies de test/lint
 ├── vitest.config.mjs
 ├── README.md               # Ce fichier
 ├── ROADMAP.md              # Feuille de route produit
@@ -142,7 +142,7 @@ klasio/
     ├── ISSUE_TEMPLATE/
     ├── PULL_REQUEST_TEMPLATE.md
     └── workflows/
-        └── check.yml        # Tests + lint HTML en CI
+        └── check.yml        # Tests, lint/format + validation HTML en CI
 ```
 
 ## 🤝 Contribuer
