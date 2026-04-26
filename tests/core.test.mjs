@@ -14,6 +14,8 @@ import {
   decodeState,
   parseCsvEffectifs,
   applyCsvItems,
+  createDemoState,
+  buildClassesCsv,
   DEFAULT_STATE,
   STRATS,
   STRATS_IDS,
@@ -456,6 +458,64 @@ describe('applyCsvItems()', () => {
     ];
     const { newLevels } = applyCsvItems(NIV, items);
     expect(newLevels).toEqual([{ label: 'GS', total: 25 }]);
+  });
+});
+
+describe('createDemoState()', () => {
+  it('renvoie un état exemple complet et validable', () => {
+    const demo = createDemoState();
+    const valid = validateState(demo);
+
+    expect(valid).not.toBeNull();
+    expect(valid.schoolName).toBe('École Jules Ferry');
+    expect(valid.niveaux.reduce((sum, niveau) => sum + niveau.total, 0)).toBeGreaterThan(0);
+    expect(valid.classes.length).toBeGreaterThan(0);
+    expect(valid.currentStep).toBe(4);
+  });
+});
+
+describe('buildClassesCsv()', () => {
+  it('exporte une ligne par niveau de classe avec les colonnes tableur', () => {
+    const csv = buildClassesCsv({
+      niveaux: NIV,
+      classes: [
+        {
+          rows: [
+            { nid: 'CP', val: 12 },
+            { nid: 'CE1', val: 10 },
+          ],
+          teacher: 'Mme Martin',
+          name: 'Cycle 2',
+          girls: 11,
+          boys: 11,
+          comment: 'Garder le binôme A/B',
+        },
+      ],
+    });
+
+    const lines = csv.split('\n');
+    expect(lines[0]).toBe(
+      'Classe;Enseignant;Niveau;Élèves;Total classe;Plafond;Filles;Garçons;Note',
+    );
+    expect(lines[1]).toBe('Cycle 2;Mme Martin;CP;12;22;24;11;11;Garder le binôme A/B');
+    expect(lines[2]).toBe('Cycle 2;Mme Martin;CE1;10;22;24;11;11;Garder le binôme A/B');
+  });
+
+  it('échappe les cellules contenant séparateur, guillemets ou retours ligne', () => {
+    const csv = buildClassesCsv({
+      niveaux: NIV,
+      classes: [
+        {
+          rows: [{ nid: 'CP', val: 12 }],
+          teacher: 'Mme "A"',
+          name: 'Classe; test',
+          comment: 'Ligne 1\nLigne 2',
+        },
+      ],
+    });
+
+    expect(csv).toContain('"Classe; test";"Mme ""A""";CP;12;12;24;;;');
+    expect(csv).toContain('"Ligne 1\nLigne 2"');
   });
 });
 

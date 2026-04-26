@@ -6,7 +6,7 @@
 [![Status](https://img.shields.io/badge/status-alpha-orange.svg)]()
 [![No dependencies](https://img.shields.io/badge/build-static%20HTML-informational)]()
 [![CI](https://github.com/Boblebol/Klasio/actions/workflows/check.yml/badge.svg)](https://github.com/Boblebol/Klasio/actions/workflows/check.yml)
-[![Tests](https://img.shields.io/badge/tests-64%20unitaires-success)]()
+[![Tests](https://img.shields.io/badge/tests-67%20unitaires-success)]()
 
 Klasio est une application **100 % côté client** (un seul fichier `index.html`). Aucune donnée ne quitte le navigateur : tout est stocké localement (`localStorage`). Aucun compte, aucun backend, aucun tracker.
 
@@ -15,6 +15,7 @@ Klasio est une application **100 % côté client** (un seul fichier `index.html`
 ## ✨ Fonctionnalités
 
 - **Assistant en 4 étapes** — effectifs par niveau → plafonds par classe → stratégie de répartition → ajustement manuel.
+- **Mode démo** — charge une école fictive complète pour tester l'outil sans saisie préalable.
 - **Répartition automatique** avec 4 stratégies :
   - ⚖️ **Classes équilibrées** (recommandé)
   - 🔀 **Le moins de classes possible** (regroupements à double niveau)
@@ -26,7 +27,7 @@ Klasio est une application **100 % côté client** (un seul fichier `index.html`
 - **Tri des classes** (ordre de création / par niveau).
 - **Nom d'enseignant·e** par classe.
 - **Partage par lien URL** (l'état est encodé dans l'URL).
-- **Exports / imports** : PDF, TXT, affichage mural imprimable, **fichier `.klasio`** (JSON) réimportable, **import CSV** des effectifs à l'étape 1.
+- **Exports / imports** : PDF, TXT, CSV tableur, affichage mural imprimable, **fichier `.klasio`** (JSON) réimportable, **import CSV** des effectifs à l'étape 1.
 - **Plafonds personnalisables** (24 pour CP/CE1 par défaut, conformément à la réglementation française 2024).
 - **Ajout de niveaux libres** (maternelle GS/MS/PS, collège 6e…).
 - **Mode sombre** + **Annuler/Rétablir** (`Ctrl+Z` / `Ctrl+Y`).
@@ -67,7 +68,7 @@ Pour un fork, activez **Settings → Pages → Source: GitHub Actions**, puis po
 npm run build:pages
 ```
 
-Le dossier `dist/` contient uniquement les fichiers nécessaires à l'application (`index.html`, `src/`, `vendor/`, `.nojekyll`).
+Le dossier `dist/` contient uniquement les fichiers nécessaires à l'application (`index.html`, `privacy.html`, `src/`, `vendor/`, `.nojekyll`).
 
 ## 🧭 Utilisation
 
@@ -85,11 +86,12 @@ Le dossier `dist/` contient uniquement les fichiers nécessaires à l'applicatio
 - [jsPDF](https://github.com/parallax/jsPDF) 2.5.2 **hébergé localement** dans `vendor/jspdf/` pour l'export PDF (offline, vie privée, CSP stricte).
 - Police [Inter](https://rsms.me/inter/) via Google Fonts (seule ressource externe restante).
 - Persistance locale via `localStorage`, partage via encodage Base64URL dans l'URL.
+- Page [`privacy.html`](./privacy.html) statique pour documenter clairement les garanties et limites de vie privée.
 - [Vitest](https://vitest.dev) en dépendance **dev uniquement** pour les tests unitaires.
 
 ## 🧪 Tests
 
-Le noyau de logique (validation, répartition, parsing CSV, échappement HTML, encode/decode URL) vit dans `src/core.mjs` et est couvert par une suite de tests Vitest.
+Le noyau de logique (validation, répartition, parsing CSV, export CSV, démo, échappement HTML, encode/decode URL) vit dans `src/core.mjs` et est couvert par une suite de tests Vitest.
 
 ```bash
 npm install      # installe les outils de dev
@@ -116,12 +118,13 @@ Les deux tournent aussi dans le CI GitHub Actions (job `lint`).
 ```
 klasio/
 ├── index.html              # UI complète (HTML + CSS + JS inline)
+├── privacy.html            # Page vie privée statique
 ├── src/
 │   └── core.mjs            # Noyau pur (validation, répartition, parsing CSV…)
 ├── vendor/
 │   └── jspdf/              # jsPDF 2.5.2 vendorisé (UMD + LICENSE)
 ├── tests/
-│   └── core.test.mjs       # 64 tests Vitest
+│   └── core.test.mjs       # 67 tests Vitest
 ├── scripts/
 │   └── build-pages.mjs     # Prépare dist/ pour GitHub Pages
 ├── package.json            # scripts + devDependencies de test/lint
@@ -149,6 +152,7 @@ Les contributions sont les bienvenues. Consultez [`CONTRIBUTING.md`](./CONTRIBUT
 - Aucune donnée n'est envoyée à un serveur. Tout reste dans votre navigateur.
 - Le lien de partage encode les données dans l'URL elle-même — seules les personnes à qui vous envoyez le lien y ont accès.
 - Pas de cookies de tracking, pas d'analytics.
+- Détails et limites : [`privacy.html`](./privacy.html).
 
 ## 📜 Licence
 

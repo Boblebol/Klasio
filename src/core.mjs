@@ -65,6 +65,68 @@ export const DEFAULT_STATE = () => ({
   schoolYear: '2025-2026',
 });
 
+export const createDemoState = () => ({
+  niveaux: [
+    { id: 'CP', label: 'CP', total: 25, plafond: 24, color: COLORS[0] },
+    { id: 'CE1', label: 'CE1', total: 21, plafond: 24, color: COLORS[1] },
+    { id: 'CE2', label: 'CE2', total: 24, plafond: 25, color: COLORS[2] },
+    { id: 'CM1', label: 'CM1', total: 22, plafond: 25, color: COLORS[3] },
+    { id: 'CM2', label: 'CM2', total: 20, plafond: 25, color: COLORS[4] },
+  ],
+  classes: [
+    {
+      rows: [{ nid: 'CP', val: 22 }],
+      teacher: 'Mme Martin',
+      name: 'CP A',
+      comment: 'Garder une marge pour les arrivées de septembre.',
+      girls: 11,
+      boys: 11,
+    },
+    {
+      rows: [
+        { nid: 'CP', val: 3 },
+        { nid: 'CE1', val: 21 },
+      ],
+      teacher: 'M. Diallo',
+      name: 'CP / CE1',
+      comment: 'Petit groupe de CP autonomes avec les CE1.',
+      girls: 12,
+      boys: 12,
+    },
+    {
+      rows: [{ nid: 'CE2', val: 24 }],
+      teacher: 'Mme Leroy',
+      name: 'CE2',
+      comment: '',
+      girls: 13,
+      boys: 11,
+    },
+    {
+      rows: [{ nid: 'CM1', val: 22 }],
+      teacher: 'M. Moreau',
+      name: 'CM1',
+      comment: 'Classe à surveiller pour l’équilibre F/M.',
+      girls: 9,
+      boys: 13,
+    },
+    {
+      rows: [{ nid: 'CM2', val: 20 }],
+      teacher: 'Mme Petit',
+      name: 'CM2',
+      comment: 'Prévoir les binômes de tutorat avec les CM1.',
+      girls: 10,
+      boys: 10,
+    },
+  ],
+  maxClasses: 5,
+  counter: 6,
+  distribMode: 'balanced',
+  showPreview: false,
+  currentStep: 4,
+  schoolName: 'École Jules Ferry',
+  schoolYear: '2026-2027',
+});
+
 // ── Échappement HTML sûr ──
 // À utiliser pour toute donnée utilisateur injectée dans un template.
 export function esc(s) {
@@ -339,6 +401,69 @@ export function summariseState(state) {
     isEmpty: totalEleves === 0 && state.classes.length === 0,
     maxClasses: state.maxClasses || 0,
   };
+}
+
+function niveauLabelById(state, id) {
+  return state.niveaux.find((n) => n.id === id)?.label || id;
+}
+
+function exportClassName(state, cl) {
+  const custom = typeof cl.name === 'string' ? cl.name.trim() : '';
+  if (custom) return custom;
+  if (!Array.isArray(cl.rows) || !cl.rows.length) return 'Classe vide';
+  return cl.rows.map((r) => niveauLabelById(state, r.nid)).join(' + ');
+}
+
+function csvCell(value) {
+  const text = String(value == null ? '' : value);
+  if (!/[;"\n\r]/.test(text)) return text;
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+export function buildClassesCsv(state) {
+  const header = [
+    'Classe',
+    'Enseignant',
+    'Niveau',
+    'Élèves',
+    'Total classe',
+    'Plafond',
+    'Filles',
+    'Garçons',
+    'Note',
+  ];
+  if (!state || !Array.isArray(state.niveaux) || !Array.isArray(state.classes)) {
+    return header.join(';');
+  }
+
+  const lines = [header.join(';')];
+  state.classes.forEach((cl) => {
+    if (!Array.isArray(cl.rows) || !cl.rows.length) return;
+    const name = exportClassName(state, cl);
+    const total = classTotal(cl);
+    const plafond = classPlafond(cl, state.niveaux);
+    const girls = normaliseCount(cl.girls);
+    const boys = normaliseCount(cl.boys);
+    const hasGender = girls + boys > 0;
+    cl.rows.forEach((row) => {
+      lines.push(
+        [
+          name,
+          cl.teacher || '',
+          niveauLabelById(state, row.nid),
+          parseInt(row.val) || 0,
+          total,
+          Number.isFinite(plafond) ? plafond : '',
+          hasGender ? girls : '',
+          hasGender ? boys : '',
+          cl.comment || '',
+        ]
+          .map(csvCell)
+          .join(';'),
+      );
+    });
+  });
+  return lines.join('\n');
 }
 
 // ── Partage via URL ──

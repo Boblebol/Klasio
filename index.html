@@ -94,9 +94,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .header-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:54px;gap:12px}
 .brand{display:flex;align-items:center;gap:9px;text-decoration:none}
 .brand-icon{width:32px;height:32px;border-radius:9px;background:var(--brand);display:flex;align-items:center;justify-content:center}
-.brand-name{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px}
+.brand-name{font-size:17px;font-weight:800;color:var(--text);letter-spacing:0}
 .brand-name span{color:var(--brand)}
-.hdr-btn{border-radius:var(--rs);padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--t2);display:flex;align-items:center;gap:5px;transition:all .15s}
+.hdr-btn{border-radius:var(--rs);padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--t2);display:flex;align-items:center;gap:5px;transition:all .15s;text-decoration:none}
 .hdr-btn:hover:not(:disabled){background:var(--bg);border-color:var(--border2);color:var(--text)}
 .hdr-btn:disabled{opacity:.4;cursor:not-allowed}
 .hdr-btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
@@ -599,6 +599,10 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
         <svg id="icon-sun" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
         <svg id="icon-moon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
+      <a class="hdr-btn" href="privacy.html" title="Lire la page vie privée" aria-label="Lire la page vie privée">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Vie privée</span>
+      </a>
       <button class="hdr-btn share" onclick="shareUrl()">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         <span>Partager</span>
@@ -666,6 +670,10 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
       <button class="btn-add" onclick="openCsvImport()" title="Coller ou importer une liste « Niveau, Effectif »">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         Importer CSV
+      </button>
+      <button class="btn-add" onclick="loadDemoState()" title="Remplir Klasio avec une école fictive complète">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
+        Charger un exemple
       </button>
     </div>
   </div>
@@ -818,6 +826,10 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       <span>TXT</span>
     </button>
+    <button class="s-btn ghost" onclick="exportCsv()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 10h16M4 16h16M10 4v16M16 4v16"/></svg>
+      <span>CSV</span>
+    </button>
     <button class="s-btn ghost" onclick="exportKlasio()" title="Télécharger un fichier .klasio réimportable plus tard">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       <span>Sauver</span>
@@ -903,7 +915,7 @@ html[data-theme="dark"] .sticky,html:not([data-theme]) .sticky{background:var(--
           </div>
           <div class="onb-point">
             <span class="onb-point-icon">↓</span>
-            <div><strong>Exports prêts pour l'école</strong><span>PDF, TXT, affichage mural et fichier .klasio depuis l'étape 4.</span></div>
+            <div><strong>Exports prêts pour l'école</strong><span>PDF, TXT, CSV, affichage mural et fichier .klasio depuis l'étape 4.</span></div>
           </div>
         </div>
         <div class="onb-note">Astuce : créez un fichier .klasio avant de changer d'ordinateur ou de navigateur.</div>
@@ -1031,6 +1043,8 @@ import {
   summariseState,
   encodeState as _encodeStatePure,
   decodeState as _decodeStatePure,
+  createDemoState,
+  buildClassesCsv,
   parseCsvEffectifs, applyCsvItems,
 } from './src/core.mjs';
 
@@ -1381,6 +1395,18 @@ function pulseInput(el){
 function toggleHelp(id){
   const b=document.getElementById('help-'+id),btn=document.getElementById('hb-'+id);
   const v=b.classList.toggle('on');btn.classList.toggle('on',v);
+}
+async function loadDemoState(){
+  const hasWork=state.classes.length>0||state.niveaux.some(n=>n.total>0)||Boolean((state.schoolName||'').trim());
+  if(hasWork){
+    const ok=await confirmDialog('Charger l’exemple ?','La répartition actuelle sera remplacée par une école fictive complète. Sauvegardez un fichier .klasio avant si vous voulez la conserver.','warn');
+    if(!ok)return;
+  }
+  clearTimeout(_saveTimer);
+  state=createDemoState();window.state=state;
+  history.past.length=0;history.future.length=0;_pendingBaseline=null;_lastSnapshot=JSON.stringify(state);
+  save();syncStepInputs();render();goStep(4);updateHistoryButtons();
+  showDialog({icon:'ok',title:'Exemple chargé',msg:'Une école fictive complète est prête. Vous pouvez tester les ajustements, les brouillons et les exports.',buttons:[{label:'Voir les classes',style:'ok green',value:true}]});
 }
 
 // ── Stratégies (STRATS + computeDistrib importés depuis core.mjs) ──
@@ -2270,6 +2296,21 @@ function exportTxt(){
   const blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='klasio_repartition.txt';a.click();
 }
+function exportCsv(){
+  try{
+    const blob=new Blob(['\uFEFF'+buildClassesCsv(state)],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a');
+    const safeName=(state.schoolName||'klasio').replace(/[^a-zA-Z0-9_-]+/g,'_').slice(0,40)||'klasio';
+    a.href=URL.createObjectURL(blob);
+    a.download=`${safeName}_classes.csv`;
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+    showToast('✓ CSV téléchargé');
+  }catch(e){
+    console.error(e);
+    alertDialog('Erreur d’export','Le CSV n’a pas pu être généré. Essayez l’export TXT.','err');
+  }
+}
 function exportKlasio(){
   try{
     const payload={
@@ -2454,8 +2495,8 @@ Object.assign(window, {
   removeNiveau, getNiveau, updateTotal, updatePlafond, updateVal,
   updateTeacher, updateClassName, updateComment, toggleCommentBox,
   updateGender, toggleGenderBox, applyQA, _dialogBtn,
-  scrollToFirstClassWith,
-  exportPdf, exportTxt, exportMural, exportKlasio, importKlasio,
+  scrollToFirstClassWith, loadDemoState,
+  exportPdf, exportTxt, exportCsv, exportMural, exportKlasio, importKlasio,
   openCsvImport, closeCsvImport, fillCsvExample, loadCsvFile,
   updateCsvPreview, confirmCsvImport,
   openMoveDialog, closeMoveDialog, moveInputStep, confirmMove,

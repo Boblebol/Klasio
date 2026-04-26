@@ -25,6 +25,8 @@ _Objectif : rendre la v0.1 fiable, testable et agréable au quotidien. 1–3 sem
 - ✅ **Dupliquer une répartition** (pour tester une variante) via l'action « Copier vers… » des brouillons A/B/C.
 - ✅ **Commentaire par classe** — note libre (280 caractères) dépliable sous chaque classe, reprise dans les exports TXT et PDF (mais pas dans le mural public).
 - ✅ **Total par genre F/M** optionnel, avec badge d'équilibre (si l'école entre cette donnée).
+- ✅ **Mode démo** — charge une école fictive complète pour tester l'outil sans saisie.
+- ✅ **Export CSV tableur** — une ligne par niveau de classe, compatible Excel/LibreOffice.
 - **Indicateur de charge** par enseignant·e (utile si une maîtresse a 2 demi-classes à cheval).
 
 ### UX / UI
@@ -84,7 +86,7 @@ _Objectif : passer d'un outil pour directeur d'école primaire à une solution p
 
 - 🎯 **Landing page** simple (fr) avec démo live, captures, témoignages.
 - 🎯 **Domaine dédié** (ex. `klasio.fr` ou `klasio.app`).
-- 🎯 **Page « Vie privée »** détaillée (RGPD).
+- ✅ **Page « Vie privée »** détaillée sur le fonctionnement local, les liens de partage et les exports.
 - **Article de blog** : « Pourquoi Klasio (et pas un tableur) ».
 
 ### i18n
