@@ -49,6 +49,7 @@ Vérifications automatisées :
 npm test
 npm run lint
 npm run format:check
+npm run build:pages
 ```
 
 Checklist minimale :
@@ -60,6 +61,8 @@ Checklist minimale :
 - [ ] Export mural s'ouvre dans un nouvel onglet, imprimable.
 - [ ] Ajout / suppression de niveau custom OK.
 - [ ] Pas de warning XSS lors d'une saisie contenant `<script>` ou `"`.
+
+Le workflow GitHub Actions exécute ces vérifications sur chaque pull request. Le déploiement GitHub Pages ne se fait que sur un push vers `main`, après réussite des vérifications.
 
 ## 📦 Commits
 
@@ -86,5 +89,6 @@ docs(readme): ajoute section vie privée
 - Une PR = un changement cohérent.
 - Renseignez le template de PR (il est rempli automatiquement).
 - Reliez l'issue concernée (`Closes #123`).
+- Respectez le [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md).
 
 Merci !

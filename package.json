@@ -11,6 +11,7 @@
   "type": "module",
   "scripts": {
     "dev": "python3 -m http.server 8080 --bind 127.0.0.1",
+    "build:pages": "node scripts/build-pages.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",

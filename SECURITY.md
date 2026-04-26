@@ -14,7 +14,7 @@ Klasio est une application **100 % côté client** sans backend et sans traiteme
 
 - **XSS** via les champs de saisie (nom d'école, de niveau, d'enseignant·e, commentaire…).
 - **Injection** via les paramètres URL de partage (`?s=…`).
-- **Exfiltration** via le chargement de ressources tierces (CDN jsPDF, Google Fonts).
+- **Exfiltration** via le chargement de ressources tierces (Google Fonts).
 
 ### Comment signaler
 

@@ -53,28 +53,21 @@ npx serve .
 
 Puis rendez-vous sur <http://localhost:8080>.
 
-### En ligne (Netlify)
+### En ligne (GitHub Pages)
 
-Le projet est configuré pour un déploiement **Netlify zéro-config** (`netlify.toml` à la racine). Deux options :
+La version publique est déployée automatiquement par GitHub Actions :
 
-**Option A — via l'interface Netlify** (la plus simple) :
+<https://boblebol.github.io/Klasio/>
 
-1. Se connecter sur [app.netlify.com](https://app.netlify.com/).
-2. **Add new site → Import an existing project → GitHub**.
-3. Sélectionner le dépôt `Boblebol/Klasio` (Netlify a besoin d'un accès aux repos privés, à autoriser dans les paramètres GitHub).
-4. Laisser les réglages par défaut (le `netlify.toml` s'en charge). Cliquer **Deploy**.
-5. Le site est en ligne sur une URL `*.netlify.app`, déployé automatiquement à chaque push sur `main`.
+Le workflow `.github/workflows/check.yml` exécute les tests, le lint, le formatage et prépare un dossier `dist/`. Sur un push vers `main`, ce dossier est publié sur GitHub Pages.
 
-**Option B — via la CLI Netlify** :
+Pour un fork, activez **Settings → Pages → Source: GitHub Actions**, puis poussez sur `main`.
 
 ```bash
-npm install -g netlify-cli
-netlify login
-netlify init           # relie le repo au site Netlify
-netlify deploy --prod  # déploie
+npm run build:pages
 ```
 
-Les en-têtes de sécurité (CSP, X-Frame-Options, Referrer-Policy…) sont déjà configurés dans `netlify.toml`.
+Le dossier `dist/` contient uniquement les fichiers nécessaires à l'application (`index.html`, `src/`, `vendor/`, `.nojekyll`).
 
 ## 🧭 Utilisation
 
@@ -113,6 +106,7 @@ npm run lint           # ESLint (0 warning attendu)
 npm run lint:fix       # autofix
 npm run format         # reformatte avec Prettier
 npm run format:check   # vérifie sans écrire (CI)
+npm run build:pages    # prépare l'artefact GitHub Pages dans dist/
 ```
 
 Les deux tournent aussi dans le CI GitHub Actions (job `lint`).
@@ -128,6 +122,8 @@ klasio/
 │   └── jspdf/              # jsPDF 2.5.2 vendorisé (UMD + LICENSE)
 ├── tests/
 │   └── core.test.mjs       # 64 tests Vitest
+├── scripts/
+│   └── build-pages.mjs     # Prépare dist/ pour GitHub Pages
 ├── package.json            # scripts + devDependencies de test/lint
 ├── vitest.config.mjs
 ├── README.md               # Ce fichier
@@ -135,19 +131,18 @@ klasio/
 ├── CHANGELOG.md            # Historique des versions
 ├── CONTRIBUTING.md         # Guide de contribution
 ├── LICENSE                 # MIT
-├── netlify.toml            # Config Netlify (headers, redirects)
 ├── .editorconfig
 ├── .gitignore
 └── .github/
     ├── ISSUE_TEMPLATE/
     ├── PULL_REQUEST_TEMPLATE.md
     └── workflows/
-        └── check.yml        # Tests, lint/format + validation HTML en CI
+        └── check.yml        # Tests, lint/format, build + déploiement Pages
 ```
 
 ## 🤝 Contribuer
 
-Les contributions sont les bienvenues ! Consultez [`CONTRIBUTING.md`](./CONTRIBUTING.md) pour les conventions du projet.
+Les contributions sont les bienvenues. Consultez [`CONTRIBUTING.md`](./CONTRIBUTING.md) pour les conventions du projet et [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) pour les règles de participation.
 
 ## 🔒 Vie privée
 

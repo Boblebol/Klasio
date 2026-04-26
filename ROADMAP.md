@@ -22,9 +22,9 @@ _Objectif : rendre la v0.1 fiable, testable et agréable au quotidien. 1–3 sem
 - ✅ **Sauvegarde/ouverture de fichiers `.klasio`** (JSON) à l'étape 4.
 - ✅ **Déplacer des élèves entre classes** — bouton → sur chaque ligne, modal avec classes cibles compatibles et quantité paramétrable.
 - ✅ **Multi-scénarios A/B/C** — trois slots indépendants avec noms éditables, modal de comparaison (élèves placés, classes, erreurs), undo/redo isolé par scénario.
-- **Dupliquer une répartition** (pour tester une variante).
+- ✅ **Dupliquer une répartition** (pour tester une variante) via l'action « Copier vers… » des brouillons A/B/C.
 - ✅ **Commentaire par classe** — note libre (280 caractères) dépliable sous chaque classe, reprise dans les exports TXT et PDF (mais pas dans le mural public).
-- **Total par genre F/M** optionnel, avec badge d'équilibre (si l'école entre cette donnée).
+- ✅ **Total par genre F/M** optionnel, avec badge d'équilibre (si l'école entre cette donnée).
 - **Indicateur de charge** par enseignant·e (utile si une maîtresse a 2 demi-classes à cheval).
 
 ### UX / UI
@@ -39,7 +39,7 @@ _Objectif : rendre la v0.1 fiable, testable et agréable au quotidien. 1–3 sem
 
 ### Technique
 
-- ✅ **Tests Vitest** sur `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `encodeState/decodeState`, `parseCsvEffectifs` (42 tests).
+- ✅ **Tests Vitest** sur `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `genderBalanceStatus`, `encodeState/decodeState`, `parseCsvEffectifs` (64 tests).
 - ✅ **Validation stricte des états importés** (localStorage + URL + fichier `.klasio`).
 - ✅ **Échappement HTML centralisé** via `esc()` sur toutes les données utilisateur.
 - ✅ **Début de split du monolithe** : les fonctions pures sont dans `src/core.mjs`, `index.html` est un `<script type="module">` qui les importe.
@@ -54,8 +54,8 @@ _Objectif : rendre la v0.1 fiable, testable et agréable au quotidien. 1–3 sem
     js/share.js      # encodage URL
   ```
   Build minimal : concaténation avec [esbuild](https://esbuild.github.io/) ou [Vite](https://vitejs.dev/), mais **garder la possibilité** de servir le fichier unique en prod (one-file-build).
-- 🧱 **Tests end-to-end** avec [Playwright](https://playwright.dev/) — scénarios nominaux (4 étapes, partage, exports).
 - ✅ **Linting** : ESLint 9 (flat config) + Prettier, intégrés au CI.
+- ✅ **GitHub Pages via Actions** : tests, lint, format, build statique et déploiement automatique sur `main`.
 - ✅ **jsPDF hébergé localement** (`vendor/jspdf/`) — plus de CDN runtime, CSP durcie, offline complet.
 
 ---

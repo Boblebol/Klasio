@@ -2,14 +2,20 @@ import js from '@eslint/js';
 import globals from 'globals';
 import prettier from 'eslint-config-prettier';
 
-// Lint du noyau testable (`src/core.mjs`), de ses tests et des configs.
+// Lint du noyau testable (`src/core.mjs`), de ses tests, scripts et configs.
 // `index.html` n'est volontairement pas linté : il mélange HTML + CSS + JS et
 // sera découpé avec Vite/esbuild dans une itération ultérieure (roadmap phase 1).
 export default [
   js.configs.recommended,
   prettier,
   {
-    files: ['src/**/*.{js,mjs}', 'tests/**/*.{js,mjs}', 'vitest.config.mjs', 'eslint.config.mjs'],
+    files: [
+      'src/**/*.{js,mjs}',
+      'tests/**/*.{js,mjs}',
+      'scripts/**/*.{js,mjs}',
+      'vitest.config.mjs',
+      'eslint.config.mjs',
+    ],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -30,6 +36,14 @@ export default [
     },
   },
   {
-    ignores: ['node_modules/**', 'vendor/**', 'package-lock.json', '*.min.js', '.netlify/**'],
+    ignores: [
+      'node_modules/**',
+      'vendor/**',
+      'dist/**',
+      'build/**',
+      'package-lock.json',
+      '*.min.js',
+      '.netlify/**',
+    ],
   },
 ];

@@ -20,6 +20,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 - **jsPDF hébergé localement** (`vendor/jspdf/jspdf.umd.min.js`, version 2.5.2) : plus aucune dépendance runtime sur un CDN. Fonctionnement 100 % hors ligne après le premier chargement, CSP renforcée (`script-src 'self' 'unsafe-inline'`, retrait de `cdnjs.cloudflare.com`), aucune requête sortie du navigateur du directeur pour exporter un PDF. Documentation de la procédure de mise à jour dans `vendor/jspdf/README.md`.
 - **Commentaire libre par classe** (280 caractères max) : bouton « + Ajouter une note » qui déplie une zone de saisie sous chaque classe (ex. _« privilégier élèves calmes »_, _« séparer jumeaux Dupont »_). La note est reprise dans les exports **TXT** et **PDF** (en italique sous la classe), mais **pas dans le mural** — le mural étant destiné à l'affichage public.
 - **Multi-scénarios A / B / C** : trois répartitions indépendantes que vous pouvez éditer et comparer côte à côte. Bouton _Scénario A_ dans le header → modal avec résumé de chaque scénario (élèves placés, classes, erreurs) et actions _Activer_ / _Copier vers_ / _Vider_. Noms éditables, undo/redo isolé par scénario. Migration transparente des données existantes vers le slot A.
+- **Total filles/garçons par classe** : ligne compacte dépliable dans chaque carte de classe, badge d'équilibre (`Équilibré`, `À surveiller`, `Déséquilibré`, `À compléter`, `Total incohérent`), persistance dans les scénarios, partage URL et exports TXT/PDF.
 - **Accessibilité** : passe complète pour conforter la navigation clavier et les lecteurs d'écran.
   - Lien « Aller au contenu principal » (skip link) apparaissant au focus clavier.
   - Landmark `<main>` sur la zone centrale, nav étapes annoncée et `aria-current="step"` sur l'étape active.
@@ -27,8 +28,8 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   - Toast annoncé poliment (`role="status"` + `aria-live`), cartes d'étapes opérables au clavier.
   - Anneau de focus visible uniforme via `:focus-visible`, focus initial dans les modals, restauration du focus sur l'élément déclencheur à la fermeture.
   - Respect de `prefers-reduced-motion` : animations et transitions réduites à 0,01 ms.
-- **Suite de tests unitaires** (Vitest) sur le noyau pur (`src/core.mjs`) : 56 tests couvrant `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `computeMoveTargets`, `summariseState`, `encodeState/decodeState`, `parseCsvEffectifs`, `applyCsvItems`, `esc`. Exécutés en CI sur chaque push.
-- **Configuration Netlify** (`netlify.toml`) pour déploiement zéro-config avec en-têtes de sécurité (CSP, X-Frame-Options, Referrer-Policy, Permissions-Policy).
+- **Suite de tests unitaires** (Vitest) sur le noyau pur (`src/core.mjs`) : 64 tests couvrant `validateState`, `computeDistrib`, `consecOk`, `classPlafond`, `computeMoveTargets`, `summariseState`, `genderBalanceStatus`, `encodeState/decodeState`, `parseCsvEffectifs`, `applyCsvItems`, `esc`. Exécutés en CI sur chaque push.
+- **GitHub Pages via GitHub Actions** : workflow unique pour tests, lint, formatage, build statique (`dist/`) et déploiement automatique sur `main`.
 
 ### Corrigé
 
@@ -37,7 +38,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### Changé
 
-- Bascule de la configuration de déploiement de GitHub Pages vers Netlify.
+- Bascule de la configuration de déploiement de Netlify vers GitHub Pages.
 - **Début de décomposition du monolithe** : le code JavaScript devient un module ES (`<script type="module">`) qui importe ses fonctions pures depuis `src/core.mjs`. Les handlers inline restants sont exposés explicitement via `window.*`. Ouvre la voie au build Vite prévu en Phase 2.
 
 ### Sécurité

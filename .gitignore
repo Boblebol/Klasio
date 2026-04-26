@@ -28,6 +28,7 @@ pnpm-debug.log*
 .env.local
 .env.*.local
 .superpowers/
+docs/superpowers/
 
 # Build / dist
 dist/
