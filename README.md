@@ -92,7 +92,7 @@ Le dossier `dist/` contient uniquement les fichiers nécessaires au site public 
 
 - HTML / CSS / JavaScript vanilla — **aucune dépendance runtime externe**, aucun bundler nécessaire pour servir le site.
 - `<script type="module">` avec imports ES6 vers `src/core.mjs` (fonctions pures testables).
-- [jsPDF](https://github.com/parallax/jsPDF) 2.5.2 **hébergé localement** dans `vendor/jspdf/` pour l'export PDF (offline, vie privée, CSP stricte).
+- [jsPDF](https://github.com/parallax/jsPDF) 4.2.1 **hébergé localement** dans `vendor/jspdf/` pour l'export PDF (offline, vie privée, CSP stricte).
 - Police [Inter](https://rsms.me/inter/) via Google Fonts (seule ressource externe restante).
 - Persistance locale via `localStorage`, partage via encodage Base64URL dans l'URL.
 - Page [`privacy.html`](./privacy.html) statique pour documenter clairement les garanties et limites de vie privée.
@@ -133,7 +133,7 @@ klasio/
 ├── src/
 │   └── core.mjs            # Noyau pur (validation, répartition, parsing CSV…)
 ├── vendor/
-│   └── jspdf/              # jsPDF 2.5.2 vendorisé (UMD + LICENSE)
+│   └── jspdf/              # jsPDF 4.2.1 vendorisé (UMD + LICENSE)
 ├── tests/
 │   └── core.test.mjs       # 67 tests Vitest
 ├── scripts/

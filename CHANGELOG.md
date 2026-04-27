@@ -50,6 +50,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### Sécurité
 
+- **Mise à jour sécurité des dépendances de développement** : `jspdf` passe en 4.2.1 (bundle vendorisé inclus) et `vitest` en 4.1.5 pour retirer les alertes Dependabot `jspdf`, `dompurify`, `vite` et `esbuild`.
 - **Échappement HTML systématique** de toutes les données saisies par l'utilisateur injectées dans les templates de rendu (labels de niveaux, nom de classe, libellés de boutons, attributs `title`, actions rapides). Un helper `esc()` centralisé remplace les concaténations directes.
 - **Validation stricte du schéma** à la lecture (`localStorage` + paramètre URL `?s=…`). Un état corrompu ou manipulé est rejeté silencieusement plutôt que de casser l'application ou de permettre une injection.
 - **Restriction des identifiants de niveau** à `/^[A-Za-z0-9_-]{1,20}$/` pour couper la surface d'injection via les handlers `onclick`.
