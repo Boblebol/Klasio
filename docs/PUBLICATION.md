@@ -13,6 +13,9 @@ fonctionnalité GitHub soit documentée sans être réellement activée.
   `vanilla-javascript`, `github-pages`, `french`.
 - Issues activées avec templates bug/feature.
 - Pull request template présent.
+- Dependabot version updates configuré dans `.github/dependabot.yml`.
+- Dependabot alerts et security updates activés côté GitHub.
+- Secret scanning et push protection activés côté GitHub.
 - `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `SUPPORT.md`,
   `CHANGELOG.md` et `ROADMAP.md` présents.
 
