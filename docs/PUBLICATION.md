@@ -19,6 +19,7 @@ fonctionnalité GitHub soit documentée sans être réellement activée.
 - Dependabot version updates configuré dans `.github/dependabot.yml`.
 - Dependabot alerts et security updates activés côté GitHub.
 - Secret scanning et push protection activés côté GitHub.
+- Workflow CodeQL activé sur `main`, pull requests et un scan hebdomadaire.
 - Auto-merge, update branch et suppression automatique des branches mergées
   activés côté GitHub.
 - Branche `main` protégée avec le check CI principal requis.

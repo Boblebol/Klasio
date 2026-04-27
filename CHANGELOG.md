@@ -9,7 +9,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### Ajouté (Phase 1 — en cours)
 
-- **Documentation mainteneur** : `docs/ARCHITECTURE.md`, `docs/RELEASING.md`, checklist de publication enrichie, `.github/CODEOWNERS`, `.nvmrc` et script `npm run check`.
+- **Documentation mainteneur** : `docs/ARCHITECTURE.md`, `docs/RELEASING.md`, checklist de publication enrichie, `.github/CODEOWNERS`, `.nvmrc`, workflow CodeQL et script `npm run check`.
 - **Mode sombre** avec trois modes : clair / sombre / automatique (suit la préférence système). Toggle dans le header, choix persisté dans `localStorage`.
 - **Annuler / Rétablir** via les boutons du header et les raccourcis `Ctrl+Z` / `Ctrl+Y` (et `Cmd+Z` / `Cmd+Shift+Z` sur macOS). Historique de 20 états avec coalescence des modifications rapprochées (<800 ms) pour éviter le spam de snapshots lors de la saisie clavier.
 - **Nom personnalisé par classe** (ex. « Classe de la baleine », « Salle 12 »). Le nom auto « CP + CE1 » reste en placeholder et en sous-titre de la carte.
