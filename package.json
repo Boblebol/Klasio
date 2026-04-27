@@ -23,7 +23,7 @@
     "vendor:jspdf": "cp node_modules/jspdf/dist/jspdf.umd.min.js vendor/jspdf/jspdf.umd.min.js && cp node_modules/jspdf/LICENSE vendor/jspdf/LICENSE"
   },
   "devDependencies": {
-    "eslint": "^9.39.4",
+    "eslint": "^10.2.1",
     "eslint-config-prettier": "^9.1.2",
     "globals": "^15.15.0",
     "jspdf": "^4.2.1",
