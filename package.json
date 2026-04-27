@@ -10,10 +10,14 @@
   },
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=20.19"
+  },
   "scripts": {
     "dev": "python3 -m http.server 8080 --bind 127.0.0.1",
     "build:pages": "node scripts/build-pages.mjs",
     "verify:pages": "node scripts/verify-pages-build.mjs",
+    "check": "npm test && npm run lint && npm run format:check && npm run build:pages && npm run verify:pages",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
@@ -23,9 +27,10 @@
     "vendor:jspdf": "cp node_modules/jspdf/dist/jspdf.umd.min.js vendor/jspdf/jspdf.umd.min.js && cp node_modules/jspdf/LICENSE vendor/jspdf/LICENSE"
   },
   "devDependencies": {
-    "eslint": "^9.39.4",
-    "eslint-config-prettier": "^9.1.2",
-    "globals": "^15.15.0",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.1",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.5.0",
     "jspdf": "^4.2.1",
     "prettier": "^3.8.3",
     "vitest": "^4.1.5"

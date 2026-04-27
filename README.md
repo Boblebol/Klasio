@@ -42,6 +42,8 @@ Klasio est une application HTML statique. Il suffit de l'ouvrir dans un navigate
 ```bash
 git clone https://github.com/Boblebol/Klasio.git
 cd Klasio
+npm install          # requis seulement pour tests/lint/build Pages
+npm run dev          # optionnel : sert le site sur localhost:8080
 open app.html          # macOS : ouvre directement l'application
 # ou
 open index.html        # landing publique
@@ -117,6 +119,7 @@ npm run lint           # ESLint (0 warning attendu)
 npm run lint:fix       # autofix
 npm run format         # reformatte avec Prettier
 npm run format:check   # vérifie sans écrire (CI)
+npm run check          # tests + lint + format + build Pages + vérification
 npm run build:pages    # prépare l'artefact GitHub Pages dans dist/
 npm run verify:pages   # vérifie les fichiers et liens clés de dist/
 ```
@@ -140,7 +143,9 @@ klasio/
 │   ├── build-pages.mjs     # Prépare dist/ pour GitHub Pages
 │   └── verify-pages-build.mjs # Vérifie l'artefact Pages
 ├── docs/
-│   └── PUBLICATION.md      # Checklist publication/open-source
+│   ├── ARCHITECTURE.md     # Architecture statique et règles techniques
+│   ├── PUBLICATION.md      # Checklist publication/open-source
+│   └── RELEASING.md        # Procédure de release
 ├── package.json            # scripts + devDependencies de test/lint
 ├── vitest.config.mjs
 ├── README.md               # Ce fichier
@@ -149,6 +154,7 @@ klasio/
 ├── CONTRIBUTING.md         # Guide de contribution
 ├── SUPPORT.md              # Aide, issues et sécurité
 ├── LICENSE                 # MIT
+├── .nvmrc                  # Version Node de développement
 ├── .editorconfig
 ├── .gitignore
 └── .github/

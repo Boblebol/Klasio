@@ -16,6 +16,8 @@ Klasio est un site statique **sans build runtime** :
 - `app.html` : application Klasio.
 - `src/core.mjs` : noyau pur testé avec Vitest.
 
+Pré-requis : Node.js **20.19 ou plus récent** (voir `.nvmrc`).
+
 ```bash
 git clone https://github.com/Boblebol/Klasio.git
 cd Klasio
@@ -55,6 +57,8 @@ npm run lint
 npm run format:check
 npm run build:pages
 npm run verify:pages
+# ou tout lancer d'un coup :
+npm run check
 ```
 
 Checklist minimale :

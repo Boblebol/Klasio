@@ -9,6 +9,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### Ajouté (Phase 1 — en cours)
 
+- **Documentation mainteneur** : `docs/ARCHITECTURE.md`, `docs/RELEASING.md`, checklist de publication enrichie, `.github/CODEOWNERS`, `.nvmrc` et script `npm run check`.
 - **Mode sombre** avec trois modes : clair / sombre / automatique (suit la préférence système). Toggle dans le header, choix persisté dans `localStorage`.
 - **Annuler / Rétablir** via les boutons du header et les raccourcis `Ctrl+Z` / `Ctrl+Y` (et `Cmd+Z` / `Cmd+Shift+Z` sur macOS). Historique de 20 états avec coalescence des modifications rapprochées (<800 ms) pour éviter le spam de snapshots lors de la saisie clavier.
 - **Nom personnalisé par classe** (ex. « Classe de la baleine », « Salle 12 »). Le nom auto « CP + CE1 » reste en placeholder et en sous-titre de la carte.
@@ -50,7 +51,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### Sécurité
 
-- **Mise à jour sécurité des dépendances de développement** : `jspdf` passe en 4.2.1 (bundle vendorisé inclus) et `vitest` en 4.1.5 pour retirer les alertes Dependabot `jspdf`, `dompurify`, `vite` et `esbuild`.
+- **Mise à jour sécurité des dépendances de développement** : `jspdf` passe en 4.2.1 (bundle vendorisé inclus), `vitest` en 4.1.5, `eslint` en 10.2.1, `eslint-config-prettier` en 10.1.8 et `globals` en 17.5.0 pour retirer les alertes Dependabot et absorber les PR de maintenance restantes.
 - **Échappement HTML systématique** de toutes les données saisies par l'utilisateur injectées dans les templates de rendu (labels de niveaux, nom de classe, libellés de boutons, attributs `title`, actions rapides). Un helper `esc()` centralisé remplace les concaténations directes.
 - **Validation stricte du schéma** à la lecture (`localStorage` + paramètre URL `?s=…`). Un état corrompu ou manipulé est rejeté silencieusement plutôt que de casser l'application ou de permettre une injection.
 - **Restriction des identifiants de niveau** à `/^[A-Za-z0-9_-]{1,20}$/` pour couper la surface d'injection via les handlers `onclick`.

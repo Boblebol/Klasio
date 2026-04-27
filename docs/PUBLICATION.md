@@ -13,11 +13,19 @@ fonctionnalité GitHub soit documentée sans être réellement activée.
   `vanilla-javascript`, `github-pages`, `french`.
 - Issues activées avec templates bug/feature.
 - Pull request template présent.
+- Labels `type:*` et `phase:*` créés pour correspondre aux templates et à la
+  roadmap.
+- CODEOWNERS présent pour demander une revue mainteneur par défaut.
 - Dependabot version updates configuré dans `.github/dependabot.yml`.
 - Dependabot alerts et security updates activés côté GitHub.
 - Secret scanning et push protection activés côté GitHub.
+- Auto-merge, update branch et suppression automatique des branches mergées
+  activés côté GitHub.
+- Branche `main` protégée avec le check CI principal requis.
+- Release GitHub `v0.1.0` publiée pour correspondre au `CHANGELOG.md`.
 - `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `SUPPORT.md`,
-  `CHANGELOG.md` et `ROADMAP.md` présents.
+  `CHANGELOG.md`, `ROADMAP.md`, `docs/ARCHITECTURE.md` et
+  `docs/RELEASING.md` présents.
 
 ## GitHub Pages
 
