@@ -3,10 +3,11 @@
 > Outil web gratuit pour aider les directeurs et directrices d'école à **répartir leurs élèves dans les classes** — y compris les classes à double niveau typiques des écoles primaires françaises.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Status](https://img.shields.io/badge/status-alpha-orange.svg)]()
-[![No dependencies](https://img.shields.io/badge/runtime-static%20HTML-informational)]()
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-online-success)](https://boblebol.github.io/Klasio/)
+![Status: alpha](https://img.shields.io/badge/status-alpha-orange.svg)
+![Runtime: static HTML](https://img.shields.io/badge/runtime-static%20HTML-informational)
 [![CI](https://github.com/Boblebol/Klasio/actions/workflows/check.yml/badge.svg)](https://github.com/Boblebol/Klasio/actions/workflows/check.yml)
-[![Tests](https://img.shields.io/badge/tests-67%20unitaires-success)]()
+![Tests: 67 unitaires](https://img.shields.io/badge/tests-67%20unitaires-success)
 
 Klasio est une application **100 % côté client** servie depuis `app.html`, avec une landing publique en `index.html`. Aucune donnée ne quitte le navigateur : tout est stocké localement (`localStorage`). Aucun compte, aucun backend, aucun tracker.
 
@@ -69,6 +70,7 @@ L'application est accessible depuis la landing, ou directement via :
 Le workflow `.github/workflows/check.yml` exécute les tests, le lint, le formatage, le build Pages et une vérification d'artefact (`npm run verify:pages`). Sur un push vers `main`, ce dossier est publié sur GitHub Pages.
 
 Pour un fork, activez **Settings → Pages → Source: GitHub Actions**, puis poussez sur `main`.
+Voir aussi [`docs/PUBLICATION.md`](./docs/PUBLICATION.md) pour la checklist de publication et les réglages GitHub du repository.
 
 ```bash
 npm run build:pages
@@ -137,6 +139,8 @@ klasio/
 ├── scripts/
 │   ├── build-pages.mjs     # Prépare dist/ pour GitHub Pages
 │   └── verify-pages-build.mjs # Vérifie l'artefact Pages
+├── docs/
+│   └── PUBLICATION.md      # Checklist publication/open-source
 ├── package.json            # scripts + devDependencies de test/lint
 ├── vitest.config.mjs
 ├── README.md               # Ce fichier
